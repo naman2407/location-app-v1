@@ -1,0 +1,38 @@
+<svg width="1600" height="1100" viewBox="0 0 1600 1100" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1600" height="1100" fill="#f6f7f9"/>
+  <g stroke="#d6d8dc" stroke-width="2" fill="none">
+    <path d="M120 180 L1480 220"/>
+    <path d="M90 320 L1510 380"/>
+    <path d="M60 500 L1540 520"/>
+    <path d="M140 700 L1460 740"/>
+    <path d="M100 880 L1500 910"/>
+    <path d="M260 90 L220 1020"/>
+    <path d="M520 70 L460 1040"/>
+    <path d="M780 60 L740 1060"/>
+    <path d="M1040 70 L1020 1040"/>
+    <path d="M1320 110 L1300 1000"/>
+  </g>
+  <g stroke="#c4c7cc" stroke-width="1.5" fill="none">
+    <path d="M300 200 C420 260, 600 260, 760 220"/>
+    <path d="M240 420 C480 480, 720 480, 980 420"/>
+    <path d="M220 640 C460 700, 760 700, 1120 640"/>
+    <path d="M260 860 C520 920, 820 940, 1220 880"/>
+  </g>
+  <g stroke="#9fd6ea" stroke-width="18" fill="none" stroke-linecap="round">
+    <path d="M880 70 C760 220, 740 420, 860 640 C980 860, 1100 980, 1230 1060"/>
+  </g>
+  <g font-family="Inter, Arial, sans-serif" fill="#1c1d20" opacity="0.7">
+    <text x="1020" y="560" font-size="32" font-weight="600">Washington</text>
+    <text x="870" y="520" font-size="16">Potomac River</text>
+    <text x="1080" y="680" font-size="14">Capitol Hill</text>
+    <text x="760" y="430" font-size="14">Georgetown</text>
+    <text x="620" y="560" font-size="14">Arlington</text>
+    <text x="520" y="680" font-size="14">Clarendon</text>
+  </g>
+  <g fill="#1c1d20" opacity="0.35">
+    <circle cx="950" cy="540" r="6"/>
+    <circle cx="820" cy="440" r="4"/>
+    <circle cx="700" cy="610" r="4"/>
+    <circle cx="1100" cy="760" r="4"/>
+  </g>
+</svg>
