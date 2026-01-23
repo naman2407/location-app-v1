@@ -6,6 +6,7 @@ import { brands, locations, filterBrands, filterLocations } from '../constants/s
 import { SafeImage } from './SafeImage'
 import { IMAGES } from '../constants/images'
 import { getBrandPageUrl, getBusinessPageUrl } from '../constants/brandNavigation'
+import { ClaimedTooltip } from './ClaimedTooltip'
 
 interface HeroSearchBarProps {
   initialQuery?: string
@@ -394,8 +395,17 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
                       />
                     </div>
                     {/* Brand Name */}
-                    <span className="text-sm text-[#000000] font-normal flex-1">
+                    <span className="text-sm text-[#000000] font-normal flex-1 flex items-center gap-1.5">
                       {brand.name}
+                      {brand.claimed !== undefined && (
+                        <ClaimedTooltip tooltipText={brand.claimed ? "This brand profile has been claimed by the business owner or an authorized representative." : "This brand profile has not yet been claimed by the business owner or an authorized representative."}>
+                          <SafeImage
+                            alt={brand.claimed ? "Claimed" : "Unclaimed"}
+                            className="shrink-0 w-4 h-4"
+                            src={brand.claimed ? IMAGES.claimed : IMAGES.unclaimed}
+                          />
+                        </ClaimedTooltip>
+                      )}
                     </span>
                 </div>
               )

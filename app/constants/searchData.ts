@@ -1,11 +1,12 @@
 // Dummy data for unified search suggestions
+import { isClaimedFoodBrand } from './foodAndDiningBrands'
 
 // Brand data - unique brands only (for brand suggestions)
 export const brands = [
-  { id: 'tb', name: 'Taco Bell', image: '/images/brands/taco-bell.svg' },
-  { id: 'br', name: 'Baskin-Robbins', image: '/images/brands/BR.png' },
-  { id: 'tbc', name: 'Taco Mahal', image: '/images/brands/store.svg' },
-  { id: 'tt', name: 'Taco Time', image: '/images/brands/store.svg' },
+  { id: 'tb', name: 'Taco Bell', image: '/images/brands/taco-bell.svg', claimed: true },
+  { id: 'br', name: 'Baskin-Robbins', image: '/images/brands/BR.png', claimed: false },
+  { id: 'tbc', name: 'Taco Mahal', image: '/images/brands/store.svg', claimed: isClaimedFoodBrand('Taco Mahal') },
+  { id: 'tt', name: 'Taco Time', image: '/images/brands/store.svg', claimed: isClaimedFoodBrand('Taco Time') },
 ]
 
 // Location data - brand locations with addresses
