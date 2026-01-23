@@ -174,11 +174,11 @@ function SearchContent() {
           </nav>
           <div className="container relative py-8 sm:py-12">
             <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-              {/* Store Icon - Square with rounded border */}
+              {/* All Brands Icon - Square with rounded border */}
               <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
                 <SafeImage
-                  src="/images/brands/store.svg"
-                  alt="Store"
+                  src={IMAGES.all_brands}
+                  alt="All Brands"
                   className="w-[50%] object-contain p-2"
                 />
               </div>

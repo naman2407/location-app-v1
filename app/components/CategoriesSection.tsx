@@ -1,9 +1,15 @@
 'use client'
 
-import React, { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { CategoryCard } from './CategoryCard'
 import { Link } from './Link'
 import { categories } from '../constants/data'
+
+const getCategoryLabel = (category: { name: string; name2?: string }) =>
+  category.name2 ? `${category.name} ${category.name2}` : category.name
+
+const getCategoryHref = (categoryName: string) =>
+  categoryName === 'Food & Dining' ? '/categories/food-and-dining' : undefined
 
 export function CategoriesSection() {
   const [showAllCategories, setShowAllCategories] = useState(false)
@@ -36,10 +42,10 @@ export function CategoriesSection() {
       </p>
       <div className="flex flex-col relative px-4 sm:px-0 w-full max-w-[1440px] mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center">
-          {visibleCategories.map((category, index) => {
-            const categoryName = category.name2 ? `${category.name} ${category.name2}` : category.name
-            const href = categoryName === 'Food & Dining' ? '/categories/food-and-dining' : undefined
-            return <CategoryCard key={index} category={category} href={href} />
+          {visibleCategories.map((category) => {
+            const categoryName = getCategoryLabel(category)
+            const href = getCategoryHref(categoryName)
+            return <CategoryCard key={categoryName} category={category} href={href} />
           })}
         </div>
 
@@ -50,10 +56,10 @@ export function CategoriesSection() {
                 showAllCategories ? 'categories-expanded' : 'categories-collapsed'
               }`}
             >
-              {remainingCategories.map((category, index) => {
-                const categoryName = category.name2 ? `${category.name} ${category.name2}` : category.name
-                const href = categoryName === 'Food & Dining' ? '/categories/food-and-dining' : undefined
-                return <CategoryCard key={`more-${index}`} category={category} href={href} />
+              {remainingCategories.map((category) => {
+                const categoryName = getCategoryLabel(category)
+                const href = getCategoryHref(categoryName)
+                return <CategoryCard key={`more-${categoryName}`} category={category} href={href} />
               })}
             </div>
 

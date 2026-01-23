@@ -18,7 +18,6 @@ function AllBrandsContent() {
   const pageParam = Number(searchParams?.get('page') || '1')
   const statusParam = searchParams?.get('status')
   const activeTab = statusParam === 'unclaimed' ? 'unclaimed' : 'claimed'
-  const totalPages = Math.max(1, Math.ceil(allBrandNames.length / PAGE_SIZE))
   const scrollPositionRef = useRef<number>(0)
 
   const tabs = useMemo(
@@ -180,7 +179,6 @@ function AllBrandsContent() {
           <div role="tablist" aria-label="Brand status tabs" className="flex flex-wrap items-center gap-4">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id
-              const isVerified = tab.id === 'claimed'
               return (
                 <button
                   key={tab.id}

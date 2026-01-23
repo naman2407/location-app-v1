@@ -76,29 +76,4 @@ export const brands = [
     logo: IMAGES.brands.lensCrafters,
     claimed: true,
   },
-  {
-    name: 'Advance Auto Parts',
-    locations: '6,752 locations',
-    category: 'Automotive',
-    rating: 4.5,
-    logo: IMAGES.brands.advanceAuto,
-    claimed: true,
-  },
-  {
-    name: "Freddy's Custard",
-    locations: '4,273 locations',
-    category: 'Food & Dining',
-    rating: 4.5,
-    logo: IMAGES.brands.freddys,
-    claimed: true,
-  },
-  {
-    name: 'LensCrafters',
-    locations: '6,752 locations',
-    category: 'Health',
-    rating: 4.5,
-    logo: IMAGES.brands.lensCrafters,
-    claimed: true,
-  },
 ]
-

@@ -617,7 +617,7 @@ export const mockBusinesses: Business[] = [
     'Houston',
     false
   ),
-  // Other brands (from searchResults)
+  // Other brands
   {
     slug: 'starbucks-georgetown',
     name: 'Starbucks',
@@ -1470,4 +1470,3 @@ export const mockBusinesses: Business[] = [
     ],
   },
 ]
-

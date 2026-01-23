@@ -109,7 +109,7 @@ function FoodAndDiningContent() {
                 />
               </div>
               <div className="flex-1 min-w-0">
-                <h1 className="mb-2 ext-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
+                <h1 className="mb-2 text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
                   <span className="flex items-center gap-2 flex-wrap">
                     Food & Dining
                   </span>
@@ -124,7 +124,6 @@ function FoodAndDiningContent() {
           <div role="tablist" aria-label="Brand status tabs" className="flex flex-wrap items-center gap-4">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id
-              const isVerified = tab.id === 'claimed'
               return (
                 <button
                   key={tab.id}

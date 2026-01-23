@@ -102,7 +102,7 @@ export default function BrandTopLevelPage({ params }: PageProps) {
                     </span>
                   )}
                 </div>
-                <h1 className="mb-2 ext-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
+                <h1 className="mb-2 text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
                   <span className="flex items-center gap-2 flex-wrap">
                     {brand.name}
                   </span>

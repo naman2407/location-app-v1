@@ -16,14 +16,14 @@ export function BrandsSection() {
       <div className="flex flex-col gap-4 sm:gap-6 md:gap-[24px] items-center relative w-full">
         {/* Brand Cards Grid - Responsive: 1 col mobile, 2 col tablet, 3 col large/xl */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
-          {brands.map((brand, index) => {
+          {brands.map((brand) => {
             // Only Taco Bell is clickable for the prototype
             const href = brand.name.toLowerCase() === 'taco bell' 
               ? '/categories/food-and-dining/taco-bell'
               : undefined
             
             return (
-              <div key={index} className={index === 8 ? 'block md:hidden lg:block' : ''}>
+              <div key={brand.name}>
                 <BrandCard brand={brand} href={href} showClaimedBadge={true} />
               </div>
             )
