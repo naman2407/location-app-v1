@@ -1,14 +1,17 @@
 // Image paths - Update these paths to match your image filenames in the public folder
 export const IMAGES = {
   logo: "/images/icons/logo.svg",
+  yext_logo: "/images/brands/yext_logo.svg",
   heroBackground: "/images/illustrations/hero-background.jpg",
-  marketingGraphic: "/images/illustrations/marketing.webp",
   emptyDone: "/images/illustrations/empty-done.svg",
   noResult: "/images/illustrations/no_result.svg",
   tag: "/images/icons/tag.svg",
   stars: "/images/icons/Stars.svg",
   star_single: "/images/icons/star_single.svg",
   claimed: "/images/icons/claimed.svg",
+  claimed_tab: "/images/icons/claimed_tab.svg",
+  unclaimed: "/images/icons/unclaimed.svg",
+  unclaimed_tab: "/images/icons/unclaimed_tab.svg",
   facebook: "/images/icons/facebook.svg",
   facebook_color: "/images/icons/facebook_color.svg",
   instagram: "/images/icons/instagram.svg",
@@ -23,30 +26,17 @@ export const IMAGES = {
   external: "/images/icons/external.svg",
   link: "/images/icons/link.svg",
   google_location: "/images/illustrations/google_location.png",
-  stores: "/images/illustrations/stores.svg",
   brands: {
+    // Brand logos for homepage
     starbucks: "/images/brands/starbucks.svg",
-    mcdonalds: "/images/brands/mcdonalds.svg",
     westernUnion: "/images/brands/western-union.svg",
     freddys: "/images/brands/freddys.svg",
     advanceAuto: "/images/brands/advance-auto.svg",
     lensCrafters: "/images/brands/lenscrafters.svg",
-    asda: "/images/brands/asda.png",
-    campbells: "/images/brands/campbells.png",
-    hd: "/images/brands/hd.png",
-    mcd: "/images/brands/mcd.png",
-    brookdale: "/images/brands/brookdale.png",
-    samsung: "/images/brands/samsung.png",
-    first: "/images/brands/first.png",
-    fedex: "/images/brands/fedex.png",
-    ihg: "/images/brands/ihg.png",
-    ohio: "/images/brands/ohio.png",
-    dominos: "/images/brands/dominos.png",
-    bojangles: "/images/brands/bojangles.png",
+    // Brand logos for brand pages
     all: "/images/brands/all.png",
-    subway: "/images/brands/subway.png",
-    extra: "/images/brands/extra.png",
-
+    tacoBell: "/images/brands/taco-bell.svg",
+    baskinRobbins: "/images/brands/BR.png",
   },
   categories: [
     "/images/categories/agriculture.svg",
@@ -75,4 +65,3 @@ export const IMAGES = {
     "/images/categories/other.svg",
   ],
 } as const
-

@@ -1,3 +1,5 @@
+'use client'
+
 import { SafeImage } from './SafeImage'
 import { IMAGES } from '../constants/images'
 import { HeroSearchBar } from './HeroSearchBar'
@@ -8,12 +10,12 @@ export function Hero() {
       <div className="flex flex-col font-bold text-center justify-center relative shrink-0 text-[48px] sm:text-[64px] leading-[1.25]">
         <p>Your Go-To Guide for Businesses</p>
       </div>
-      <p className="font-medium text-[20px] leading-[1.4] sm:text-[24px] sm:leading-normal relative shrink-0 text-center px-4">
+      <p className="font-medium text-[20px] leading-[1.4] sm:text-[24px] sm:leading-normal relative shrink-0 text-center px-4 pb-12 md:pb-0">
         Discover businesses and services you can trust with ABCD Directory
       </p>
       
-      {/* Search Bar */}
-      <div className="relative z-10 w-full flex justify-center mt-4 overflow-visible">
+      {/* Search Bar - Hidden on mobile, shown on tablet/desktop */}
+      <div className="hidden md:flex relative z-10 w-full justify-center mt-4 pb-12 sm:pb-0 overflow-visible">
         <HeroSearchBar />
       </div>
       

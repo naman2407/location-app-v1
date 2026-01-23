@@ -34,13 +34,15 @@ export const brands = [
     category: 'Financial Services',
     rating: 4.5,
     logo: IMAGES.brands.westernUnion,
+    claimed: true,
   },
   {
-    name: "McDonald's",
+    name: "Taco Bell",
     locations: '13,445 locations',
     category: 'Food & Dining',
     rating: 4.5,
-    logo: IMAGES.brands.mcdonalds,
+    logo: IMAGES.brands.tacoBell,
+    claimed: true,
   },
   {
     name: 'Starbucks',
@@ -48,13 +50,15 @@ export const brands = [
     category: 'Food & Dining',
     rating: 4.5,
     logo: IMAGES.brands.starbucks,
+    claimed: true,
   },
   {
-    name: "Freddy's Frozen Custard & Steakburgers",
+    name: "Freddy's Custard",
     locations: '4,273 locations',
     category: 'Food & Dining',
     rating: 4.5,
     logo: IMAGES.brands.freddys,
+    claimed: true,
   },
   {
     name: 'Advance Auto Parts',
@@ -62,6 +66,7 @@ export const brands = [
     category: 'Automotive',
     rating: 4.5,
     logo: IMAGES.brands.advanceAuto,
+    claimed: true,
   },
   {
     name: 'LensCrafters',
@@ -69,6 +74,7 @@ export const brands = [
     category: 'Health',
     rating: 4.5,
     logo: IMAGES.brands.lensCrafters,
+    claimed: true,
   },
   {
     name: 'Advance Auto Parts',
@@ -76,13 +82,15 @@ export const brands = [
     category: 'Automotive',
     rating: 4.5,
     logo: IMAGES.brands.advanceAuto,
+    claimed: true,
   },
   {
-    name: "Freddy's Frozen Custard & Steakburgers",
+    name: "Freddy's Custard",
     locations: '4,273 locations',
     category: 'Food & Dining',
     rating: 4.5,
     logo: IMAGES.brands.freddys,
+    claimed: true,
   },
   {
     name: 'LensCrafters',
@@ -90,6 +98,7 @@ export const brands = [
     category: 'Health',
     rating: 4.5,
     logo: IMAGES.brands.lensCrafters,
+    claimed: true,
   },
 ]
 

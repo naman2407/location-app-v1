@@ -1,16 +1,16 @@
 'use client'
 
 import { useMemo, useState } from 'react'
+import Link from 'next/link'
 import { mockBusinesses } from '../mocks/mockBusinesses'
 import { HoursCard } from '../components/business/HoursCard'
 import { RatingHistogram } from '../components/business/RatingHistogram'
 import { ReviewCard } from '../components/business/ReviewCard'
 import { FaqAccordion } from '../components/business/FaqAccordion'
-import { SocialChips } from '../components/business/SocialChips'
-import { MapPlaceholder } from '../components/business/MapPlaceholder'
 import { SafeImage } from '../../app/components/SafeImage'
 import { IMAGES } from '../../app/constants/images'
 import { ClaimedTooltip } from '../../app/components/ClaimedTooltip'
+import { findLocationBySlug } from '../../app/constants/brandData'
 
 type Params = { slug?: string }
 
@@ -28,50 +28,68 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
     [business]
   )
 
-  // Generate dynamic breadcrumbs
+  // Generate dynamic breadcrumbs matching the brand/category flow
   const breadcrumbs = useMemo(() => {
     if (!business) return []
     
     const crumbs = [{ label: 'Home', href: '/' }]
     
-    // Extract primary category from descriptor (first part before ·)
-    let primaryCategory = categories[0] || 'Food & Dining'
+    // Try to find location in brand data structure
+    const locationInfo = findLocationBySlug(business.slug)
     
-    // Normalize category names to match search page categories
-    const categoryMap: Record<string, string> = {
-      'Fast Food': 'Food & Dining',
-      'Mexican': 'Food & Dining',
-      'Restaurant': 'Food & Dining',
-      'Coffee': 'Food & Dining',
-      'Cafe': 'Food & Dining',
-      'Agriculture & Industry': 'Agriculture & Industry',
+    if (locationInfo) {
+      const { brand, state, city } = locationInfo
+      
+      // Add category
+      const categorySlug = brand.category === 'Food & Dining' ? 'food-and-dining' : brand.category.toLowerCase().replace(/\s+/g, '-')
+      crumbs.push({ 
+        label: brand.category, 
+        href: `/categories/${categorySlug}` 
+      })
+      
+      // Add brand
+      crumbs.push({ 
+        label: brand.name, 
+        href: `/categories/${categorySlug}/${brand.slug}` 
+      })
+      
+      // Add state
+      crumbs.push({ 
+        label: state.name, 
+        href: `/categories/${categorySlug}/${brand.slug}/${state.slug}` 
+      })
+      
+      // Add city
+      crumbs.push({ 
+        label: city.name, 
+        href: `/categories/${categorySlug}/${brand.slug}/${state.slug}/${city.slug}` 
+      })
+    } else {
+      // Fallback to old breadcrumb logic for businesses not in brand data
+      let primaryCategory = categories[0] || 'Food & Dining'
+      
+      const categoryMap: Record<string, string> = {
+        'Fast Food': 'Food & Dining',
+        'Mexican': 'Food & Dining',
+        'Restaurant': 'Food & Dining',
+        'Coffee': 'Food & Dining',
+        'Cafe': 'Food & Dining',
+        'Ice Cream': 'Food & Dining',
+        'Desserts': 'Food & Dining',
+        'Frozen Treats': 'Food & Dining',
+        'Agriculture & Industry': 'Agriculture & Industry',
+      }
+      
+      if (categoryMap[primaryCategory]) {
+        primaryCategory = categoryMap[primaryCategory]
+      }
+      
+      const categorySlug = primaryCategory === 'Food & Dining' ? 'food-and-dining' : primaryCategory.toLowerCase().replace(/\s+/g, '-')
+      crumbs.push({ 
+        label: primaryCategory, 
+        href: `/categories/${categorySlug}` 
+      })
     }
-    
-    // Map category if needed, otherwise use as-is
-    if (categoryMap[primaryCategory]) {
-      primaryCategory = categoryMap[primaryCategory]
-    }
-    
-    // Add category
-    crumbs.push({ 
-      label: primaryCategory, 
-      href: `/search?category=${encodeURIComponent(primaryCategory)}` 
-    })
-    
-    // Add state (abbreviated or full name)
-    const stateLabel = business.address.state.length > 2 
-      ? business.address.state
-      : business.address.state.toUpperCase()
-    crumbs.push({ 
-      label: stateLabel, 
-      href: `/search?category=${encodeURIComponent(primaryCategory)}&location=${encodeURIComponent(business.address.state)}` 
-    })
-    
-    // Add city
-    crumbs.push({ 
-      label: business.address.city, 
-      href: `/search?category=${encodeURIComponent(primaryCategory)}&location=${encodeURIComponent(business.address.city + ', ' + business.address.state)}` 
-    })
     
     // Add business name (non-clickable, current page)
     crumbs.push({ label: business.name, href: '#' })
@@ -96,99 +114,114 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
 
   return (
     <div className="biz-page w-full">
-      <div className="w-full px-4 sm:px-8 lg:px-8 xl:px-[150px] py-6 lg:py-8 flex-1 flex flex-col max-w-[1440px] mx-auto min-h-0">
-        <nav className="breadcrumb-container flex items-center mb-4" aria-label="Breadcrumb">
+      <div className="w-full px-4 sm:px-8 lg:px-8 xl:px-[150px] pb-6 lg:pb-8 flex-1 flex flex-col max-w-[1440px] mx-auto min-h-0">
+        <nav className="breadcrumb-container flex items-center my-4 -ml-4 sm:-ml-8 lg:-ml-8 xl:-ml-[150px]" aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, index) => (
             <span key={index} className="flex items-center">
-              {index > 0 && <span className="breadcrumb-separator mx-2">/</span>}
+              {index > 0 && <span className="breadcrumb-separator mx-2 text-[#767676]">/</span>}
               {index === breadcrumbs.length - 1 ? (
                 <span className="breadcrumb-current">{crumb.label}</span>
               ) : (
-                <a href={crumb.href} className="hover:underline">{crumb.label}</a>
+                <Link href={crumb.href} className="link-primary">
+                  {crumb.label}
+                </Link>
               )}
             </span>
           ))}
         </nav>
 
-      <div className="biz-hero">
+      <div>
         <SafeImage
           alt=""
           className="biz-hero-image biz-hero-image-desktop"
           src={IMAGES.heroBackground}
         />
-        {/* Unclaimed Business Banner */}
-      {business.claimed === false && (
-        <div className="unclaimed-banner">
-          <div className="unclaimed-banner-content">
-            <div className="unclaimed-banner-icon">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="1.5" fill="none"/>
-                <text x="12" y="16" textAnchor="middle" fontSize="14" fontWeight="600" fill="currentColor" fontFamily="Inter, sans-serif">i</text>
-              </svg>
-            </div>
-            <div className="unclaimed-banner-text">
-              <div className="unclaimed-banner-title">Own this business?</div>
-              <div className="unclaimed-banner-description">
-                If you own or manage this business, connect with Yext to take control of your digital presence — from reviews and listings to social media and customer engagement.
-              </div>
-            </div>
-            <a href={`/claim/${business.slug}`} className="unclaimed-banner-cta">Get Started</a>
-          </div>
-        </div>
-      )}
-        <div className="flex items-center gap-3 flex-wrap">
-          <h1 className="heading heading-lead">{business.name}</h1>
-          {business.claimed && (
-            <ClaimedTooltip tooltipText="This profile has been claimed by the business owner or representative.">
-              <SafeImage
-                alt="Claimed"
-                className="shrink-0 claimed-icon-size"
-                src={IMAGES.claimed}
-              />
-            </ClaimedTooltip>
-          )}
-        </div>
-        <div className="biz-rating">
-          <span className="biz-rating-score">{business.rating.toFixed(1)}</span>
-          <div className="biz-rating-stars">
-            <SafeImage alt="Stars" className="block max-w-none h-full" src={IMAGES.stars} />
-          </div>
-          <span className="biz-rating-count">{business.reviewCount} reviews</span>
-        </div>
-        <div className="biz-status">
-          <span className="biz-status-text">{business.statusText}</span>
-          <span className="biz-status-dot" />
-          <span className="biz-status-time">Closes at {business.closesAt}</span>
-        </div>
+        
         <SafeImage
           alt=""
           className="biz-hero-image biz-hero-image-mobile"
           src={business.imageUrl || IMAGES.heroBackground}
         />
-        <div className="biz-cta">
-          <a href={`https://maps.google.com?q=${business.address.line1}`} className="button button-primary" target="_blank" rel="noopener noreferrer">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M9.965 5.07495C10.1325 4.67745 10.2 4.38495 10.2 4.19995C10.2 2.98495 9.215 1.99995 8 1.99995C6.785 1.99995 5.8 2.98495 5.8 4.19995C5.8 4.38495 5.8675 4.67495 6.035 5.07495C6.1975 5.45995 6.4275 5.88495 6.695 6.31745C7.1225 7.01245 7.6175 7.68495 8 8.17745C8.3825 7.68495 8.8775 7.01245 9.305 6.31745C9.5725 5.88495 9.8025 5.45995 9.965 5.07495ZM8.37 8.99995C8.1775 9.23995 7.82 9.23995 7.63 8.99995C6.8275 7.99745 5 5.56495 5 4.19995C5 2.54245 6.3425 1.19995 8 1.19995C9.6575 1.19995 11 2.54245 11 4.19995C11 5.56495 9.1725 7.99745 8.37 8.99995ZM10.9475 6.77245C10.9275 6.77995 10.905 6.78745 10.885 6.79245C11.09 6.43745 11.2775 6.07495 11.43 5.71995L14.3775 4.53995C14.7725 4.38245 15.2 4.67245 15.2 5.09745V11.8675C15.2 12.1125 15.05 12.3325 14.8225 12.425L10.9475 13.975C10.865 14.0075 10.775 14.0125 10.69 13.9875L5.2225 12.4225L1.6225 13.8625C1.2275 14.02 0.800003 13.73 0.800003 13.305V6.53495C0.800003 6.28995 0.950003 6.06995 1.1775 5.97745L4.2575 4.74495C4.31 5.00495 4.3925 5.26495 4.4875 5.51495L1.6 6.66995V13.0075L4.8 11.7275V8.79995C4.8 8.57995 4.98 8.39995 5.2 8.39995C5.42 8.39995 5.6 8.57995 5.6 8.79995V11.6975L10.4 13.07V8.79995C10.4 8.57995 10.58 8.39995 10.8 8.39995C11.02 8.39995 11.2 8.57995 11.2 8.79995V13.01L14.4 11.73V5.39245L10.9475 6.77245ZM8 3.39995C8.0788 3.39995 8.15682 3.41547 8.22961 3.44562C8.30241 3.47578 8.36855 3.51997 8.42427 3.57569C8.47998 3.6314 8.52418 3.69755 8.55433 3.77034C8.58448 3.84314 8.6 3.92116 8.6 3.99995C8.6 4.07874 8.58448 4.15677 8.55433 4.22956C8.52418 4.30236 8.47998 4.3685 8.42427 4.42422C8.36855 4.47993 8.30241 4.52413 8.22961 4.55428C8.15682 4.58443 8.0788 4.59995 8 4.59995C7.92121 4.59995 7.84319 4.58443 7.77039 4.55428C7.6976 4.52413 7.63145 4.47993 7.57574 4.42422C7.52002 4.3685 7.47583 4.30236 7.44568 4.22956C7.41552 4.15677 7.4 4.07874 7.4 3.99995C7.4 3.92116 7.41552 3.84314 7.44568 3.77034C7.47583 3.69755 7.52002 3.6314 7.57574 3.57569C7.63145 3.51997 7.6976 3.47578 7.77039 3.44562C7.84319 3.41547 7.92121 3.39995 8 3.39995Z" fill="currentColor"/>
-            </svg>
-            <span>Get Directions</span>
-          </a>
-          <a href={`tel:${business.phone}`} className="button button-secondary">
-            <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M11.495 8.48006C11.085 8.30506 10.61 8.42006 10.3275 8.76506L9.49751 9.78006C8.34751 9.11256 7.38751 8.15256 6.72001 7.00256L7.73251 6.17506C8.07751 5.89256 8.19501 5.41756 8.01751 5.00756L6.81751 2.20756C6.63001 1.76756 6.15751 1.52256 5.69001 1.62256L2.89001 2.22256C2.43001 2.32006 2.10001 2.72756 2.10001 3.20006C2.10001 9.11756 6.68751 13.9626 12.5 14.3726C12.6125 14.3801 12.7275 14.3876 12.8425 14.3926C12.8425 14.3926 12.8425 14.3926 12.845 14.3926C12.9975 14.3976 13.1475 14.4026 13.3025 14.4026C13.775 14.4026 14.1825 14.0726 14.28 13.6126L14.88 10.8126C14.98 10.3451 14.735 9.87256 14.295 9.68506L11.495 8.48506V8.48006ZM13.2925 13.6001C7.55251 13.5951 2.90001 8.94256 2.90001 3.20006C2.90001 3.10506 2.96501 3.02506 3.05751 3.00506L5.85751 2.40506C5.95001 2.38506 6.04501 2.43506 6.08251 2.52256L7.28251 5.32256C7.31751 5.40506 7.29501 5.50006 7.22501 5.55506L6.21001 6.38506C5.90751 6.63256 5.82751 7.06506 6.02501 7.40506C6.76251 8.67756 7.82251 9.73756 9.09251 10.4726C9.43251 10.6701 9.86501 10.5901 10.1125 10.2876L10.9425 9.27256C11 9.20256 11.095 9.18006 11.175 9.21506L13.975 10.4151C14.0625 10.4526 14.1125 10.5476 14.0925 10.6401L13.4925 13.4401C13.4725 13.5326 13.39 13.5976 13.2975 13.5976C13.295 13.5976 13.2925 13.5976 13.29 13.5976L13.2925 13.6001Z" fill="currentColor"/>
-            </svg>
-            <span>Call</span>
-          </a>
-          <a href={business.website} target="_blank" rel="noopener noreferrer" className="button button-secondary">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M10 1.6001C9.78001 1.6001 9.60001 1.7801 9.60001 2.0001C9.60001 2.2201 9.78001 2.4001 10 2.4001H13.035L6.91751 8.5176C6.76251 8.6726 6.76251 8.9276 6.91751 9.0826C7.07251 9.2376 7.32751 9.2376 7.48251 9.0826L13.6 2.9651V6.0001C13.6 6.2201 13.78 6.4001 14 6.4001C14.22 6.4001 14.4 6.2201 14.4 6.0001V2.0001C14.4 1.7801 14.22 1.6001 14 1.6001H10ZM3.20001 2.4001C2.31751 2.4001 1.60001 3.1176 1.60001 4.0001V12.8001C1.60001 13.6826 2.31751 14.4001 3.20001 14.4001H12C12.8825 14.4001 13.6 13.6826 13.6 12.8001V9.2001C13.6 8.9801 13.42 8.8001 13.2 8.8001C12.98 8.8001 12.8 8.9801 12.8 9.2001V12.8001C12.8 13.2426 12.4425 13.6001 12 13.6001H3.20001C2.75751 13.6001 2.40001 13.2426 2.40001 12.8001V4.0001C2.40001 3.5576 2.75751 3.2001 3.20001 3.2001H6.80001C7.02001 3.2001 7.20001 3.0201 7.20001 2.8001C7.20001 2.5801 7.02001 2.4001 6.80001 2.4001H3.20001Z" fill="currentColor"/>
-            </svg>
-            <span>Website</span>
-          </a>
-        </div>
       </div>
 
       <div className="biz-main-grid">
         <div className="biz-main-col">
+          <section className="biz-title-block">
+            {business.claimed === false && (
+              <div className="biz-hero-banner biz-hero-banner-mobile">
+                <div className="biz-claim-banner" role="note" aria-label="Own this business">
+                  <div className="biz-claim-banner-header">
+                    <div className="biz-claim-banner-title">Go Beyond The Basics</div>
+                  </div>
+                  <div className="biz-claim-banner-description">
+                    <p>Businesses using Yext unlock:</p>
+                    <ul>
+                      <li>Deeper insights into customer feedback</li>
+                      <li>Performance summaries across key platforms</li>
+                      <li>Visibility into common customer questions</li>
+                      <li>Tools to manage and optimize digital presence at scale</li>
+                    </ul>
+                    <p>Let's walk through what this looks like for your business.</p>
+                  </div>
+                  <a href="https://www.yext.com/demo" target="_blank" rel="noopener noreferrer" className="biz-claim-banner-cta">
+                  Get in touch
+                  </a>
+                </div>
+              </div>
+            )}
+            <div className="flex items-center gap-3 flex-wrap">
+              <h1 className="heading heading-lead">{business.name}</h1>
+              {business.claimed ? (
+                <ClaimedTooltip tooltipText="This brand profile has been claimed by the business owner or an authorized representative.">
+                  <SafeImage
+                    alt="Claimed"
+                    className="shrink-0 claimed-icon-size"
+                    src={IMAGES.claimed}
+                  />
+                </ClaimedTooltip>
+              ) : (
+                <ClaimedTooltip tooltipText="This brand profile has not yet been claimed by the business owner or an authorized representative.">
+                  <SafeImage
+                    alt="Unclaimed"
+                    className="shrink-0 claimed-icon-size"
+                    src={IMAGES.unclaimed}
+                  />
+                </ClaimedTooltip>
+              )}
+            </div>
+            <div className="biz-rating">
+              <span className="biz-rating-score">{business.rating.toFixed(1)}</span>
+              <div className="biz-rating-stars">
+                <SafeImage alt="Stars" className="block max-w-none h-full" src={IMAGES.stars} />
+              </div>
+              <span className="biz-rating-count">{business.reviewCount} reviews</span>
+            </div>
+            <div className="biz-status">
+              <span className="biz-status-text">{business.statusText}</span>
+              <span className="biz-status-dot" />
+              <span className="biz-status-time">Closes at {business.closesAt}</span>
+            </div>
+            <div className="biz-cta">
+              <a href={`https://maps.google.com?q=${business.address.line1}`} className="button button-primary" target="_blank" rel="noopener noreferrer">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9.965 5.07495C10.1325 4.67745 10.2 4.38495 10.2 4.19995C10.2 2.98495 9.215 1.99995 8 1.99995C6.785 1.99995 5.8 2.98495 5.8 4.19995C5.8 4.38495 5.8675 4.67495 6.035 5.07495C6.1975 5.45995 6.4275 5.88495 6.695 6.31745C7.1225 7.01245 7.6175 7.68495 8 8.17745C8.3825 7.68495 8.8775 7.01245 9.305 6.31745C9.5725 5.88495 9.8025 5.45995 9.965 5.07495ZM8.37 8.99995C8.1775 9.23995 7.82 9.23995 7.63 8.99995C6.8275 7.99745 5 5.56495 5 4.19995C5 2.54245 6.3425 1.19995 8 1.19995C9.6575 1.19995 11 2.54245 11 4.19995C11 5.56495 9.1725 7.99745 8.37 8.99995ZM10.9475 6.77245C10.9275 6.77995 10.905 6.78745 10.885 6.79245C11.09 6.43745 11.2775 6.07495 11.43 5.71995L14.3775 4.53995C14.7725 4.38245 15.2 4.67245 15.2 5.09745V11.8675C15.2 12.1125 15.05 12.3325 14.8225 12.425L10.9475 13.975C10.865 14.0075 10.775 14.0125 10.69 13.9875L5.2225 12.4225L1.6225 13.8625C1.2275 14.02 0.800003 13.73 0.800003 13.305V6.53495C0.800003 6.28995 0.950003 6.06995 1.1775 5.97745L4.2575 4.74495C4.31 5.00495 4.3925 5.26495 4.4875 5.51495L1.6 6.66995V13.0075L4.8 11.7275V8.79995C4.8 8.57995 4.98 8.39995 5.2 8.39995C5.42 8.39995 5.6 8.57995 5.6 8.79995V11.6975L10.4 13.07V8.79995C10.4 8.57995 10.58 8.39995 10.8 8.39995C11.02 8.39995 11.2 8.57995 11.2 8.79995V13.01L14.4 11.73V5.39245L10.9475 6.77245ZM8 3.39995C8.0788 3.39995 8.15682 3.41547 8.22961 3.44562C8.30241 3.47578 8.36855 3.51997 8.42427 3.57569C8.47998 3.6314 8.52418 3.69755 8.55433 3.77034C8.58448 3.84314 8.6 3.92116 8.6 3.99995C8.6 4.07874 8.58448 4.15677 8.55433 4.22956C8.52418 4.30236 8.47998 4.3685 8.42427 4.42422C8.36855 4.47993 8.30241 4.52413 8.22961 4.55428C8.15682 4.58443 8.0788 4.59995 8 4.59995C7.92121 4.59995 7.84319 4.58443 7.77039 4.55428C7.6976 4.52413 7.63145 4.47993 7.57574 4.42422C7.52002 4.3685 7.47583 4.30236 7.44568 4.22956C7.41552 4.15677 7.4 4.07874 7.4 3.99995C7.4 3.92116 7.41552 3.84314 7.44568 3.77034C7.47583 3.69755 7.52002 3.6314 7.57574 3.57569C7.63145 3.51997 7.6976 3.47578 7.77039 3.44562C7.84319 3.41547 7.92121 3.39995 8 3.39995Z" fill="currentColor"/>
+                </svg>
+                <span>Get Directions</span>
+              </a>
+              <a href={`tel:${business.phone}`} className="button button-secondary">
+                <svg width="17" height="16" viewBox="0 0 17 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M11.495 8.48006C11.085 8.30506 10.61 8.42006 10.3275 8.76506L9.49751 9.78006C8.34751 9.11256 7.38751 8.15256 6.72001 7.00256L7.73251 6.17506C8.07751 5.89256 8.19501 5.41756 8.01751 5.00756L6.81751 2.20756C6.63001 1.76756 6.15751 1.52256 5.69001 1.62256L2.89001 2.22256C2.43001 2.32006 2.10001 2.72756 2.10001 3.20006C2.10001 9.11756 6.68751 13.9626 12.5 14.3726C12.6125 14.3801 12.7275 14.3876 12.8425 14.3926C12.8425 14.3926 12.8425 14.3926 12.845 14.3926C12.9975 14.3976 13.1475 14.4026 13.3025 14.4026C13.775 14.4026 14.1825 14.0726 14.28 13.6126L14.88 10.8126C14.98 10.3451 14.735 9.87256 14.295 9.68506L11.495 8.48506V8.48006ZM13.2925 13.6001C7.55251 13.5951 2.90001 8.94256 2.90001 3.20006C2.90001 3.10506 2.96501 3.02506 3.05751 3.00506L5.85751 2.40506C5.95001 2.38506 6.04501 2.43506 6.08251 2.52256L7.28251 5.32256C7.31751 5.40506 7.29501 5.50006 7.22501 5.55506L6.21001 6.38506C5.90751 6.63256 5.82751 7.06506 6.02501 7.40506C6.76251 8.67756 7.82251 9.73756 9.09251 10.4726C9.43251 10.6701 9.86501 10.5901 10.1125 10.2876L10.9425 9.27256C11 9.20256 11.095 9.18006 11.175 9.21506L13.975 10.4151C14.0625 10.4526 14.1125 10.5476 14.0925 10.6401L13.4925 13.4401C13.4725 13.5326 13.39 13.5976 13.2975 13.5976C13.295 13.5976 13.2925 13.5976 13.29 13.5976L13.2925 13.6001Z" fill="currentColor"/>
+                </svg>
+                <span>Call</span>
+              </a>
+              <a href={business.website} target="_blank" rel="noopener noreferrer" className="button button-secondary">
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M10 1.6001C9.78001 1.6001 9.60001 1.7801 9.60001 2.0001C9.60001 2.2201 9.78001 2.4001 10 2.4001H13.035L6.91751 8.5176C6.76251 8.6726 6.76251 8.9276 6.91751 9.0826C7.07251 9.2376 7.32751 9.2376 7.48251 9.0826L13.6 2.9651V6.0001C13.6 6.2201 13.78 6.4001 14 6.4001C14.22 6.4001 14.4 6.2201 14.4 6.0001V2.0001C14.4 1.7801 14.22 1.6001 14 1.6001H10ZM3.20001 2.4001C2.31751 2.4001 1.60001 3.1176 1.60001 4.0001V12.8001C1.60001 13.6826 2.31751 14.4001 3.20001 14.4001H12C12.8825 14.4001 13.6 13.6826 13.6 12.8001V9.2001C13.6 8.9801 13.42 8.8001 13.2 8.8001C12.98 8.8001 12.8 8.9801 12.8 9.2001V12.8001C12.8 13.2426 12.4425 13.6001 12 13.6001H3.20001C2.75751 13.6001 2.40001 13.2426 2.40001 12.8001V4.0001C2.40001 3.5576 2.75751 3.2001 3.20001 3.2001H6.80001C7.02001 3.2001 7.20001 3.0201 7.20001 2.8001C7.20001 2.5801 7.02001 2.4001 6.80001 2.4001H3.20001Z" fill="currentColor"/>
+                </svg>
+                <span>Website</span>
+              </a>
+            </div>
+          </section>
           <section className="biz-section">
             <h2 className="heading heading-sub">Business Details</h2>
             <div className="biz-details-list">
@@ -265,7 +298,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
               ))}
             </ul>
             {business.detailsMore.length > 0 && (
-              <button onClick={() => setShowMoreDetails((prev) => !prev)} className="button button-secondary">
+              <button onClick={() => setShowMoreDetails((prev) => !prev)} className="button button-secondary no-focus-ring">
                 {showMoreDetails ? 'Show Less' : `Show ${business.detailsMore.length} More`}
               </button>
             )}
@@ -296,6 +329,47 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
         </div>
 
         <div className="biz-hours-col">
+          {business.claimed ? (
+            <div className="biz-hero-banner biz-hero-banner-desktop biz-hero-banner-spacer" aria-hidden="true">
+              <div className="biz-claim-banner">
+                <div className="biz-claim-banner-header">
+                  <div className="biz-claim-banner-title">Go Beyond The Basics</div>
+                </div>
+                <div className="biz-claim-banner-description">
+                  <p>Businesses using Yext unlock:</p>
+                  <ul>
+                    <li>Deeper insights into customer feedback</li>
+                    <li>Performance summaries across key platforms</li>
+                    <li>Visibility into common customer questions</li>
+                    <li>Tools to manage and optimize digital presence at scale</li>
+                  </ul>
+                  <p>Let's walk through what this looks like for your business.</p>
+                </div>
+                <span className="biz-claim-banner-cta">Get in touch</span>
+              </div>
+            </div>
+          ) : (
+            <div className="biz-hero-banner biz-hero-banner-desktop">
+              <div className="biz-claim-banner" role="note" aria-label="Own this business">
+                <div className="biz-claim-banner-header">
+                  <div className="biz-claim-banner-title">Go Beyond The Basics</div>
+                </div>
+                <div className="biz-claim-banner-description">
+                  <p>Businesses using Yext unlock:</p>
+                  <ul>
+                    <li>Deeper insights into customer feedback</li>
+                    <li>Performance summaries across key platforms</li>
+                    <li>Visibility into common customer questions</li>
+                    <li>Tools to manage and optimize digital presence at scale</li>
+                  </ul>
+                  <p>Let's walk through what this looks like for your business.</p>
+                </div>
+                <a href="https://www.yext.com/demo" target="_blank" rel="noopener noreferrer" className="biz-claim-banner-cta">
+                 Get in touch
+                </a>
+              </div>
+            </div>
+          )}
           <HoursCard hours={business.hours} statusText={business.statusText} closesAt={business.closesAt} />
         </div>
       </div>

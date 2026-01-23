@@ -1,5 +1,7 @@
+import Link from 'next/link'
 import { SafeImage } from './SafeImage'
 import { IMAGES } from '../constants/images'
+import { ClaimedTooltip } from './ClaimedTooltip'
 
 interface BrandCardProps {
   brand: {
@@ -8,20 +10,34 @@ interface BrandCardProps {
     category: string
     rating: number
     logo: string
+    claimed?: boolean
   }
+  href?: string
+  showClaimedBadge?: boolean
 }
 
-export function BrandCard({ brand }: BrandCardProps) {
-  return (
+export function BrandCard({ brand, href, showClaimedBadge = false }: BrandCardProps) {
+  const cardContent = (
     <div className="bg-white card-border-normal flex flex-col gap-3 sm:gap-4 h-auto md:h-full md:min-h-[200px] w-full min-w-0 p-3 sm:p-4 md:p-5 lg:p-6 relative rounded-[8px] transition-all duration-200 group cursor-pointer">
       <div className="flex gap-3 sm:gap-4 items-start min-w-0 flex-1">
         <div className="relative shrink-0 w-[50px] h-[50px] sm:w-[55px] sm:h-[55px] md:w-[60px] md:h-[60px] lg:w-[70px] lg:h-[70px] rounded-full overflow-hidden">
-          <SafeImage alt={brand.name} className="block max-w-none w-full h-full object-cover rounded-full" src={brand.logo} />
+          <SafeImage alt={brand.name} className="block max-w-none w-full h-full rounded-full" src={brand.logo} />
         </div>
         <div className="flex flex-col gap-1.5 sm:gap-2 items-start leading-tight min-w-0 flex-1 text-black overflow-hidden">
-          <p className="font-semibold text-base sm:text-lg transition-colors duration-200 group-hover:text-[#5A58F2] line-clamp-2">
-            {brand.name}
-          </p>
+          <div className="flex items-center gap-1.5 w-full">
+            <p className="font-semibold text-base sm:text-lg transition-colors duration-200 group-hover:text-[#5A58F2] line-clamp-2">
+              {brand.name}
+            </p>
+            {showClaimedBadge && brand.claimed && (
+              <ClaimedTooltip tooltipText="This brand profile has been claimed by the business owner or an authorized representative.">
+                <SafeImage
+                  alt="Claimed"
+                  className="shrink-0 w-4 h-4 sm:w-5 sm:h-5"
+                  src={IMAGES.claimed}
+                />
+              </ClaimedTooltip>
+            )}
+          </div>
           <p className="font-normal text-sm sm:text-base line-clamp-2 text-[#5b5d60]">
             {brand.locations}
           </p>
@@ -54,5 +70,15 @@ export function BrandCard({ brand }: BrandCardProps) {
       </div>
     </div>
   )
+
+  if (href) {
+    return (
+      <Link href={href} className="block w-full h-full no-underline">
+        {cardContent}
+      </Link>
+    )
+  }
+
+  return cardContent
 }
 

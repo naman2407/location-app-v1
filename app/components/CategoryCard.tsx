@@ -1,3 +1,5 @@
+'use client'
+
 import Link from 'next/link'
 import { CategoryIcon } from './CategoryIcon'
 
@@ -7,17 +9,12 @@ interface CategoryCardProps {
     name2?: string
     icon: string
   }
+  href?: string
 }
 
-export function CategoryCard({ category }: CategoryCardProps) {
-  const categoryName = category.name2 ? `${category.name} ${category.name2}` : category.name
-  const searchHref = `/search?category=${encodeURIComponent(categoryName)}`
-
-  return (
-    <Link
-      href={searchHref}
-      className="card-border-normal flex flex-col gap-[12px] items-center justify-center overflow-hidden p-4 sm:p-6 md:p-[40px] relative rounded-[8px] h-[172px] transition-all duration-200 group cursor-pointer min-w-0 w-full"
-    >
+export function CategoryCard({ category, href }: CategoryCardProps) {
+  const content = (
+    <>
       <div className="relative shrink-0 w-[32px] h-[32px] category-icon-wrapper text-black group-hover:text-[#5A58F2] transition-colors duration-200">
         <CategoryIcon
           src={category.icon}
@@ -35,6 +32,22 @@ export function CategoryCard({ category }: CategoryCardProps) {
           <p>{category.name}</p>
         )}
       </div>
-    </Link>
+    </>
+  )
+
+  const cardClasses = "card-border-normal flex flex-col gap-[12px] items-center justify-center overflow-hidden p-4 sm:p-6 md:p-[40px] relative rounded-[8px] h-[172px] transition-all duration-200 group cursor-pointer min-w-0 w-full"
+
+  if (href) {
+    return (
+      <Link href={href} className={cardClasses}>
+        {content}
+      </Link>
+    )
+  }
+
+  return (
+    <div className={cardClasses}>
+      {content}
+    </div>
   )
 }

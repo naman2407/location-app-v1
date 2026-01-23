@@ -8,13 +8,13 @@ interface LinkProps {
 }
 
 export function Link({ href, children, className = '', onClick }: LinkProps) {
-  const baseClasses = 'text-[#5A58F2] no-underline hover:underline active:no-underline transition-all duration-200'
+  const baseClasses = 'link-primary no-underline hover:underline active:no-underline transition-all duration-200 font-medium'
   
   if (onClick) {
     return (
       <button
         onClick={onClick}
-        className={`${baseClasses} ${className} bg-transparent border-none cursor-pointer`}
+        className={`${baseClasses} ${className} link-button`}
       >
         {children}
       </button>
@@ -27,4 +27,3 @@ export function Link({ href, children, className = '', onClick }: LinkProps) {
     </a>
   )
 }
-

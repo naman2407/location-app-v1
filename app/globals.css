@@ -94,7 +94,8 @@ input::-webkit-calendar-picker-indicator {
 .container {
   width: 100%;
   max-width: 1440px;
-  margin: 0 auto;
+  margin-left: auto;
+  margin-right: auto;
   padding-left: 16px;
   padding-right: 16px;
 }
@@ -352,6 +353,31 @@ input::-webkit-calendar-picker-indicator {
   border-radius: 1px;
 }
 
+.no-focus-ring:focus,
+.no-focus-ring:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+.link-primary--dark {
+  color: #000000;
+}
+
+.link-button {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.link-button:focus-visible {
+  outline: none;
+}
+
+.link-primary:focus-visible {
+  outline: none;
+}
+
 /* Footer link hover - white underline */
 .bg-black .footer-link:hover,
 .footer-link:hover {
@@ -448,9 +474,43 @@ input::-webkit-calendar-picker-indicator {
   color: #000000;
 }
 
-.biz-hero {
-  padding-top: 16px;
-  padding-bottom: 0;
+.category-hero {
+  position: relative;
+  width: 100%;
+  background-image: url('https://a.mktgcdn.com/p/fl6wYh6pavLaZirTXkU4VUMbgrTSXgZ2mf2gQpUOr3w/1140x285.png');
+  background-size: cover;
+  background-position: center;
+}
+
+.category-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(255, 255, 255, 0.85);
+}
+
+.brand-unclaimed-banner {
+  background: linear-gradient(135deg, #4B48FF 0%, #8E31F2 69%);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.brand-unclaimed-cta {
+  background: linear-gradient(to bottom, #1C1D20, #432874);
+}
+
+.biz-hero-banner {
+  width: 100%;
+  margin-bottom: 16px;
+}
+
+.biz-hero-banner-desktop {
+  display: none;
+}
+
+.biz-hero-banner-spacer {
+  visibility: hidden;
+  pointer-events: none;
+  height: 240px;
 }
 
 .biz-hero-image {
@@ -471,6 +531,7 @@ input::-webkit-calendar-picker-indicator {
   height: 164px;
   max-height: 200px;
   margin-top: 24px;
+  margin-bottom: 24px;
 }
 
 @media (min-width: 640px) {
@@ -480,6 +541,26 @@ input::-webkit-calendar-picker-indicator {
 
   .biz-hero-image-mobile {
     display: none;
+  }
+}
+
+.biz-title-block {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+@media (min-width: 1280px) {
+  .biz-hero-banner {
+    margin-bottom: 40px;
+  }
+
+  .biz-hero-banner-mobile {
+    display: none;
+  }
+
+  .biz-hero-banner-desktop {
+    display: block;
   }
 }
 
@@ -562,7 +643,6 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .biz-main-grid {
-  padding-top: 40px;
   padding-bottom: 48px;
   display: flex;
   flex-direction: column;
@@ -625,36 +705,12 @@ input::-webkit-calendar-picker-indicator {
   text-decoration: none;
 }
 
-.biz-social-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 1rem;
-}
-
-.biz-social-row a,
-.biz-social-row .button-social {
-  font-size: 14px;
-}
-
 .biz-social-icon {
   width: 16px;
   height: 16px;
   display: block;
 }
 
-.biz-social-fallback {
-  width: 16px;
-  height: 16px;
-  border-radius: 999px;
-  background: #e5e5e5;
-  color: #1c1d20;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  font-weight: 600;
-}
 
 .biz-category-row {
   display: flex;
@@ -975,13 +1031,24 @@ input::-webkit-calendar-picker-indicator {
 .biz-histogram-bar {
   flex: 1;
   height: 8px;
-  background: #ccc;
+  border: none;
   border-radius: 999px;
   overflow: hidden;
+  appearance: none;
+  background: #ccc;
 }
 
-.biz-histogram-fill {
-  height: 100%;
+.biz-histogram-bar::-webkit-progress-bar {
+  background: #ccc;
+  border-radius: 999px;
+}
+
+.biz-histogram-bar::-webkit-progress-value {
+  background: #000;
+  border-radius: 999px;
+}
+
+.biz-histogram-bar::-moz-progress-bar {
   background: #000;
   border-radius: 999px;
 }
@@ -1137,24 +1204,54 @@ input::-webkit-calendar-picker-indicator {
   color: var(--text);
 }
 
-/* Unclaimed Business Banner */
-.unclaimed-banner {
-  background-color: #FFEAED;
+/* Unclaimed Business Banner - Removed, replaced with new card */
+
+/* New Claim Card */
+.biz-claim-card {
+  background-color: #F7F9FE;
   padding: 16px;
   border-radius: 8px;
   width: 100%;
-  margin-bottom: 24px;
+  position: relative;
+  box-sizing: border-box;
 }
 
-.unclaimed-banner-content {
+.biz-claim-card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  border-radius: 8px;
+  padding: 2px;
+  background: linear-gradient(135deg, rgba(75, 72, 255, 0.4) 0%, rgba(142, 49, 242, 0.4) 100%);
+  -webkit-mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask: 
+    linear-gradient(#fff 0 0) content-box, 
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 0;
+}
+
+.biz-claim-card-content {
+  position: relative;
+  z-index: 1;
+}
+
+.biz-claim-card-content {
   display: flex;
   align-items: flex-start;
   gap: 16px;
   flex-wrap: wrap;
 }
 
-.unclaimed-banner-icon {
-  color: #B02A37;
+.biz-claim-card-icon {
+  color: #1C1D20;
   flex-shrink: 0;
   display: flex;
   align-items: center;
@@ -1163,200 +1260,277 @@ input::-webkit-calendar-picker-indicator {
   height: 24px;
 }
 
-.unclaimed-banner-text {
+.biz-claim-card-text {
   flex: 1;
   min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 8px;
 }
 
-.unclaimed-banner-title {
-  font-size: 14px;
+.biz-claim-card-title {
+  font-size: 16px;
   font-weight: 600;
-  color: #B02A37;
+  color: #1C1D20;
   line-height: 1.4;
   margin: 0;
 }
 
-.unclaimed-banner-description {
+.biz-claim-card-description {
   font-size: 14px;
   font-weight: 400;
-  color: #B02A37;
-  line-height: 1.4;
+  color: #1C1D20;
+  line-height: 1.5;
   margin: 0;
 }
 
-.unclaimed-banner-cta {
-  background-color: transparent;
-  border: 1px solid #B02A37;
-  color: #B02A37;
-  padding: 6px 12px;
+.biz-claim-card-cta {
+  background-color: #5A58F2;
+  color: #FFFFFF;
+  padding: 10px 20px;
   border-radius: 9999px;
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: background-color 0.2s, opacity 0.2s;
   flex-shrink: 0;
   text-decoration: none;
   display: inline-block;
   white-space: nowrap;
 }
 
-.unclaimed-banner-cta:hover {
-  background-color: #F6E2E5;
+.biz-claim-card-cta:hover {
+  opacity: 0.9;
 }
 
-@media (max-width: 640px) {
-  .unclaimed-banner-content {
+/* Mobile/Tablet: Show mobile card, hide desktop card */
+.biz-claim-card-mobile {
+  display: block;
+}
+
+.biz-claim-card-desktop {
+  display: none !important;
+}
+
+/* Desktop: Hide mobile card, show desktop card */
+@media (min-width: 1280px) {
+  .biz-claim-card-mobile {
+    display: none !important;
+  }
+  
+  .biz-claim-card-desktop {
+    display: block !important;
+  }
+}
+
+/* Force hide desktop card on all screens below 1280px */
+@media screen and (max-width: 1279px) {
+  .biz-claim-card-desktop {
+    display: none !important;
+    visibility: hidden !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+  }
+}
+
+@media (max-width: 1279px) {
+  .biz-claim-card-content {
     flex-direction: column;
     align-items: flex-start;
   }
   
-  .unclaimed-banner-cta {
+  .biz-claim-card-cta {
     width: 100%;
+    text-align: center;
   }
 }
 
-/* Claimed Icon Tooltip */
-.claimed-icon-wrapper {
+.biz-claim-banner {
+  background-color: #F7F9FE;
+  border-radius: 8px;
+  padding: 18px 20px;
+  width: 100%;
   position: relative;
-  display: inline-block;
-  cursor: pointer;
-  z-index: 1000;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
 }
 
-.claimed-tooltip {
-  visibility: hidden;
-  opacity: 0;
+.biz-claim-banner::before {
+  content: '';
   position: absolute;
-  bottom: 100%;
-  left: 50%;
-  transform: translateX(-50%);
-  margin-bottom: 8px;
+  inset: 0;
+  border-radius: 8px;
+  padding: 2px;
+  background: linear-gradient(95deg, #59359A 0%, #3B34EC 14%, #0AA2C0 42%, #3DD5F3 68%, #2402C8 100%);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+}
+
+.biz-claim-banner-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  position: relative;
+  z-index: 1;
+}
+
+.biz-claim-banner-logo {
+  width: auto;
+  height: 24px;
+  filter: brightness(0);
+  flex-shrink: 0;
+}
+
+.biz-claim-banner-icon {
+  color: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.biz-claim-banner-title {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  background: linear-gradient(135deg, #E230D6 0%, #0046F7 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.biz-claim-banner-description {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1C1D20;
+  position: relative;
+  z-index: 1;
+}
+
+.biz-claim-banner-description p {
+  margin: 0 0 8px 0;
+}
+
+.biz-claim-banner-description p:last-child {
+  margin-top: 8px;
+}
+
+.biz-claim-banner-description ul {
+  margin: 8px 0;
+  padding-left: 20px;
+  list-style-type: disc;
+}
+
+.biz-claim-banner-description li {
+  margin-bottom: 4px;
+}
+
+.biz-claim-banner-cta {
+  align-self: flex-start;
+  background-color: #5A58F2;
+  color: #FFFFFF;
+  padding: 10px 20px;
+  border-radius: 9999px;
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  transition: opacity 0.2s;
+  position: relative;
+  z-index: 1;
+}
+
+.biz-claim-banner-cta:hover {
+  opacity: 0.9;
+}
+
+/* Claimed Tooltip */
+.claimed-tooltip-portal {
+  position: fixed;
+  z-index: 9990;
+  pointer-events: none;
+}
+
+.claimed-tooltip-portal--top {
+  transform: translate(-50%, -100%);
+}
+
+.claimed-tooltip-portal--bottom {
+  transform: translate(-50%, 0);
+}
+
+.claimed-tooltip-portal--right {
+  transform: translate(0, -50%);
+}
+
+.claimed-tooltip-portal--left {
+  transform: translate(-100%, -50%);
+}
+
+.claimed-tooltip-content {
   background-color: #1C1D20;
   color: #FFFFFF;
-  text-align: center;
-  z-index: 9990;
+  text-align: left;
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 12px;
   line-height: 1.4;
-  white-space: nowrap;
-  z-index: 10001;
-  transition: opacity 0.2s, visibility 0.2s;
-  pointer-events: none;
   max-width: 280px;
-  white-space: normal;
   width: max-content;
+  white-space: normal;
   box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
 }
 
-.claimed-tooltip::after {
-  content: "";
+.claimed-tooltip-arrow {
   position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.claimed-tooltip-portal--top .claimed-tooltip-arrow {
   top: 100%;
   left: 50%;
   transform: translateX(-50%);
-  border: 5px solid transparent;
-  border-top-color: #1c1d20;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 6px solid #1C1D20;
 }
 
-.claimed-icon-wrapper:hover .claimed-tooltip {
-  visibility: visible;
-  opacity: 1;
-}
-
-/* Toast Notification */
-.toast-container {
-  position: fixed;
-  bottom: 24px;
+.claimed-tooltip-portal--bottom .claimed-tooltip-arrow {
+  bottom: 100%;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 9999;
-  animation: toastSlideUp 0.3s ease-out;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-bottom: 6px solid #1C1D20;
 }
 
-.toast-content {
-  background-color: #1c1d20;
-  color: #ffffff;
-  padding: 12px 20px;
-  border-radius: 8px;
-  font-size: 14px;
-  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-  max-width: 400px;
-  text-align: center;
+.claimed-tooltip-portal--right .claimed-tooltip-arrow {
+  right: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-right: 6px solid #1C1D20;
 }
 
-@keyframes toastSlideUp {
-  from {
-    opacity: 0;
-    transform: translateX(-50%) translateY(20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
-  }
-}
-
-/* Map Popup Styling */
-.leaflet-popup-content-wrapper {
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 0;
-  z-index: 1000 !important;
-}
-
-.leaflet-popup-content {
-  margin: 0;
-  padding: 0;
-}
-
-.custom-popup {
-  min-width: 200px;
-}
-
-.leaflet-popup {
-  z-index: 1000 !important;
-}
-
-/* Grayscale only for map tiles, not markers */
-.grayscale-tiles {
-  filter: grayscale(100%);
-}
-
-/* Ensure markers are not affected by grayscale */
-.leaflet-marker-icon,
-.custom-numbered-marker {
-  filter: none !important;
-}
-
-/* Map Tooltip Styling */
-.leaflet-tooltip.custom-tooltip {
-  background: white !important;
-  opacity: 1 !important;
-  border: 1px solid #ededed;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  padding: 0;
-  margin: 0;
-}
-
-.leaflet-tooltip-top.custom-tooltip::before {
-  border-top-color: white;
-}
-
-.leaflet-tooltip-bottom.custom-tooltip::before {
-  border-bottom-color: white;
-}
-
-.leaflet-tooltip-left.custom-tooltip::before {
-  border-left-color: white;
-}
-
-.leaflet-tooltip-right.custom-tooltip::before {
-  border-right-color: white;
+.claimed-tooltip-portal--left .claimed-tooltip-arrow {
+  left: 100%;
+  top: 50%;
+  transform: translateY(-50%);
+  border-top: 6px solid transparent;
+  border-bottom: 6px solid transparent;
+  border-left: 6px solid #1C1D20;
 }
 
 /* Utility classes for removed inline styles */
@@ -1387,10 +1561,6 @@ input::-webkit-calendar-picker-indicator {
   opacity: 0;
 }
 
-.map-container-full {
-  height: 100%;
-  width: 100%;
-}
 
 .overflow-visible {
   overflow: visible;
@@ -1456,551 +1626,4 @@ input::-webkit-calendar-picker-indicator {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
-}
-
-/* ============================================
-   Claim Business Page Styles (Yext Marketing Style)
-   ============================================ */
-
-/* Claim Page Wrapper */
-.claim-page-wrapper {
-  background-color: #EEEEF0;
-}
-
-/* Section A: Marketing Hero */
-.claim-hero {
-  position: relative;
-  width: 100%;
-  background-color: #0B0D10;
-  padding-top: 72px;
-  padding-bottom: 180px;
-  overflow: hidden;
-  clip-path: polygon(100% 0.081%, 0.067% 0.081%, 0.067% 99.991%, 0.067% 99.991%, 1.492% 99.449%, 5.487% 98.017%, 11.803% 95.918%, 20.189% 93.374%, 30.396% 90.61%, 42.175% 87.848%, 55.274% 85.311%, 69.444% 83.223%, 84.436% 81.806%, 100% 81.284%, 100% 0.081%);
-    -webkit-clip-path: polygon(100% 0.081%, 0.067% 0.081%, 0.067% 99.991%, 0.067% 99.991%, 1.492% 99.449%, 5.487% 98.017%, 11.803% 95.918%, 20.189% 93.374%, 30.396% 90.61%, 42.175% 87.848%, 55.274% 85.311%, 69.444% 83.223%, 84.436% 81.806%, 100% 81.284%, 100% 0.081%);
-}
-
-@media (min-width: 1400px) {
-  .claim-hero {
-    padding-bottom: 200px;
-    
-  }
-}
-
-/* Teal gradient glow blob */
-.claim-hero-glow {
-  position: absolute;
-  left: -35%;
-  top: 50%;
-  width: 50vw;
-  aspect-ratio: 1 / 1;
-  background: #1A7189;
-  filter: blur(180px);
-  transform: translateZ(0);
-  pointer-events: none;
-  z-index: 0;
-}
-
-@media (min-width: 992px) {
-  .claim-hero-glow {
-    display: block;
-  }
-}
-
-@media (min-width: 1200px) {
-  .claim-hero-glow {
-    left: -32%;
-  }
-}
-
-@media (max-width: 991px) {
-  .claim-hero-glow {
-    display: none;
-  }
-}
-
-.claim-hero-container {
-  position: relative;
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
-  z-index: 1;
-}
-
-@media (min-width: 640px) {
-  .claim-hero-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .claim-hero-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .claim-hero-container {
-    padding-left: 150px;
-    padding-right: 150px;
-  }
-}
-
-.claim-hero-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 48px;
-  align-items: center;
-}
-
-@media (min-width: 1024px) {
-  .claim-hero-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-  }
-}
-
-/* Left: Marketing Content */
-.claim-hero-content {
-  display: flex;
-  flex-direction: column;
-  gap: 0;
-  position: relative;
-  z-index: 1;
-}
-
-.claim-eyebrow {
-  font-size: 18px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: #ffffffb3;
-  margin-bottom: 16px;
-}
-
-.claim-headline {
-  font-size: 54px;
-  font-weight: 300;
-  line-height: 1.05;
-  color: #eeeff0;
-  margin-bottom: 20px;
-  span:first-child{
-    color: #259bbc;
-    font-weight: 700;
-  }
-}
-
-@media (min-width: 768px) {
-  .claim-headline {
-    line-height: 1.12;
-  }
-}
-
-.claim-description {
-  font-size: 24px;
-  line-height: 1.5;
-  color: #f2f4f5;
-  max-width: 540px;
-  font-weight: 400;
-}
-
-/* Right: Form Card */
-.claim-form-card {
-  position: relative;
-  z-index: 1;
-  background: #ffffff;
-  border: 1px solid #EAEAEA;
-  border-radius: 12px;
-  padding: 32px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
-}
-
-@media (max-width: 1023px) {
-  .claim-form-card {
-    max-width: 100%;
-  }
-}
-
-.claim-business-info {
-  margin-bottom: 24px;
-  padding-bottom: 24px;
-  border-bottom: 1px solid #ededed;
-}
-
-.claim-business-name {
-  font-size: 20px;
-  font-weight: 600;
-  color: #1c1d20;
-  margin: 0 0 8px 0;
-}
-
-.claim-business-address {
-  font-size: 14px;
-  color: #6b6d71;
-  margin: 0 0 12px 0;
-}
-
-.claim-business-category {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.claim-business-category span {
-  font-size: 12px;
-  color: #6b6d71;
-}
-
-.claim-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-}
-
-.claim-form-field {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.claim-form-label {
-  font-size: 14px;
-  font-weight: 500;
-  color: #1c1d20;
-}
-
-.claim-form-input {
-  width: 100%;
-  padding: 12px 16px;
-  font-size: 14px;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  outline: none;
-  transition: all 0.2s ease;
-}
-
-.claim-form-input:focus {
-  border-color: #5A58F2;
-  box-shadow: 0 0 0 3px rgba(90, 88, 242, 0.1);
-}
-
-.claim-form-input-error {
-  border-color: #dc2626;
-}
-
-.claim-form-error {
-  font-size: 12px;
-  color: #dc2626;
-  margin-top: 4px;
-}
-
-.claim-form-submit {
-  width: 100%;
-  padding: 14px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  color: #ffffff;
-  background: #5A58F2;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: all 0.2s ease;
-  margin-top: 8px;
-}
-
-.claim-form-submit:hover {
-  background: #4a48e0;
-}
-
-.claim-form-submit:active {
-  transform: scale(0.98);
-}
-
-/* Section B: Trusted By */
-.claim-trusted {
-  background: #EEEEF0;
-  padding: 50px 0;
-}
-
-.claim-trusted-container {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-
-@media (min-width: 640px) {
-  .claim-trusted-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .claim-trusted-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .claim-trusted-container {
-    padding-left: 150px;
-    padding-right: 150px;
-  }
-}
-
-.claim-trusted-heading {
-  font-size: 24px;
-  font-weight: 700;
-  color: #92979B;
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-/* Marquee Carousel */
-.claim-trusted-carousel-wrapper {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  margin: 0 auto;
-}
-
-@media (max-width: 767px) {
-  .claim-trusted-carousel-wrapper {
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-  }
-  
-  .claim-trusted-carousel-wrapper::-webkit-scrollbar {
-    display: none;
-  }
-}
-
-.claim-trusted-carousel-track {
-  display: flex;
-  align-items: center;
-  gap: 40px;
-  width: fit-content;
-  animation: claim-marquee 30s linear infinite;
-}
-
-@media (min-width: 768px) {
-  .claim-trusted-carousel-track {
-    gap: 56px;
-  }
-}
-
-@media (min-width: 992px) {
-  .claim-trusted-carousel-track:hover {
-    animation-play-state: paused;
-  }
-}
-
-@media (max-width: 767px) {
-  .claim-trusted-carousel-track {
-    animation: none;
-  }
-}
-
-@keyframes claim-marquee {
-  0% {
-    transform: translateX(0);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.claim-trusted-logo {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.claim-trusted-logo-placeholder {
-  width: 150px;
-  height: auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-  gap: 16px;
-  padding-top: 16px;
-}
-
-.claim-trusted-logo-image {
-  width: auto;
-  height: auto;
-  max-height: 40px;
-  object-fit: contain;
-  display: block;
-}
-
-@media (min-width: 768px) {
-  .claim-trusted-logo-image {
-    max-height: 48px;
-  }
-}
-
-.claim-trusted-logo:hover .claim-trusted-logo-image {
-  transform: scale(1.05);
-}
-
-/* Section C: Final Marketing CTA */
-.claim-final-cta {
-  background: #EEEEF0;
- padding-top: 50px;
- padding-bottom: 100px;
-}
-
-.claim-final-cta-container {
-  width: 100%;
-  max-width: 1440px;
-  margin: 0 auto;
-  padding-left: 16px;
-  padding-right: 16px;
-}
-
-@media (min-width: 640px) {
-  .claim-final-cta-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .claim-final-cta-container {
-    padding-left: 32px;
-    padding-right: 32px;
-  }
-}
-
-@media (min-width: 1280px) {
-  .claim-final-cta-container {
-    padding-left: 150px;
-    padding-right: 150px;
-  }
-}
-
-.claim-final-cta-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 48px;
-  align-items: center;
-}
-
-@media (min-width: 1024px) {
-  .claim-final-cta-grid {
-    grid-template-columns: 1fr 1fr;
-    gap: 64px;
-  }
-}
-
-.claim-final-cta-content {
-  display: flex;
-  flex-direction: column;
-}
-
-.claim-final-cta-title {
-  font-size: 36px;
-  font-weight: 400;
-  line-height: 1.1;
-  color: #000000;
-  margin-bottom: 20px;
-  span {
-    color: #259bbc;
-    font-weight: 700;
-  }
-}
-
-@media (min-width: 768px) {
-  .claim-final-cta-title {
-    font-size: 44px;
-  }
-}
-
-@media (min-width: 1024px) {
-  .claim-final-cta-title {
-    font-size: 48px;
-  }
-}
-
-.claim-final-cta-description {
-  font-size: 16px;
-  line-height: 1.6;
-  color: #000000;
-  max-width: 560px;
-  font-weight: 400;
-}
-
-@media (min-width: 768px) {
-  .claim-final-cta-description {
-    font-size: 18px;
-  }
-}
-
-.claim-cta-secondary {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 40px;
-  font-size: 14px;
-  font-weight: 600;
-  color: #FFFFFF;
-  background: #111111;
-  border: none;
-  border-radius: 9999px;
-  cursor: pointer;
-  transition: background-color 175ms ease-out, box-shadow 175ms ease-out;
-  width: fit-content;
-  margin-top: 20px;
-}
-
-@media (min-width: 768px) {
-  .claim-cta-secondary {
-    font-size: 16px;
-  }
-}
-
-.claim-cta-secondary:hover {
-  background: #2F3E40;
-  box-shadow: 0px 6px 16px rgba(0, 0, 0, 0.25);
-}
-
-.claim-cta-secondary:active {
-  transform: scale(0.98);
-}
-
-.claim-cta-secondary:focus-visible {
-  outline: 2px solid #111111;
-  outline-offset: 2px;
-}
-
-.claim-final-cta-graphic {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.claim-final-cta-image {
-  width: 100%;
-  max-width: 560px;
-  border-radius: 12px;
-  display: block;
-  object-fit: cover;
-}
-
-@media (min-width: 1024px) {
-  .claim-final-cta-image {
-    border-radius: 16px;
-  }
 }

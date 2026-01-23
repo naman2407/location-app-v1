@@ -176,71 +176,14 @@ export function ClaimedTooltip({ children, tooltipText }: ClaimedTooltipProps) {
     }
   }, [])
 
+  useLayoutEffect(() => {
+    if (!isMounted || !tooltipRef.current) return
+    tooltipRef.current.style.top = `${tooltipPosition.top}px`
+    tooltipRef.current.style.left = `${tooltipPosition.left}px`
+  }, [isMounted, tooltipPosition])
+
   if (!isMounted) {
     return <div ref={triggerRef}>{children}</div>
-  }
-
-  const getArrowStyle = (placement: Placement) => {
-    const baseStyle = {
-      width: 0,
-      height: 0,
-    }
-    
-    switch (placement) {
-      case 'top':
-        return {
-          ...baseStyle,
-          top: '100%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          borderLeft: '6px solid transparent',
-          borderRight: '6px solid transparent',
-          borderTop: '6px solid #1C1D20',
-        }
-      case 'bottom':
-        return {
-          ...baseStyle,
-          bottom: '100%',
-          left: '50%',
-          transform: 'translateX(-50%)',
-          borderLeft: '6px solid transparent',
-          borderRight: '6px solid transparent',
-          borderBottom: '6px solid #1C1D20',
-        }
-      case 'right':
-        return {
-          ...baseStyle,
-          right: '100%',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          borderTop: '6px solid transparent',
-          borderBottom: '6px solid transparent',
-          borderRight: '6px solid #1C1D20',
-        }
-      case 'left':
-        return {
-          ...baseStyle,
-          left: '100%',
-          top: '50%',
-          transform: 'translateY(-50%)',
-          borderTop: '6px solid transparent',
-          borderBottom: '6px solid transparent',
-          borderLeft: '6px solid #1C1D20',
-        }
-    }
-  }
-
-  const getTransform = (placement: Placement) => {
-    switch (placement) {
-      case 'top':
-        return 'translate(-50%, -100%)'
-      case 'bottom':
-        return 'translate(-50%, 0)'
-      case 'right':
-        return 'translate(0, -50%)'
-      case 'left':
-        return 'translate(-100%, -50%)'
-    }
   }
 
   return (
@@ -257,23 +200,12 @@ export function ClaimedTooltip({ children, tooltipText }: ClaimedTooltipProps) {
         createPortal(
           <div
             ref={tooltipRef}
-            className="claimed-tooltip-portal"
-            style={{
-              position: 'fixed',
-              top: `${tooltipPosition.top}px`,
-              left: `${tooltipPosition.left}px`,
-              transform: getTransform(tooltipPosition.placement),
-              zIndex: 9990,
-              pointerEvents: 'none',
-            }}
+            className={`claimed-tooltip-portal claimed-tooltip-portal--${tooltipPosition.placement}`}
           >
-            <div className="bg-[#1C1D20] text-white text-xs px-3 py-2 rounded-md shadow-lg max-w-[280px] whitespace-normal break-words">
+            <div className="claimed-tooltip-content">
               {tooltipText}
             </div>
-            <div
-              className="absolute"
-              style={getArrowStyle(tooltipPosition.placement)}
-            />
+            <div className="claimed-tooltip-arrow" />
           </div>,
           document.body
         )}

@@ -13,9 +13,7 @@ export function RatingHistogram({ rating }: RatingHistogramProps) {
       {rating.ratingHistogram.map((item) => (
         <div key={item.stars} className="biz-histogram-row">
           <span className="biz-histogram-label">{item.stars} stars</span>
-          <div className="biz-histogram-bar">
-            <div className="biz-histogram-fill" style={{ width: `${(item.count / max) * 100}%` }} />
-          </div>
+          <progress className="biz-histogram-bar" value={item.count} max={max} />
           <span className="biz-histogram-count">{item.count}</span>
         </div>
       ))}

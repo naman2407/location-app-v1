@@ -36,27 +36,31 @@ export function CategoriesSection() {
       </p>
       <div className="flex flex-col relative px-4 sm:px-0 w-full max-w-[1440px] mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center">
-          {visibleCategories.map((category, index) => (
-            <CategoryCard key={index} category={category} />
-          ))}
+          {visibleCategories.map((category, index) => {
+            const categoryName = category.name2 ? `${category.name} ${category.name2}` : category.name
+            const href = categoryName === 'Food & Dining' ? '/categories/food-and-dining' : undefined
+            return <CategoryCard key={index} category={category} href={href} />
+          })}
         </div>
 
         {remainingCategories.length > 0 && (
           <>
             <div
-              className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center transition-all duration-500 ease-in-out categories-expandable ${
+              className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center transition-all duration-500 ease-in-out categories-expandable mt-4 sm:mt-5 md:mt-[20px] ${
                 showAllCategories ? 'categories-expanded' : 'categories-collapsed'
               }`}
             >
-              {remainingCategories.map((category, index) => (
-                <CategoryCard key={`more-${index}`} category={category} />
-              ))}
+              {remainingCategories.map((category, index) => {
+                const categoryName = category.name2 ? `${category.name} ${category.name2}` : category.name
+                const href = categoryName === 'Food & Dining' ? '/categories/food-and-dining' : undefined
+                return <CategoryCard key={`more-${index}`} category={category} href={href} />
+              })}
             </div>
 
             <Link
               href="#"
               onClick={() => setShowAllCategories(!showAllCategories)}
-              className="font-normal h-[30px] leading-[1.5] relative shrink-0 text-base text-center tracking-[-0.38px] w-full mt-4 sm:mt-6"
+              className="no-focus-ring font-medium h-[30px] leading-[1.5] relative shrink-0 text-base text-center tracking-[-0.38px] w-full mt-4 sm:mt-6"
             >
               {showAllCategories ? 'Show Less' : 'Show More'}
             </Link>
@@ -66,4 +70,3 @@ export function CategoriesSection() {
     </div>
   )
 }
-

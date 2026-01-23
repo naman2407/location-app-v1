@@ -162,6 +162,131 @@ function createBusinessFromSearchResult(
   }
 }
 
+// Helper function to create Baskin-Robbins business data
+function createBaskinRobbinsBusiness(
+  slug: string,
+  name: string,
+  address: string,
+  rating: number,
+  reviewCount: number,
+  isOpen: boolean,
+  openText: string,
+  phone: string,
+  hours: string,
+  city: string = 'New York',
+  claimed: boolean = false
+): Business {
+  const addressParts = address.split(', ')
+  const line1 = addressParts[0]
+  const stateZip = addressParts[addressParts.length - 1] || 'NY'
+  const state = stateZip.split(' ')[0] || 'NY'
+  const postalCode = stateZip.split(' ')[1] || '10001'
+
+  // Parse closesAt from openText
+  let closesAt = '10:00 PM'
+  if (openText.includes('Closes')) {
+    const match = openText.match(/Closes (.+)/)
+    closesAt = match ? match[1] : '10:00 PM'
+  }
+
+  const statusText = isOpen ? 'Open Now' : 'Closed'
+
+  // Generate rating histogram based on rating
+  const baseCount = Math.floor(reviewCount / 5)
+  const ratingHistogram = [
+    { stars: 5, count: Math.floor(baseCount * (rating / 5) * 2.5) },
+    { stars: 4, count: Math.floor(baseCount * (rating / 5) * 1.5) },
+    { stars: 3, count: Math.floor(baseCount * (rating / 5) * 0.8) },
+    { stars: 2, count: Math.floor(baseCount * (rating / 5) * 0.4) },
+    { stars: 1, count: Math.floor(baseCount * (rating / 5) * 0.2) },
+  ]
+
+  // Parse hours range
+  const hoursRange = hours || '10:00 AM - 10:00 PM'
+  const [openTime, closeTime] = hoursRange.split(' - ')
+
+  return {
+    slug,
+    name,
+    rating,
+    reviewCount,
+    statusText,
+    closesAt,
+    claimed,
+    address: {
+      line1,
+      city,
+      state,
+      postalCode,
+    },
+    phone,
+    website: 'https://www.baskinrobbins.com',
+    links: [
+      { label: 'Google', href: 'https://maps.google.com' },
+      { label: 'Facebook', href: 'https://facebook.com/baskinrobbins' },
+      { label: 'Instagram', href: 'https://instagram.com/baskinrobbins' },
+    ],
+    descriptor: 'Ice Cream · Desserts · Frozen Treats',
+    about: `Baskin-Robbins offers 31 flavors of ice cream, frozen yogurt, and ice cream cakes. This ${city} location provides a wide selection of classic and seasonal flavors, custom ice cream cakes, and friendly service in a welcoming atmosphere.`,
+    detailsPrimary: ['Dine-in', 'Takeout', 'Credit card', 'Ice cream cakes'],
+    detailsMore: ['Debit', 'Wheelchair accessible', 'Parking', 'Wi-Fi', 'Restrooms', 'Party orders'],
+    hours: {
+      openNowText: isOpen ? `Open Now • Closes at ${closesAt}` : `Closed • Opens at ${openTime}`,
+      rows: [
+        { day: 'Monday', range: hoursRange },
+        { day: 'Tuesday', range: hoursRange },
+        { day: 'Wednesday', range: hoursRange },
+        { day: 'Thursday', range: hoursRange },
+        { day: 'Friday', range: hoursRange },
+        { day: 'Saturday', range: hoursRange },
+        { day: 'Sunday', range: hoursRange },
+      ],
+    },
+    ratingHistogram,
+    aiSummary: `Guests enjoy the variety of flavors, friendly staff, and quality ice cream at this ${city} location. The ice cream cakes are popular for celebrations, and the atmosphere is family-friendly.`,
+    reviews: [
+      {
+        author: 'Sarah M.',
+        rating: 5,
+        date: 'Jan 15, 2024',
+        text: 'Amazing ice cream! So many flavors to choose from. The staff is always friendly and helpful.',
+      },
+      {
+        author: 'Mike T.',
+        rating: 4,
+        date: 'Jan 10, 2024',
+        text: 'Great selection of flavors. The ice cream is always fresh and delicious. Perfect for a treat!',
+      },
+      {
+        author: 'Jessica L.',
+        rating: 5,
+        date: 'Jan 08, 2024',
+        text: `Love this Baskin-Robbins in ${city}! Ordered an ice cream cake for my daughter's birthday and it was perfect.`,
+      },
+      {
+        author: 'David K.',
+        rating: 4,
+        date: 'Jan 05, 2024',
+        text: 'Good ice cream, lots of flavors. Can get busy on weekends but worth the wait.',
+      },
+      {
+        author: 'Emily R.',
+        rating: 4,
+        date: 'Jan 03, 2024',
+        text: 'Classic ice cream shop with great variety. The seasonal flavors are always a hit!',
+      },
+    ],
+    faqs: [
+      { question: `Where is this Baskin-Robbins located?`, answer: `${address}.` },
+      { question: 'What are the hours?', answer: `Open daily, typically ${hoursRange}.` },
+      { question: 'Do they make custom ice cream cakes?', answer: 'Yes, custom ice cream cakes are available for order.' },
+      { question: 'How many flavors do they have?', answer: 'Baskin-Robbins offers 31 flavors, including seasonal options.' },
+      { question: 'Is parking available?', answer: 'Yes, parking is available at this location.' },
+      { question: 'Is it wheelchair accessible?', answer: 'Yes, the location is wheelchair accessible.' },
+    ],
+  }
+}
+
 export const mockBusinesses: Business[] = [
   // Original detailed entry
   {
@@ -252,255 +377,247 @@ export const mockBusinesses: Business[] = [
       { question: 'Is it wheelchair accessible?', answer: 'Yes, the location is wheelchair accessible.' },
     ],
   },
-  // Generated entries for all other Taco Bell locations
+  // Taco Bell locations linked from brand pages
+  // New York locations
   createBusinessFromSearchResult(
-    'taco-bell-albany-washington',
+    'taco-bell-200-w-34th-st',
     'Taco Bell',
-    '456 Washington Ave, Albany, NY',
+    '200 W 34th St, New York, NY 10001',
+    4.2,
+    862,
+    true,
+    'Open now · Closes 1:00 AM',
+    '(212) 555-0123',
+    '10:00 AM - 1:00 AM',
+    'New York',
+    true
+  ),
+  createBusinessFromSearchResult(
+    'taco-bell-81-delancey-st',
+    'Taco Bell',
+    '81 Delancey St, New York, NY 10002',
     4.5,
     523,
     true,
     'Open now · Closes 12:00 AM',
-    '(518) 555-0124',
+    '(212) 555-0124',
     '9:00 AM - 12:00 AM',
-    'Albany',
-    false
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-madison',
-    'Taco Bell',
-    '789 Madison Ave, Albany, NY',
-    4.0,
-    312,
-    false,
-    'Closed · Opens 10:00 AM',
-    '(518) 555-0125',
-    '10:00 AM - 11:00 PM',
-    'Albany',
+    'New York',
     true
   ),
   createBusinessFromSearchResult(
-    'taco-bell-albany-pearl',
+    'taco-bell-570-lexington-ave',
     'Taco Bell',
-    '321 Pearl Street, Albany, NY',
+    '570 Lexington Ave, New York, NY 10022',
+    4.0,
+    312,
+    true,
+    'Open now · Closes 11:00 PM',
+    '(212) 555-0125',
+    '10:00 AM - 11:00 PM',
+    'New York',
+    true
+  ),
+  createBusinessFromSearchResult(
+    'taco-bell-456-broadway',
+    'Taco Bell',
+    '456 Broadway, New York, NY 10013',
     4.3,
     445,
     true,
     'Open now · Closes 11:00 PM',
-    '(518) 555-0126',
+    '(212) 555-0126',
     '10:00 AM - 11:00 PM',
-    'Albany',
+    'New York',
     true
   ),
   createBusinessFromSearchResult(
-    'taco-bell-albany-lark',
+    'taco-bell-234-5th-ave',
     'Taco Bell',
-    '567 Lark Street, Albany, NY',
+    '234 5th Ave, New York, NY 10001',
+    4.6,
+    678,
+    true,
+    'Open now · Closes 11:30 PM',
+    '(212) 555-0127',
+    '10:30 AM - 11:30 PM',
+    'New York',
+    true
+  ),
+  createBusinessFromSearchResult(
+    'taco-bell-789-park-ave',
+    'Taco Bell',
+    '789 Park Ave, New York, NY 10021',
     4.1,
     389,
     true,
     'Open now · Closes 12:30 AM',
-    '(518) 555-0127',
+    '(212) 555-0128',
     '9:00 AM - 12:30 AM',
-    'Albany',
-    false
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-western',
-    'Taco Bell',
-    '890 Western Avenue, Albany, NY',
-    4.4,
-    521,
-    true,
-    'Open now · Closes 1:00 AM',
-    '(518) 555-0128',
-    '10:00 AM - 1:00 AM',
-    'Albany',
+    'New York',
     true
   ),
+  // Albany location
   createBusinessFromSearchResult(
-    'taco-bell-albany-central',
+    'taco-bell-albany-main-st',
     'Taco Bell',
-    '234 Central Avenue, Albany, NY',
+    '123 Main St, Albany, NY 12201',
     4.2,
-    678,
-    true,
-    'Open now · Closes 11:30 PM',
-    '(518) 555-0129',
-    '10:30 AM - 11:30 PM',
-    'Albany',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-colonie',
-    'Taco Bell',
-    '145 Wolf Road, Colonie, NY',
-    4.6,
-    892,
-    true,
-    'Open now · Closes 12:00 AM',
-    '(518) 555-0130',
-    '9:00 AM - 12:00 AM',
-    'Colonie',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-troy',
-    'Taco Bell',
-    '678 Hoosick Street, Troy, NY',
-    4.3,
-    567,
+    234,
     true,
     'Open now · Closes 11:00 PM',
-    '(518) 555-0131',
+    '(518) 555-0200',
     '10:00 AM - 11:00 PM',
-    'Troy',
-    false
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-schenectady',
-    'Taco Bell',
-    '789 State Street, Schenectady, NY',
-    4.1,
-    423,
-    false,
-    'Closed · Opens 9:00 AM',
-    '(518) 555-0132',
-    '9:00 AM - 10:00 PM',
-    'Schenectady',
+    'Albany',
     true
   ),
+  // Los Angeles location
   createBusinessFromSearchResult(
-    'taco-bell-albany-guilderland',
+    'taco-bell-la-main-st',
     'Taco Bell',
-    '234 Western Avenue, Guilderland, NY',
-    4.5,
-    734,
-    true,
-    'Open now · Closes 12:00 AM',
-    '(518) 555-0133',
-    '9:30 AM - 12:00 AM',
-    'Guilderland',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-clifton-park',
-    'Taco Bell',
-    '456 Route 9, Clifton Park, NY',
-    4.4,
-    612,
-    true,
-    'Open now · Closes 11:00 PM',
-    '(518) 555-0134',
-    '10:00 AM - 11:00 PM',
-    'Clifton Park',
-    false
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-latham',
-    'Taco Bell',
-    '567 New Loudon Road, Latham, NY',
-    4.2,
-    489,
-    true,
-    'Open now · Closes 11:30 PM',
-    '(518) 555-0135',
-    '10:00 AM - 11:30 PM',
-    'Latham',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-delmar',
-    'Taco Bell',
-    '123 Delaware Avenue, Delmar, NY',
-    4.3,
-    356,
+    '123 Main St, Los Angeles, CA 90001',
+    4.0,
+    189,
     true,
     'Open now · Closes 10:00 PM',
-    '(518) 555-0136',
+    '(323) 555-0100',
     '10:00 AM - 10:00 PM',
-    'Delmar',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-east-greenbush',
-    'Taco Bell',
-    '789 Columbia Turnpike, East Greenbush, NY',
-    4.0,
-    278,
-    false,
-    'Closed · Opens 8:00 AM',
-    '(518) 555-0137',
-    '8:00 AM - 9:00 PM',
-    'East Greenbush',
+    'Los Angeles',
     false
   ),
+  // Houston location
   createBusinessFromSearchResult(
-    'taco-bell-albany-watervliet',
+    'taco-bell-houston-oak',
     'Taco Bell',
-    '234 19th Street, Watervliet, NY',
-    4.1,
-    334,
-    true,
-    'Open now · Closes 11:00 PM',
-    '(518) 555-0138',
-    '10:00 AM - 11:00 PM',
-    'Watervliet',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-cohoes',
-    'Taco Bell',
-    '456 Remsen Street, Cohoes, NY',
-    4.2,
-    401,
-    true,
-    'Open now · Closes 10:30 PM',
-    '(518) 555-0139',
-    '10:00 AM - 10:30 PM',
-    'Cohoes',
-    false
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-ballston-spa',
-    'Taco Bell',
-    '789 Route 50, Ballston Spa, NY',
+    '654 Oak Blvd, Houston, TX 77001',
     4.4,
-    523,
+    321,
     true,
     'Open now · Closes 11:00 PM',
-    '(518) 555-0140',
-    '9:00 AM - 11:00 PM',
-    'Ballston Spa',
+    '(713) 555-0100',
+    '10:00 AM - 11:00 PM',
+    'Houston',
     true
   ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-saratoga',
-    'Taco Bell',
-    '123 Broadway, Saratoga Springs, NY',
-    4.5,
-    645,
-    true,
-    'Open now · Closes 12:00 AM',
-    '(518) 555-0141',
-    '9:00 AM - 12:00 AM',
-    'Saratoga Springs',
-    true
-  ),
-  createBusinessFromSearchResult(
-    'taco-bell-albany-glens-falls',
-    'Taco Bell',
-    '456 Glen Street, Glens Falls, NY',
+  // Baskin-Robbins locations
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-150-broadway',
+    'Baskin-Robbins',
+    '150 Broadway, New York, NY 10038',
     4.3,
     512,
     true,
-    'Open now · Closes 11:00 PM',
-    '(518) 555-0142',
-    '10:00 AM - 11:00 PM',
-    'Glens Falls',
+    'Open now · Closes 10:00 PM',
+    '(212) 555-0201',
+    '10:00 AM - 10:00 PM',
+    'New York',
     false
   ),
-  // Other brands
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-89-5th-ave',
+    'Baskin-Robbins',
+    '89 5th Ave, New York, NY 10003',
+    4.5,
+    678,
+    true,
+    'Open now · Closes 11:00 PM',
+    '(212) 555-0202',
+    '9:00 AM - 11:00 PM',
+    'New York',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-234-madison-ave',
+    'Baskin-Robbins',
+    '234 Madison Ave, New York, NY 10016',
+    4.1,
+    389,
+    true,
+    'Open now · Closes 9:30 PM',
+    '(212) 555-0203',
+    '10:30 AM - 9:30 PM',
+    'New York',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-567-park-ave-s',
+    'Baskin-Robbins',
+    '567 Park Ave S, New York, NY 10010',
+    4.4,
+    445,
+    true,
+    'Open now · Closes 10:30 PM',
+    '(212) 555-0204',
+    '9:30 AM - 10:30 PM',
+    'New York',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-123-3rd-ave',
+    'Baskin-Robbins',
+    '123 3rd Ave, New York, NY 10003',
+    4.2,
+    523,
+    true,
+    'Open now · Closes 10:00 PM',
+    '(212) 555-0205',
+    '10:00 AM - 10:00 PM',
+    'New York',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-890-lexington-ave',
+    'Baskin-Robbins',
+    '890 Lexington Ave, New York, NY 10021',
+    4.6,
+    712,
+    true,
+    'Open now · Closes 11:00 PM',
+    '(212) 555-0206',
+    '9:00 AM - 11:00 PM',
+    'New York',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-albany-state-st',
+    'Baskin-Robbins',
+    '456 State St, Albany, NY 12210',
+    4.0,
+    198,
+    true,
+    'Open now · Closes 9:00 PM',
+    '(518) 555-0207',
+    '10:00 AM - 9:00 PM',
+    'Albany',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-la-sunset-blvd',
+    'Baskin-Robbins',
+    '789 Sunset Blvd, Los Angeles, CA 90028',
+    4.3,
+    267,
+    true,
+    'Open now · Closes 11:00 PM',
+    '(323) 555-0208',
+    '9:00 AM - 11:00 PM',
+    'Los Angeles',
+    false
+  ),
+  createBaskinRobbinsBusiness(
+    'baskin-robbins-houston-main-st',
+    'Baskin-Robbins',
+    '321 Main St, Houston, TX 77002',
+    4.4,
+    334,
+    true,
+    'Open now · Closes 10:00 PM',
+    '(713) 555-0209',
+    '10:00 AM - 10:00 PM',
+    'Houston',
+    false
+  ),
+  // Other brands (from searchResults)
   {
     slug: 'starbucks-georgetown',
     name: 'Starbucks',

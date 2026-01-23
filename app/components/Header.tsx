@@ -1,43 +1,70 @@
 'use client'
 
 import { useState } from 'react'
+import Link from 'next/link'
 import { SafeImage } from './SafeImage'
-import { Link } from './Link'
+import { Link as CustomLink } from './Link'
 import { IMAGES } from '../constants/images'
+import { HeroSearchBar } from './HeroSearchBar'
+import { SearchOverlay } from './SearchOverlay'
 
 export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const [searchOverlayOpen, setSearchOverlayOpen] = useState(false)
 
   return (
     <>
       <div className="bg-white relative w-full">
-        <div className="relative flex items-center justify-center md:justify-between overflow-hidden px-4 sm:px-8 lg:px-8 xl:px-[150px] h-[96px] w-full max-w-[1440px] mx-auto">
-          {/* Mobile/Tablet hamburger button */}
-          <button
-            className="absolute left-4 sm:left-8 lg:left-8 xl:left-[150px] flex items-center md:hidden text-sm font-medium text-black"
-            aria-label="Menu"
-            onClick={() => setMenuOpen(!menuOpen)}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          </button>
-
-          {/* Logo - centered on mobile/tablet, left on desktop */}
-          <div className="overflow-hidden relative shrink-0 w-[48px] h-[48px]">
-            <a href="/" aria-label="Home">
-              <SafeImage alt="Logo" className="block max-w-none w-full h-full" src={IMAGES.logo} />
-            </a>
+        {/* Mobile: Search icon left, Logo center, Hamburger right */}
+        <div className="md:hidden relative flex items-center px-4 py-4">
+          {/* Search icon - extreme left */}
+          <div className="flex-shrink-0 w-10">
+            <HeroSearchBar variant="headerMobile" onSearchIconClick={() => setSearchOverlayOpen(true)} />
           </div>
 
-          {/* Desktop link on right */}
-          <div className="hidden md:flex items-center justify-center">
-            <Link href="#" className="font-medium leading-[24px] text-sm sm:text-[16px] text-center">
-              ABCD for Businesses
-            </Link>
+          {/* Logo - center (flex-1 to push to center, absolute for true centering) */}
+          <div className="flex-1 flex justify-center">
+            <div className="overflow-hidden relative shrink-0 w-[48px] h-[48px]">
+              <Link href="/" aria-label="Home">
+                <SafeImage alt="Logo" className="block max-w-none w-full h-full" src={IMAGES.logo} />
+              </Link>
+            </div>
+          </div>
+
+          {/* Hamburger - right (same width as search icon for balance) */}
+          <div className="flex-shrink-0 w-10 flex justify-end">
+            <button
+              className="flex items-center justify-center text-sm font-medium text-black"
+              aria-label="Menu"
+              onClick={() => setMenuOpen(!menuOpen)}
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M4 7h16M4 12h16M4 17h16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+              </svg>
+            </button>
           </div>
         </div>
+
+        {/* Desktop: Original layout */}
+        <div className="hidden md:flex relative items-center justify-between overflow-hidden px-4 sm:px-8 lg:px-8 xl:px-[150px] h-[96px] w-full max-w-[1440px] mx-auto">
+              {/* Logo - left on desktop */}
+              <div className="overflow-hidden relative shrink-0 w-[48px] h-[48px]">
+                <Link href="/" aria-label="Home">
+                  <SafeImage alt="Logo" className="block max-w-none w-full h-full" src={IMAGES.logo} />
+                </Link>
+              </div>
+
+              {/* Desktop link on right */}
+              <div className="flex items-center justify-center">
+                <CustomLink href="#" className="font-medium leading-[24px] text-sm sm:text-[16px] text-center">
+                  ABCD for Businesses
+                </CustomLink>
+              </div>
+        </div>
       </div>
+
+      {/* Search Overlay */}
+      <SearchOverlay isOpen={searchOverlayOpen} onClose={() => setSearchOverlayOpen(false)} />
 
       {/* Mobile/Tablet hamburger menu */}
       {menuOpen && (
@@ -51,11 +78,11 @@ export function Header() {
                 </svg>
               </button>
             </div>
-            <div className="p-4">
-              <Link href="#" className="block py-3 font-medium text-base text-black">
-                ABCD for Businesses
-              </Link>
-            </div>
+                <div className="p-4">
+                  <CustomLink href="#" className="block py-3 font-medium text-base text-black">
+                    ABCD for Businesses
+                  </CustomLink>
+                </div>
           </div>
         </div>
       )}
