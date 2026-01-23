@@ -32,7 +32,7 @@ export default function BrandCityPage({ params }: PageProps) {
   ]
 
   const description = brand.claimed
-    ? `Official, brand-verified information for ${brand.name} locations in ${city.name}, including hours, FAQs, and customer feedback, sourced from the Yext Knowledge Graph.`
+    ? `Official, brand-verified information for ${brand.name} locations in ${city.name}, including hours, FAQs, and customer feedback, sourced from the TX3Y Knowledge Graph.`
     : `General business location information for ${brand.name} in ${city.name}.`
 
   return (
@@ -121,7 +121,7 @@ export default function BrandCityPage({ params }: PageProps) {
                 <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
                   <div className="flex-1 grid sm:flex items-start gap-4">
                     <SafeImage 
-                      alt="Yext logo" 
+                      alt="TX3Y logo" 
                       src={IMAGES.logo} 
                       className="h-full shrink-0"
                     />
@@ -130,7 +130,7 @@ export default function BrandCityPage({ params }: PageProps) {
                         The Advantage of Brand-Verified Information
                       </h2>
                       <p className="text-base text-gray-700">
-                            Brands that manage certified business facts through Yext see up to <span className="font-semibold">30% more traffic</span> compared to pages without brand-verified information.
+                            Brands that manage certified business facts through TX3Y see up to <span className="font-semibold">30% more traffic</span> compared to pages without brand-verified information.
                           </p>
                           <p className="text-sm text-[#5b5d60] italic mt-2">See how other brands do this at scale → <a href="https://www.yext.com/customers" target="_blank" rel="noopener noreferrer" className="link-primary">Customer stories</a></p>
                     </div>

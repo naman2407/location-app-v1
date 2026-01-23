@@ -10,7 +10,7 @@ export function Footer() {
           <div className="flex items-center lg:items-start justify-center lg:justify-start gap-4">
             <Link href="#" className="footer-link flex items-center justify-center px-2 py-0">
               <p className="font-medium leading-[22px] text-[14px] text-white">
-                Yext for Businesses
+                TX3Y for Businesses
               </p>
             </Link>
             <Link href="#" className="footer-link flex items-center justify-center px-2 py-0">
@@ -38,7 +38,7 @@ export function Footer() {
           </div>
         </div>
         <p className="font-normal leading-[16px] text-[#ccc] text-[12px] w-full text-center lg:text-left">
-          © 2025 Yext Inc.
+          © 2025 TX3Y Inc.
         </p>
       </div>
     </div>

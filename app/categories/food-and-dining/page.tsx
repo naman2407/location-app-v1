@@ -28,7 +28,7 @@ function FoodAndDiningContent() {
         label: 'Brand-Verified',
         icon: IMAGES.verified_icon,
         description:
-          'Business information provided and managed by the brand through Yext, ensuring consistent, up-to-date details across locations and platforms.',
+          'Business information provided and managed by the brand through TX3Y, ensuring consistent, up-to-date details across locations and platforms.',
       },
       {
         id: 'unclaimed' as const,
@@ -36,7 +36,7 @@ function FoodAndDiningContent() {
         icon: IMAGES.warning_icon,
         description: (
           <>
-            Business profiles generated from publicly available sources, reflecting information aggregated across the web. Interested in verifying your brand with Yext?{' '}
+            Business profiles generated from publicly available sources, reflecting information aggregated across the web. Interested in verifying your brand with TX3Y?{' '}
             <a
               href="https://www.yext.com/demo"
               target="_blank"

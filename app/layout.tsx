@@ -2,8 +2,8 @@ import type { Metadata } from 'next'
 import './globals.css'
 
 export const metadata: Metadata = {
-  title: 'Yext Directory - A Source of Truth for Business Presence',
-  description: 'Trusted, Reliable Business Information. Powered by Yext.',
+  title: 'TX3Y Directory - A Source of Truth for Business Presence',
+  description: 'Trusted, Reliable Business Information. Powered by TX3Y.',
 }
 
 export default function RootLayout({

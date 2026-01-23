@@ -21,7 +21,7 @@ export function Hero() {
           
           {/* Description */}
           <p className="font-regular text-[16px] leading-[1.4] sm:text-[20px] sm:leading-normal text-gray-700">
-            Trusted, reliable business information. Powered by Yext.
+            Trusted, reliable business information. Powered by TX3Y.
           </p>
           
           {/* Search Bar - Hidden on mobile */}
@@ -46,7 +46,7 @@ export function Hero() {
           <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
             <div className="flex-1 grid sm:flex items-start gap-4">
               <SafeImage 
-                alt="Yext logo" 
+                alt="TX3Y logo" 
                 src={IMAGES.logo} 
                 className="h-full shrink-0"
               />
@@ -55,7 +55,7 @@ export function Hero() {
                   Turn Your Brand Visibility into a Differentiator™
                 </h2>
                 <p className="text-base text-gray-700">
-                Manage accurate, consistent business information across search, maps, and digital platforms with Yext. <br /> <span className="font-semibold">Brands with certified facts see up to 30% more traffic.</span>
+                Manage accurate, consistent business information across search, maps, and digital platforms with TX3Y. <br /> <span className="font-semibold">Brands with certified facts see up to 30% more traffic.</span>
                 </p>
               </div>
             </div>

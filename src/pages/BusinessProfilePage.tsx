@@ -156,7 +156,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
                   </div>
                   <div className="px-4 lg:px-6 pb-6 lg:pb-8 pt-4 flex flex-col items-start gap-4 w-full">
                     <div className="text-base text-gray-700 text-left w-full">
-                      <p className='mb-3'>Yext customers see a 30% increase in traffic and gain access to:</p>
+                      <p className='mb-3'>TX3Y customers see a 30% increase in traffic and gain access to:</p>
                       <ul className="space-y-2">
                         <li className="flex items-start gap-3">
                           <span className="text-green-600 mt-0.5">✓</span>
@@ -353,7 +353,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
                 </div>
                 <div className="text-base text-gray-700">
                   <p>This page shows publicly sourced business information that customers may encounter across search and digital platforms.</p>
-                  <p className='font-semibold'>Brands using Yext see up to ~30% more online visibility and gain:</p>
+                  <p className='font-semibold'>Brands using TX3Y see up to ~30% more online visibility and gain:</p>
                   <ul className="list-disc pl-5 mt-2 mb-2">
                     <li>Deeper insight into customer feedback across locations</li>
                     <li>Clear performance summaries across key platforms</li>
@@ -374,7 +374,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
                 </div>
                 <div className="px-4 lg:px-6 pb-6 lg:pb-8 pt-4 flex flex-col items-start gap-4 w-full">
                   <div className="text-base text-gray-700 text-left w-full">
-                    <p className='mb-3'>Yext customers see a 30% increase in traffic and gain access to:</p>
+                    <p className='mb-3'>TX3Y customers see a 30% increase in traffic and gain access to:</p>
                     <ul className="space-y-2">
                       <li className="flex items-start gap-3">
                         <span className="text-green-600 mt-0.5">✓</span>
@@ -450,7 +450,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
                 className="h-8 w-auto mb-4"
               />
               <h2 className="text-lg font-semibold text-center mb-2">
-              Access Performance Data with Yext
+              Access Performance Data with TX3Y
               </h2>
               <p className="text-base text-gray-700 text-center mb-4 max-w-md">
                 Verify your business profile to access detailed performance data and deeper insights.
