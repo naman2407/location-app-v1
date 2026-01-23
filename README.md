@@ -83,6 +83,6 @@ npm start
 
 ## License
 
-© 2025 ABCD Inc. All Rights Reserved.
+© 2025 Yext Inc. All Rights Reserved.
 
 

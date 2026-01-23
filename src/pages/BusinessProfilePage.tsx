@@ -9,7 +9,6 @@ import { ReviewCard } from '../components/business/ReviewCard'
 import { FaqAccordion } from '../components/business/FaqAccordion'
 import { SafeImage } from '../../app/components/SafeImage'
 import { IMAGES } from '../../app/constants/images'
-import { ClaimedTooltip } from '../../app/components/ClaimedTooltip'
 import { findLocationBySlug } from '../../app/constants/brandData'
 
 type Params = { slug?: string }
@@ -115,7 +114,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
   return (
     <div className="biz-page w-full">
       <div className="w-full px-4 sm:px-8 lg:px-8 xl:px-[150px] pb-6 lg:pb-8 flex-1 flex flex-col max-w-[1440px] mx-auto min-h-0">
-        <nav className="breadcrumb-container flex items-center my-4 -ml-4 sm:-ml-8 lg:-ml-8 xl:-ml-[150px]" aria-label="Breadcrumb">
+        <nav className="breadcrumb-container flex flex-wrap items-center gap-x-2 my-4 px-4 sm:px-0 sm:-ml-8 lg:-ml-8 xl:-ml-[150px]" aria-label="Breadcrumb">
           {breadcrumbs.map((crumb, index) => (
             <span key={index} className="flex items-center">
               {index > 0 && <span className="breadcrumb-separator mx-2 text-[#767676]">/</span>}
@@ -149,45 +148,60 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
           <section className="biz-title-block">
             {business.claimed === false && (
               <div className="biz-hero-banner biz-hero-banner-mobile">
-                <div className="biz-claim-banner" role="note" aria-label="Own this business">
-                  <div className="biz-claim-banner-header">
-                    <div className="biz-claim-banner-title">Go Beyond The Basics</div>
+                <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col items-start" role="note" aria-label="Own this business">
+                  <div className="biz-banner-title-container px-4 lg:px-6 pb-3 w-full" style={{ backgroundColor: '#FEF8E0' }}>
+                    <h2 className="text-lg font-medium text-left">
+                      This profile is unverified and using publicly sourced data
+                    </h2>
                   </div>
-                  <div className="biz-claim-banner-description">
-                    <p>Businesses using Yext unlock:</p>
-                    <ul>
-                      <li>Deeper insights into customer feedback</li>
-                      <li>Performance summaries across key platforms</li>
-                      <li>Visibility into common customer questions</li>
-                      <li>Tools to manage and optimize digital presence at scale</li>
-                    </ul>
-                    <p>Let's walk through what this looks like for your business.</p>
+                  <div className="px-4 lg:px-6 pb-6 lg:pb-8 pt-4 flex flex-col items-start gap-4 w-full">
+                    <div className="text-base text-gray-700 text-left w-full">
+                      <p className='mb-3'>Yext customers see a 30% increase in traffic and gain access to:</p>
+                      <ul className="space-y-2">
+                        <li className="flex items-start gap-3">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>Deeper insights from real customer feedback</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>Performance summaries across key platforms</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>Visibility into the questions customers ask most</span>
+                        </li>
+                        <li className="flex items-start gap-3">
+                          <span className="text-green-600 mt-0.5">✓</span>
+                          <span>AI tools to manage and optimize your digital presence at scale</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <a
+                      href="https://www.yext.com/demo"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0 self-start"
+                    >
+                      Get in touch
+                    </a>
                   </div>
-                  <a href="https://www.yext.com/demo" target="_blank" rel="noopener noreferrer" className="biz-claim-banner-cta">
-                  Get in touch
-                  </a>
                 </div>
               </div>
             )}
+            {business.claimed && (
+                <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0 mb-2">
+                  <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
+                  Brand-Verified Information
+                </span>
+            )}
+            {!business.claimed && (
+              <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0 mb-2">
+                <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
+                Publicly Sourced Information
+              </span>
+            )}
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="heading heading-lead">{business.name}</h1>
-              {business.claimed ? (
-                <ClaimedTooltip tooltipText="This brand profile has been claimed by the business owner or an authorized representative.">
-                  <SafeImage
-                    alt="Claimed"
-                    className="shrink-0 claimed-icon-size"
-                    src={IMAGES.claimed}
-                  />
-                </ClaimedTooltip>
-              ) : (
-                <ClaimedTooltip tooltipText="This brand profile has not yet been claimed by the business owner or an authorized representative.">
-                  <SafeImage
-                    alt="Unclaimed"
-                    className="shrink-0 claimed-icon-size"
-                    src={IMAGES.unclaimed}
-                  />
-                </ClaimedTooltip>
-              )}
             </div>
             <div className="biz-rating">
               <span className="biz-rating-score">{business.rating.toFixed(1)}</span>
@@ -246,23 +260,25 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
               </div>
               <div className="biz-details-row items-center">
                 <SafeImage alt="Link" src={IMAGES.link} className="biz-details-icon" />
-              <a href="#" className="button button-social" target="_blank" rel="noopener noreferrer">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
-                  <path d="M15.8444 6.43317H15.2V6.39997H8.00001V9.59995H12.5212C11.8616 11.4627 10.0892 12.7999 8.00001 12.7999C5.34922 12.7999 3.20003 10.6507 3.20003 7.99996C3.20003 5.34917 5.34922 3.19998 8.00001 3.19998C9.2236 3.19998 10.3368 3.66158 11.1844 4.41558L13.4472 2.15279C12.0184 0.821196 10.1072 0 8.00001 0C3.58203 0 4.57764e-05 3.58198 4.57764e-05 7.99996C4.57764e-05 12.4179 3.58203 15.9999 8.00001 15.9999C12.418 15.9999 16 12.4179 16 7.99996C16 7.46356 15.9448 6.93997 15.8444 6.43317Z" fill="#FFC107"/>
-                  <path d="M0.922302 4.27638L3.55069 6.20397C4.26189 4.44318 5.98428 3.19998 7.99987 3.19998C9.22346 3.19998 10.3367 3.66158 11.1843 4.41558L13.447 2.15279C12.0182 0.821196 10.1071 0 7.99987 0C4.92708 0 2.2623 1.73479 0.922302 4.27638Z" fill="#FF3D00"/>
-                  <path d="M8.00009 15.9999C10.0665 15.9999 11.9441 15.2092 13.3637 13.9232L10.8877 11.828C10.0575 12.4593 9.04307 12.8008 8.00009 12.8C5.9193 12.8 4.15251 11.4732 3.48691 9.62158L0.878128 11.6316C2.20212 14.2224 4.89091 15.9999 8.00009 15.9999Z" fill="#4CAF50"/>
-                  <path d="M15.8444 6.4331H15.2V6.3999H8.00005V9.59989H12.5212C12.2057 10.4864 11.6374 11.2611 10.8864 11.8283L10.8876 11.8275L13.3636 13.9227C13.1884 14.0819 16 11.9999 16 7.99989C16 7.4635 15.9448 6.9399 15.8444 6.4331Z" fill="#1976D2"/>
-                </svg>
-                <span>Google</span>
-              </a>
-              <a href="#" className="button button-social" target="_blank" rel="noopener noreferrer">
-                <SafeImage alt="Facebook" src={IMAGES.facebook_color} className="biz-social-icon" />
-                <span>Facebook</span>
-              </a>
-              <a href="#" className="button button-social" target="_blank" rel="noopener noreferrer">
-                <SafeImage alt="Instagram" src={IMAGES.instagram_color} className="biz-social-icon" />
-                <span>Instagram</span>
-              </a>
+                <div className="flex flex-wrap gap-2">
+                  <a href="#" className="button button-social" target="_blank" rel="noopener noreferrer">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                      <path d="M15.8444 6.43317H15.2V6.39997H8.00001V9.59995H12.5212C11.8616 11.4627 10.0892 12.7999 8.00001 12.7999C5.34922 12.7999 3.20003 10.6507 3.20003 7.99996C3.20003 5.34917 5.34922 3.19998 8.00001 3.19998C9.2236 3.19998 10.3368 3.66158 11.1844 4.41558L13.4472 2.15279C12.0184 0.821196 10.1072 0 8.00001 0C3.58203 0 4.57764e-05 3.58198 4.57764e-05 7.99996C4.57764e-05 12.4179 3.58203 15.9999 8.00001 15.9999C12.418 15.9999 16 12.4179 16 7.99996C16 7.46356 15.9448 6.93997 15.8444 6.43317Z" fill="#FFC107"/>
+                      <path d="M0.922302 4.27638L3.55069 6.20397C4.26189 4.44318 5.98428 3.19998 7.99987 3.19998C9.22346 3.19998 10.3367 3.66158 11.1843 4.41558L13.447 2.15279C12.0182 0.821196 10.1071 0 7.99987 0C4.92708 0 2.2623 1.73479 0.922302 4.27638Z" fill="#FF3D00"/>
+                      <path d="M8.00009 15.9999C10.0665 15.9999 11.9441 15.2092 13.3637 13.9232L10.8877 11.828C10.0575 12.4593 9.04307 12.8008 8.00009 12.8C5.9193 12.8 4.15251 11.4732 3.48691 9.62158L0.878128 11.6316C2.20212 14.2224 4.89091 15.9999 8.00009 15.9999Z" fill="#4CAF50"/>
+                      <path d="M15.8444 6.4331H15.2V6.3999H8.00005V9.59989H12.5212C12.2057 10.4864 11.6374 11.2611 10.8864 11.8283L10.8876 11.8275L13.3636 13.9227C13.1884 14.0819 16 11.9999 16 7.99989C16 7.4635 15.9448 6.9399 15.8444 6.4331Z" fill="#1976D2"/>
+                    </svg>
+                    <span>Google</span>
+                  </a>
+                  <a href="#" className="button button-social" target="_blank" rel="noopener noreferrer">
+                    <SafeImage alt="Facebook" src={IMAGES.facebook_color} className="biz-social-icon" />
+                    <span>Facebook</span>
+                  </a>
+                  <a href="#" className="button button-social" target="_blank" rel="noopener noreferrer">
+                    <SafeImage alt="Instagram" src={IMAGES.instagram_color} className="biz-social-icon" />
+                    <span>Instagram</span>
+                  </a>
+                </div>
               </div>
             </div>
           </section>
@@ -333,81 +349,124 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
             <div className="biz-hero-banner biz-hero-banner-desktop biz-hero-banner-spacer" aria-hidden="true">
               <div className="biz-claim-banner">
                 <div className="biz-claim-banner-header">
-                  <div className="biz-claim-banner-title">Go Beyond The Basics</div>
+                  <div className="biz-claim-banner-title">Your Brand, as Customers See It</div>
                 </div>
-                <div className="biz-claim-banner-description">
-                  <p>Businesses using Yext unlock:</p>
-                  <ul>
-                    <li>Deeper insights into customer feedback</li>
-                    <li>Performance summaries across key platforms</li>
-                    <li>Visibility into common customer questions</li>
+                <div className="text-base text-gray-700">
+                  <p>This page shows publicly sourced business information that customers may encounter across search and digital platforms.</p>
+                  <p className='font-semibold'>Brands using Yext see up to ~30% more online visibility and gain:</p>
+                  <ul className="list-disc pl-5 mt-2 mb-2">
+                    <li>Deeper insight into customer feedback across locations</li>
+                    <li>Clear performance summaries across key platforms</li>
+                    <li>Clear performance summaries across key platforms</li>
                     <li>Tools to manage and optimize digital presence at scale</li>
                   </ul>
-                  <p>Let's walk through what this looks like for your business.</p>
                 </div>
                 <span className="biz-claim-banner-cta">Get in touch</span>
               </div>
             </div>
           ) : (
             <div className="biz-hero-banner biz-hero-banner-desktop">
-              <div className="biz-claim-banner" role="note" aria-label="Own this business">
-                <div className="biz-claim-banner-header">
-                  <div className="biz-claim-banner-title">Go Beyond The Basics</div>
+              <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col items-start" role="note" aria-label="Own this business">
+                <div className="biz-banner-title-container px-4 lg:px-6 pb-3 w-full" style={{ backgroundColor: '#FEF8E0' }}>
+                  <h2 className="text-lg font-medium text-left">
+                    This profile is unverified and using publicly sourced data
+                  </h2>
                 </div>
-                <div className="biz-claim-banner-description">
-                  <p>Businesses using Yext unlock:</p>
-                  <ul>
-                    <li>Deeper insights into customer feedback</li>
-                    <li>Performance summaries across key platforms</li>
-                    <li>Visibility into common customer questions</li>
-                    <li>Tools to manage and optimize digital presence at scale</li>
-                  </ul>
-                  <p>Let's walk through what this looks like for your business.</p>
+                <div className="px-4 lg:px-6 pb-6 lg:pb-8 pt-4 flex flex-col items-start gap-4 w-full">
+                  <div className="text-base text-gray-700 text-left w-full">
+                    <p className='mb-3'>Yext customers see a 30% increase in traffic and gain access to:</p>
+                    <ul className="space-y-2">
+                      <li className="flex items-start gap-3">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Deeper insights from real customer feedback</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Performance summaries across key platforms</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>Visibility into the questions customers ask most</span>
+                      </li>
+                      <li className="flex items-start gap-3">
+                        <span className="text-green-600 mt-0.5">✓</span>
+                        <span>AI tools to manage and optimize your digital presence at scale</span>
+                      </li>
+                    </ul>
+                  </div>
+                  <a
+                    href="https://www.yext.com/demo"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0 self-start"
+                  >
+                    Get in touch
+                  </a>
                 </div>
-                <a href="https://www.yext.com/demo" target="_blank" rel="noopener noreferrer" className="biz-claim-banner-cta">
-                 Get in touch
-                </a>
               </div>
             </div>
           )}
           <HoursCard hours={business.hours} statusText={business.statusText} closesAt={business.closesAt} />
         </div>
       </div>
-      {business.claimed && (
       <div className="biz-reviews-section">
-        <div className="biz-reviews">
+        <div className="biz-reviews relative">
           <h2 className="heading heading-sub">Reviews</h2>
-          <div className="biz-review-summary">
-            <div className="biz-review-score">
-              <div className="biz-review-score-row">
-                <span className="heading heading-head">{business.rating.toFixed(1)}</span>
-                <SafeImage alt="" className="biz-review-score-star" src={IMAGES.star_single} />
+          <div style={!business.claimed ? { filter: 'blur(12px)', pointerEvents: 'none', maxHeight: '600px', overflow: 'hidden' } : {}}>
+            <div className="biz-review-summary">
+              <div className="biz-review-score">
+                <div className="biz-review-score-row">
+                  <span className="heading heading-head">{business.rating.toFixed(1)}</span>
+                  <SafeImage alt="" className="biz-review-score-star" src={IMAGES.star_single} />
+                </div>
+                <div className="biz-review-count-row">
+                  <span className="biz-review-count-inline">{business.reviewCount} reviews</span>
+                </div>
               </div>
-              <div className="biz-review-count-row">
-                <span className="biz-review-count-inline">{business.reviewCount} reviews</span>
+              <RatingHistogram rating={{ ratingHistogram: business.ratingHistogram }} />
+            </div>
+            <div className="biz-ai-card">
+              <div className="biz-ai-title">What are people saying?</div>
+              <div className="biz-ai-card-header">
+                <SafeImage alt="Sparkle" src={IMAGES.sparkle} className="w-4 h-4" />
+                <span>AI-generated from recent customer reviews</span>
               </div>
+              <div className="biz-ai-text">{business.aiSummary}</div>
             </div>
-            <RatingHistogram rating={{ ratingHistogram: business.ratingHistogram }} />
-          </div>
-          <div className="biz-ai-card">
-            <div className="biz-ai-title">What are people saying?</div>
-            <div className="biz-ai-card-header">
-              <SafeImage alt="Sparkle" src={IMAGES.sparkle} className="w-4 h-4" />
-              <span>AI-generated from recent customer reviews</span>
+            <div className="biz-review-list">
+              {business.reviews.map((review) => (
+                <ReviewCard key={review.author + review.date} review={review} />
+              ))}
             </div>
-            <div className="biz-ai-text">{business.aiSummary}</div>
+            <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="link-primary">
+              Read more reviews on Google
+            </a>
           </div>
-          <div className="biz-review-list">
-            {business.reviews.map((review) => (
-              <ReviewCard key={review.author + review.date} review={review} />
-            ))}
-          </div>
-          <a href="https://maps.google.com" target="_blank" rel="noopener noreferrer" className="link-primary">
-            Read more reviews on Google
-          </a>
+          {!business.claimed && (
+            <div className="absolute inset-0 bg-white/90 backdrop-blur-md z-20 flex flex-col items-center justify-center p-6 sm:p-8 rounded-2xl">
+              <SafeImage 
+                alt="Lock icon" 
+                src={IMAGES.lock} 
+                className="h-8 w-auto mb-4"
+              />
+              <h2 className="text-lg font-semibold text-center mb-2">
+              Access Performance Data with Yext
+              </h2>
+              <p className="text-base text-gray-700 text-center mb-4 max-w-md">
+                Verify your business profile to access detailed performance data and deeper insights.
+              </p>
+              <a
+                href="https://www.yext.com/demo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0"
+              >
+                Get in touch
+              </a>
+            </div>
+          )}
         </div>
       </div>
-      )}
       {business.claimed && (
       <div className="biz-faq-section">
         <FaqAccordion faqs={business.faqs} businessName={business.name} />

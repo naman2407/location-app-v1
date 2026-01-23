@@ -167,6 +167,55 @@ export const tacoBellData: Brand = {
         },
       ],
     },
+    {
+      name: 'Florida',
+      slug: 'florida',
+      cities: [
+        {
+          name: 'Miami',
+          slug: 'miami',
+          locations: [],
+        },
+        {
+          name: 'Orlando',
+          slug: 'orlando',
+          locations: [],
+        },
+      ],
+    },
+    {
+      name: 'Illinois',
+      slug: 'illinois',
+      cities: [
+        {
+          name: 'Chicago',
+          slug: 'chicago',
+          locations: [],
+        },
+      ],
+    },
+    {
+      name: 'Arizona',
+      slug: 'arizona',
+      cities: [
+        {
+          name: 'Phoenix',
+          slug: 'phoenix',
+          locations: [],
+        },
+      ],
+    },
+    {
+      name: 'Nevada',
+      slug: 'nevada',
+      cities: [
+        {
+          name: 'Las Vegas',
+          slug: 'las-vegas',
+          locations: [],
+        },
+      ],
+    },
   ],
 }
 
@@ -306,6 +355,55 @@ export const baskinRobbinsData: Brand = {
         },
       ],
     },
+    {
+      name: 'Florida',
+      slug: 'florida',
+      cities: [
+        {
+          name: 'Miami',
+          slug: 'miami',
+          locations: [],
+        },
+        {
+          name: 'Orlando',
+          slug: 'orlando',
+          locations: [],
+        },
+      ],
+    },
+    {
+      name: 'Illinois',
+      slug: 'illinois',
+      cities: [
+        {
+          name: 'Chicago',
+          slug: 'chicago',
+          locations: [],
+        },
+      ],
+    },
+    {
+      name: 'Arizona',
+      slug: 'arizona',
+      cities: [
+        {
+          name: 'Phoenix',
+          slug: 'phoenix',
+          locations: [],
+        },
+      ],
+    },
+    {
+      name: 'Nevada',
+      slug: 'nevada',
+      cities: [
+        {
+          name: 'Las Vegas',
+          slug: 'las-vegas',
+          locations: [],
+        },
+      ],
+    },
   ],
 }
 
@@ -366,4 +464,18 @@ export function countBrandLocations(brand: Brand): number {
     }
   }
   return count
+}
+
+// Helper function to count locations for a state
+export function countStateLocations(state: State): number {
+  let count = 0
+  for (const city of state.cities) {
+    count += city.locations.length
+  }
+  return count
+}
+
+// Helper function to count locations for a city
+export function countCityLocations(city: City): number {
+  return city.locations.length
 }

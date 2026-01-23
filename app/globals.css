@@ -21,6 +21,14 @@
   -webkit-font-smoothing: antialiased;
 }
 
+/* Remove focus outline from all links */
+a:focus,
+a:focus-visible,
+a:active {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 html,
 body {
   margin: 0;
@@ -349,8 +357,8 @@ input::-webkit-calendar-picker-indicator {
 }
 
 .link-primary:focus {
-  outline: 3px solid rgba(28, 29, 32, 0.16);
-  border-radius: 1px;
+  outline: none !important;
+  box-shadow: none !important;
 }
 
 .no-focus-ring:focus,
@@ -1626,4 +1634,8 @@ input::-webkit-calendar-picker-indicator {
 
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+.biz-banner-title-container {
+  padding-top: 24px;
 }

@@ -7,7 +7,6 @@ import { filterBrands, filterLocations } from '../constants/searchData'
 import { SafeImage } from './SafeImage'
 import { IMAGES } from '../constants/images'
 import { getBrandPageUrl, getBusinessPageUrl } from '../constants/brandNavigation'
-import { ClaimedTooltip } from './ClaimedTooltip'
 
 interface SearchOverlayProps {
   isOpen: boolean
@@ -203,7 +202,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                 setHighlightedIndex(-1)
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Search businesses or locations"
+              placeholder="Search brands or locations"
               className="flex-1 outline-none text-base text-[#222222] placeholder:text-[#717171] bg-transparent w-full font-normal border-0 p-0 m-0 appearance-none px-5 py-3.5"
             />
             {hasQuery && (
@@ -283,19 +282,28 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                           src={brand.image || '/images/brands/mcd.png'}
                         />
                       </div>
-                      {/* Brand Name */}
-                      <span className="text-base text-[#000000] font-normal flex-1 flex items-center gap-1.5">
-                        {brand.name}
+                      {/* Brand Name and Badge (Mobile) */}
+                      <div className="flex flex-col gap-2 flex-1 md:flex-row md:items-center md:gap-0 md:justify-between">
+                        <span className="text-base text-[#000000] font-semibold flex-1">
+                          {brand.name}
+                        </span>
+                        {/* Badge - Mobile: under brand name, Tablet+: extreme right */}
                         {brand.claimed !== undefined && (
-                          <ClaimedTooltip tooltipText={brand.claimed ? "This brand profile has been claimed by the business owner or an authorized representative." : "This brand profile has not yet been claimed by the business owner or an authorized representative."}>
-                            <SafeImage
-                              alt={brand.claimed ? "Claimed" : "Unclaimed"}
-                              className="shrink-0 w-4 h-4 sm:w-5 sm:h-5"
-                              src={brand.claimed ? IMAGES.claimed : IMAGES.unclaimed}
-                            />
-                          </ClaimedTooltip>
+                          <div>
+                            {brand.claimed ? (
+                              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-xs font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0">
+                                <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-3 h-3 shrink-0" />
+                                Brand Verified
+                              </span>
+                            ) : (
+                              <span className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-[6px] text-xs font-medium bg-[#FFCD39] shrink-0">
+                                <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-3 h-3 shrink-0" />
+                                Publicly Sourced
+                              </span>
+                            )}
+                          </div>
                         )}
-                      </span>
+                      </div>
                     </div>
                   )
                 })}

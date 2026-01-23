@@ -3,6 +3,7 @@ export const IMAGES = {
   logo: "/images/icons/logo.svg",
   yext_logo: "/images/brands/yext_logo.svg",
   heroBackground: "/images/illustrations/hero-background.jpg",
+  hero: "/images/illustrations/hero.webp",
   emptyDone: "/images/illustrations/empty-done.svg",
   noResult: "/images/illustrations/no_result.svg",
   tag: "/images/icons/tag.svg",
@@ -12,6 +13,8 @@ export const IMAGES = {
   claimed_tab: "/images/icons/claimed_tab.svg",
   unclaimed: "/images/icons/unclaimed.svg",
   unclaimed_tab: "/images/icons/unclaimed_tab.svg",
+  verified_icon: "/images/icons/verified-icon.svg",
+  warning_icon: "/images/icons/warning-icon.svg",
   facebook: "/images/icons/facebook.svg",
   facebook_color: "/images/icons/facebook_color.svg",
   instagram: "/images/icons/instagram.svg",
@@ -25,7 +28,9 @@ export const IMAGES = {
   phone: "/images/icons/phone.svg",
   external: "/images/icons/external.svg",
   link: "/images/icons/link.svg",
+  lock: "/images/icons/lock.svg",
   google_location: "/images/illustrations/google_location.png",
+  all_brands: "/images/categories/all_brands.svg",
   brands: {
     // Brand logos for homepage
     starbucks: "/images/brands/starbucks.svg",

@@ -10,7 +10,7 @@ export function BrandsSection() {
           Brands
         </p>
         <p className="font-normal min-w-full relative shrink-0 text-base text-[#5b5d60] text-center tracking-[-0.38px] px-4">
-          Explore locations of the world's top brands
+          Explore all brands and locations
         </p>
       </div>
       <div className="flex flex-col gap-4 sm:gap-6 md:gap-[24px] items-center relative w-full">

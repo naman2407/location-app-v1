@@ -81,7 +81,7 @@ export function BrandHeader({ showSearch = true, fullWidth = false }: BrandHeade
 
               <nav className="hidden sm:flex">
                 <CustomLink href="#" className="leading-[24px] text-sm sm:text-[16px] text-center">
-                  ABCD for Businesses
+                  Yext for Businesses
                 </CustomLink>
               </nav>
         </div>

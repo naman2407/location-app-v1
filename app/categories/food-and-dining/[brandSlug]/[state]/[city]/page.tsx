@@ -6,7 +6,6 @@ import { BrandHeader } from '../../../../../components/BrandHeader'
 import { Footer } from '../../../../../components/Footer'
 import { SafeImage } from '../../../../../components/SafeImage'
 import { IMAGES } from '../../../../../constants/images'
-import { ClaimedTooltip } from '../../../../../components/ClaimedTooltip'
 import { getBrandBySlug, getStateBySlug, getCityBySlug, countBrandLocations } from '../../../../../constants/brandData'
 
 interface PageProps {
@@ -33,63 +32,52 @@ export default function BrandCityPage({ params }: PageProps) {
   ]
 
   const description = brand.claimed
-    ? `Quickly find the nearest ${brand.name} locations in ${city.name}, check whether it's open, and get accurate information like hours, reviews, and FAQs. This verified, up-to-date information about ${brand.name} locations comes straight from the Yext Knowledge Graph.`
-    : `Quickly find the nearest ${brand.name} locations in ${city.name}, check whether it's open, and get accurate information like hours, reviews, and FAQs.`
+    ? `Official, brand-verified information for ${brand.name} locations in ${city.name}, including hours, FAQs, and customer feedback, sourced from the Yext Knowledge Graph.`
+    : `General business location information for ${brand.name} in ${city.name}.`
 
   return (
     <div className="bg-white min-h-screen w-full flex flex-col">
       <BrandHeader />
 
       <div className="pb-4 flex-1 flex flex-col">
-        <nav className="my-4 container" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap">
-            {breadcrumbs.map((crumb, index) => (
-              <li key={crumb.label}>
-                {index < breadcrumbs.length - 1 ? (
-                  <>
-                    <Link href={crumb.href} className="link-primary">
-                      <span>{crumb.label}</span>
-                    </Link>
-                    <span className="mx-2 text-[#767676]">/</span>
-                  </>
-                ) : (
-                  <span>{crumb.label}</span>
-                )}
-              </li>
-            ))}
-          </ol>
-        </nav>
-
-        <div className="relative w-full bg-cover bg-center bg-[#f7f7f7]">
-          <div className="container relative py-12 sm:py-[74px]">
-            <div className="flex flex-col-reverse sm:flex-row sm:items-center gap-x-8 gap-y-4">
-              <div className="max-w-[672px]">
-                <h1 className="mb-4 flex flex-col text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
-                  <span className="flex items-center gap-2 flex-wrap">
-                    {brand.name}
-                    {brand.claimed ? (
-                      <ClaimedTooltip tooltipText="This brand profile has been claimed by the business owner or an authorized representative.">
-                        <SafeImage
-                          alt="Claimed"
-                          className="shrink-0 w-5 h-5 sm:w-6 sm:h-6"
-                          src={IMAGES.claimed}
-                        />
-                      </ClaimedTooltip>
-                    ) : (
-                      <ClaimedTooltip tooltipText="This brand profile has not yet been claimed by the business owner or an authorized representative.">
-                        <SafeImage
-                          alt="Unclaimed"
-                          className="shrink-0 w-5 h-5 sm:w-6 sm:h-6"
-                          src={IMAGES.unclaimed}
-                        />
-                      </ClaimedTooltip>
-                    )}
-                  </span>
-                  <span>in {city.name}</span>
-                </h1>
-                <p className="text-sm sm:text-base">{description}</p>
-              </div>
-              <div className="md:ml-auto h-40 w-40 rounded-full flex items-center justify-center shrink-0 overflow-hidden bg-white">
+        <div className="relative w-full bg-white">
+          <nav className="my-4 container" aria-label="Breadcrumb">
+            <ol className="flex flex-wrap">
+              {breadcrumbs.map((crumb, index) => (
+                <li key={crumb.label}>
+                  {index < breadcrumbs.length - 1 ? (
+                    <>
+                      <Link href={crumb.href} className="link-primary">
+                        <span>{crumb.label}</span>
+                      </Link>
+                      <span className="mx-2 text-[#767676]">/</span>
+                    </>
+                  ) : (
+                    <span>{crumb.label}</span>
+                  )}
+                </li>
+              ))}
+            </ol>
+          </nav>
+          <div className="container relative py-8 sm:py-12">
+            {/* Badge - Mobile: above image, Desktop: in content area */}
+            <div className="mb-4 sm:mb-0 sm:hidden">
+              {brand.claimed && (
+                <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0">
+                  <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
+                  Brand-Verified Information
+                </span>
+              )}
+              {!brand.claimed && (
+                <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0">
+                  <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
+                  Publicly Sourced Information
+                </span>
+              )}
+            </div>
+            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+              {/* Brand Image - Square with rounded border */}
+              <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
                 <SafeImage 
                   alt={`${brand.name} logo`} 
                   className="w-full h-full object-contain p-2" 
@@ -102,46 +90,59 @@ export default function BrandCityPage({ params }: PageProps) {
                   } 
                 />
               </div>
+              <div className="flex-1 min-w-0">
+                {/* Badge - Desktop only */}
+                <div className="hidden sm:block mb-2">
+                  {brand.claimed && (
+                    <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0">
+                      <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
+                      Brand-Verified Information
+                    </span>
+                  )}
+                  {!brand.claimed && (
+                    <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0">
+                      <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
+                      Publicly Sourced Information
+                    </span>
+                  )}
+                </div>
+                <h1 className="mb-2 ext-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
+                  <span className="flex items-center gap-2 flex-wrap">
+                    {brand.name} in {city.name}
+                  </span>
+                </h1>
+                <p className="text-sm sm:text-base">{description}</p>
+              </div>
             </div>
 
             {/* Unclaimed Brand Banner - Below title, description, and image */}
             {!brand.claimed && (
-              <div className="mt-6">
-                <div className="brand-unclaimed-banner">
-                  <div className="px-4 py-4 sm:px-6 sm:py-5">
-                    <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-                      <div className="flex items-start gap-3 sm:gap-4">
-                      <SafeImage alt="Yext logo" src={IMAGES.yext_logo} />
-                        <div className="flex-1">
-                          <p className="text-sm sm:text-base font-semibold text-white">
-                            Turn Your Brand Visibility into a Differentiator™
+              <div className="mt-6 w-full">
+                <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+                  <div className="flex-1 grid sm:flex items-start gap-4">
+                    <SafeImage 
+                      alt="Yext logo" 
+                      src={IMAGES.logo} 
+                      className="h-full shrink-0"
+                    />
+                    <div>
+                      <h2 className="text-xl font-semibold text-[#4a48e0] mb-1">
+                        The Advantage of Brand-Verified Information
+                      </h2>
+                      <p className="text-base text-gray-700">
+                            Brands that manage certified business facts through Yext see up to <span className="font-semibold">30% more traffic</span> compared to pages without brand-verified information.
                           </p>
-                          <p className="mt-1 text-xs sm:text-sm text-white/90 leading-relaxed">
-                            With <span className="font-bold">{countBrandLocations(brand)} locations</span>, managing your digital presence takes more than the basics. Yext helps brands stay accurate, visible, and in control everywhere customers search.
-                          </p>
-                          <p className="mt-2 text-xs sm:text-sm text-white/90">
-                            See how other brands do this at scale →{' '}
-                            <a
-                              href="https://www.yext.com/customers"
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="font-semibold text-white underline decoration-white/40 underline-offset-4 hover:decoration-white"
-                            >
-                              Customer stories
-                            </a>
-                          </p>
-                        </div>
-                      </div>
-                      <a
-                        href="https://www.yext.com/demo"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="brand-unclaimed-cta inline-flex items-center justify-center rounded-full px-5 py-2.5 sm:px-6 sm:py-3 text-xs sm:text-sm font-semibold text-white shadow-lg transition-all hover:opacity-90 whitespace-nowrap shrink-0"
-                      >
-                        Get in touch
-                      </a>
+                          <p className="text-sm text-[#5b5d60] italic mt-2">See how other brands do this at scale → <a href="https://www.yext.com/customers" target="_blank" rel="noopener noreferrer" className="link-primary">Customer stories</a></p>
                     </div>
                   </div>
+                  <a
+                    href="https://www.yext.com/demo"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0"
+                  >
+                    Get in touch
+                  </a>
                 </div>
               </div>
             )}
@@ -149,6 +150,9 @@ export default function BrandCityPage({ params }: PageProps) {
         </div>
 
         <div className="container pt-8 pb-12 sm:pb-[100px]">
+          <p className="text-base mb-6">
+            Explore verified locations:
+          </p>
           <ul className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 md:gap-6 lg:gap-6">
             {city.locations.map((location) => {
               const [line1, ...restParts] = location.address.split(',')
@@ -163,24 +167,28 @@ export default function BrandCityPage({ params }: PageProps) {
                 <li key={location.id} className="h-full">
                   <Link
                     href={`/business/${location.slug}?${query}`}
-                    className="group bg-white card-border-normal flex flex-col gap-3 sm:gap-4 h-full w-full min-w-0 p-3 sm:p-4 md:p-5 lg:p-6 relative rounded-[8px] transition-all duration-200"
+                    className="group bg-white card-border-normal flex flex-col h-full w-full min-w-0 p-4 sm:p-5 md:p-6 relative rounded-xl transition-all duration-200"
                   >
-                    <div className="flex flex-col gap-1.5 sm:gap-2 items-start leading-tight min-w-0 flex-1 text-black overflow-hidden">
-                      <div className="flex items-center gap-1 flex-wrap">
-                        <p className="font-semibold text-base sm:text-lg transition-colors duration-200 group-hover:text-[#5A58F2] line-clamp-2">
-                          {location.name}
+                    <div className="flex flex-col gap-1.5 sm:gap-2 items-start leading-tight min-w-0 flex-1 text-black">
+                      <p className="font-bold text-lg sm:text-xl transition-colors duration-200 group-hover:text-[#5A58F2]">
+                        {location.name}
+                      </p>
+                      {location.phone && (
+                        <p className="text-[14px] text-black">
+                          {location.phone}
                         </p>
-                      </div>
-                      <div className="w-fit flex items-center gap-x-2 text-sm text-[#1c1d20]">
-                        <span>{location.rating.toFixed(1)}</span>
-                        <SafeImage alt="Stars" className="h-3 w-[64px]" src={IMAGES.stars} />
-                        <span className="text-sm text-[#5b5d60]">({location.reviewCount} reviews)</span>
-                      </div>
-                      <div className="line-clamp-2 text-sm text-[#1c1d20]">
+                      )}
+                      <div className="text-[14px] text-black">
                         <div className="address-line">{line1?.trim()}</div>
                         {line2 && <div className="address-line">{line2}</div>}
                       </div>
-                      {location.phone && <div className="text-sm text-[#5b5d60]">{location.phone}</div>}
+                      <div className="flex items-center gap-1.5 text-[14px] text-black mt-1">
+                        <span>{location.rating.toFixed(1)}</span>
+                        <div className="relative shrink-0 w-[80px] sm:w-[90px] h-4">
+                          <SafeImage alt="Stars" className="block max-w-none w-full h-full" src={IMAGES.stars} />
+                        </div>
+                        <span className="text-[14px] text-[#5b5d60]">({location.reviewCount} reviews)</span>
+                      </div>
                     </div>
                   </Link>
                 </li>

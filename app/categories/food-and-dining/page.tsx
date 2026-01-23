@@ -9,6 +9,7 @@ import { SafeImage } from '../../components/SafeImage'
 import { IMAGES } from '../../constants/images'
 import { foodAndDiningBrands, isClaimedFoodBrand } from '../../constants/foodAndDiningBrands'
 import { getBrandPageUrl } from '../../constants/brandNavigation'
+import { getBrandBySlug, countBrandLocations } from '../../constants/brandData'
 
 const PAGE_SIZE = 40
 
@@ -24,18 +25,18 @@ function FoodAndDiningContent() {
     () => [
       {
         id: 'claimed' as const,
-        label: 'Claimed Businesses',
-        icon: IMAGES.claimed_tab,
+        label: 'Brand-Verified',
+        icon: IMAGES.verified_icon,
         description:
-          'A claimed business has verified ownership of its profile, allowing it to manage information, respond to reviews, and control how it appears across platforms.',
+          'Business information provided and managed by the brand through Yext, ensuring consistent, up-to-date details across locations and platforms.',
       },
       {
         id: 'unclaimed' as const,
-        label: 'Unclaimed Businesses',
-        icon: IMAGES.unclaimed_tab,
+        label: 'Publicly Sourced',
+        icon: IMAGES.warning_icon,
         description: (
           <>
-            An unclaimed business profile is auto-generated and unmanaged, with limited accuracy and no ability to engage or update details. Interested in claiming your brand?{' '}
+            Business profiles generated from publicly available sources, reflecting information aggregated across the web. Interested in verifying your brand with Yext?{' '}
             <a
               href="https://www.yext.com/demo"
               target="_blank"
@@ -75,7 +76,7 @@ function FoodAndDiningContent() {
   
   const pageItems = filteredBrands.slice(startIndex, startIndex + PAGE_SIZE)
   const heroDescription =
-    'Discover the best in Food & Dining, from top-rated restaurants to local gems. Listings includes business details, location information, and customer reviews to help you decide where to eat. Browse a range of options across different cuisines and neighborhoods.'
+    'Explore businesses across this category, with listings that include key details such as business information and location data. Browse options across different specialties and areas to support informed decisions.'
   const activeTabDescription = tabs.find((tab) => tab.id === activeTab)?.description ?? ''
 
   return (
@@ -83,36 +84,47 @@ function FoodAndDiningContent() {
       <BrandHeader showSearch={true} />
 
       <div className="pb-4 flex-1 flex flex-col">
-        <nav className="my-4 container" aria-label="Breadcrumb">
-          <ol className="flex flex-wrap">
-            <li>
-              <Link href="/" className="link-primary">
-                <span>Home</span>
-              </Link>
-              <span className="mx-2 text-[#767676]">/</span>
-            </li>
-            <li>
-              <span>Food & Dining</span>
-            </li>
-          </ol>
-        </nav>
-
-        <div className="category-hero">
-          <div className="category-hero-overlay" />
-          <div className="container relative py-12 sm:py-[74px]">
-            <div className="max-w-[672px]">
-              <h1 className="mb-4 flex flex-col text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
+        <div className="relative w-full bg-white">
+          <nav className="my-4 container" aria-label="Breadcrumb">
+            <ol className="flex flex-wrap items-center gap-x-2">
+              <li className="flex items-center">
+                <Link href="/" className="link-primary">
+                  <span>Home</span>
+                </Link>
+                <span className="mx-2 text-[#767676]">/</span>
+              </li>
+              <li className="flex items-center">
                 <span>Food & Dining</span>
-              </h1>
-              <p className="text-sm sm:text-base">{heroDescription}</p>
+              </li>
+            </ol>
+          </nav>
+          <div className="container relative py-8 sm:py-12">
+            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
+              {/* Category Icon - Square with rounded border */}
+                  <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
+                <SafeImage
+                  src={IMAGES.categories[9]}
+                  alt="Food & Dining"
+                  className="w-[50%] object-contain p-2"
+                />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h1 className="mb-2 ext-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
+                  <span className="flex items-center gap-2 flex-wrap">
+                    Food & Dining
+                  </span>
+                </h1>
+                <p className="text-sm sm:text-base">{heroDescription}</p>
+              </div>
             </div>
           </div>
         </div>
 
         <div className="container pt-8">
-          <div role="tablist" aria-label="Brand status tabs" className="flex flex-wrap items-center gap-4 border-b border-[#ededed]">
+          <div role="tablist" aria-label="Brand status tabs" className="flex flex-wrap items-center gap-4">
             {tabs.map((tab) => {
               const isActive = activeTab === tab.id
+              const isVerified = tab.id === 'claimed'
               return (
                 <button
                   key={tab.id}
@@ -126,17 +138,23 @@ function FoodAndDiningContent() {
                     // Reset to page 1 when switching tabs
                     router.push(`/categories/food-and-dining?status=${nextStatus}`)
                   }}
-                  className={`relative -mb-px flex items-center gap-2 px-2 pb-3 text-sm font-semibold transition-colors ${
-                    isActive ? 'text-[#1c1d20]' : 'text-[#5b5d60] hover:text-[#1c1d20]'
+                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
+                    isActive
+                      ? 'bg-[#f5f5f5] text-[#1c1d20]'
+                      : 'text-[#767676] hover:text-[#1c1d20]'
                   }`}
                 >
                   <SafeImage
                     alt=""
-                    className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-60'}`}
+                    className="h-4 w-4"
                     src={tab.icon}
+                    style={{
+                      filter: isActive
+                        ? 'brightness(0) saturate(100%) invert(11%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(95%)'
+                        : 'brightness(0) saturate(100%) invert(46%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(95%)',
+                    }}
                   />
                   <span>{tab.label}</span>
-                  {isActive && <span className="absolute left-0 right-0 bottom-0 h-[2px] bg-[#5a58f2]" />}
                 </button>
               )
             })}
@@ -205,6 +223,36 @@ function FoodAndDiningContent() {
             {pageItems.map((brand) => {
               const brandUrl = getBrandPageUrl(brand)
               const isClickable = brandUrl !== null
+              
+              // Get location count for the brand
+              let locationCount = 0
+              if (brandUrl) {
+                // Extract slug from URL (format: /categories/food-and-dining/taco-bell)
+                const urlParts = brandUrl.split('/')
+                const slug = urlParts[urlParts.length - 1]
+                if (slug) {
+                  const brandData = getBrandBySlug(slug)
+                  if (brandData) {
+                    locationCount = countBrandLocations(brandData)
+                    // Multiply by 1000 to show in thousands for Taco Bell and Baskin-Robbins only
+                    if (slug === 'taco-bell' || slug === 'baskin-robbins') {
+                      locationCount = locationCount * 1000
+                    }
+                  }
+                }
+              }
+              
+              // Generate a random number for non-clickable brands or brands without location data
+              if (locationCount === 0) {
+                // Use brand name as seed for consistent random number per brand
+                let hash = 0
+                for (let i = 0; i < brand.length; i++) {
+                  hash = ((hash << 5) - hash) + brand.charCodeAt(i)
+                  hash = hash & hash // Convert to 32bit integer
+                }
+                // Generate number between 10 and 5000
+                locationCount = Math.abs(hash % 4990) + 10
+              }
 
               return (
                 <li key={brand} className="mb-6">
@@ -213,7 +261,9 @@ function FoodAndDiningContent() {
                       {brand}
                     </Link>
                   ) : (
-                    <span className="text-[#5A58F2] font-medium cursor-default pointer-events-none">{brand}</span>
+                    <span className="text-[#5A58F2] font-medium cursor-default pointer-events-none">
+                      {brand}
+                    </span>
                   )}
                 </li>
               )

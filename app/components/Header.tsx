@@ -57,7 +57,7 @@ export function Header() {
               {/* Desktop link on right */}
               <div className="flex items-center justify-center">
                 <CustomLink href="#" className="font-medium leading-[24px] text-sm sm:text-[16px] text-center">
-                  ABCD for Businesses
+                  Yext for Businesses
                 </CustomLink>
               </div>
         </div>
@@ -80,7 +80,7 @@ export function Header() {
             </div>
                 <div className="p-4">
                   <CustomLink href="#" className="block py-3 font-medium text-base text-black">
-                    ABCD for Businesses
+                    Yext for Businesses
                   </CustomLink>
                 </div>
           </div>

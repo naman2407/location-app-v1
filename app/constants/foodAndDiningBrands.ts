@@ -133,8 +133,17 @@ export function isClaimedFoodBrand(brandName: string): boolean {
     "morton's the steakhouse",
   ]
   
+  // Always unclaimed brands
+  const alwaysUnclaimed = [
+    'baskin-robbins',
+  ]
+  
   if (alwaysClaimed.includes(normalized)) {
     return true
+  }
+  
+  if (alwaysUnclaimed.includes(normalized)) {
+    return false
   }
   
   // Use hash-based logic for other brands to create a mix

@@ -35,13 +35,13 @@ export function CategoryCard({ category, href }: CategoryCardProps) {
     </>
   )
 
-  const cardClasses = "card-border-normal flex flex-col gap-[12px] items-center justify-center overflow-hidden p-4 sm:p-6 md:p-[40px] relative rounded-[8px] h-[172px] transition-all duration-200 group cursor-pointer min-w-0 w-full"
+  const cardClasses = "card-border-normal flex flex-col gap-[12px] items-center justify-center overflow-hidden p-4 sm:p-6 md:p-[40px] relative rounded-xl h-[172px] transition-all duration-200 group cursor-pointer min-w-0 w-full"
 
   if (href) {
     return (
       <Link href={href} className={cardClasses}>
         {content}
-      </Link>
+    </Link>
     )
   }
 
