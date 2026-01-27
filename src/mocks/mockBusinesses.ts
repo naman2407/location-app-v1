@@ -380,6 +380,32 @@ export const mockBusinesses: Business[] = [
   // Taco Bell locations linked from brand pages
   // New York locations
   createBusinessFromSearchResult(
+    'taco-bell-200-w-34th-st',
+    'Taco Bell',
+    '200 W 34th St, New York, NY 10001',
+    4.2,
+    862,
+    true,
+    'Open now · Closes 1:00 AM',
+    '(212) 555-0123',
+    '10:00 AM - 1:00 AM',
+    'New York',
+    true
+  ),
+  createBusinessFromSearchResult(
+    'taco-bell-81-delancey-st',
+    'Taco Bell',
+    '81 Delancey St, New York, NY 10002',
+    4.5,
+    523,
+    true,
+    'Open now · Closes 12:00 AM',
+    '(212) 555-0124',
+    '9:00 AM - 12:00 AM',
+    'New York',
+    true
+  ),
+  createBusinessFromSearchResult(
     'taco-bell-go-express-200-w-34th-st',
     'Taco Bell Go Express',
     '200 W 34th St, New York, NY 10001',
@@ -458,6 +484,19 @@ export const mockBusinesses: Business[] = [
     true
   ),
   // Albany location
+  createBusinessFromSearchResult(
+    'taco-bell-albany-main-st',
+    'Taco Bell',
+    '123 Main St, Albany, NY 12201',
+    4.2,
+    234,
+    true,
+    'Open now · Closes 11:00 PM',
+    '(518) 555-0123',
+    '10:00 AM - 11:00 PM',
+    'Albany',
+    true
+  ),
   createBusinessFromSearchResult(
     'taco-bell-go-express-albany-main-st',
     'Taco Bell Go Express',

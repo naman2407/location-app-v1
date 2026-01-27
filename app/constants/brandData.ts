@@ -126,6 +126,7 @@ export const tacoBellData: Brand = {
               name: 'Taco Bell',
               address: '123 Main St, Albany, NY 12201',
               slug: 'taco-bell-albany-main-st',
+              phone: '(518) 555-0123',
               claimed: true,
               rating: 4.2,
               reviewCount: 234,
