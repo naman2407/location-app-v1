@@ -54,7 +54,7 @@ export function BrandHeader({ showSearch = true, fullWidth = false }: BrandHeade
         </div>
 
         {/* Desktop: Original layout */}
-        <div className={`hidden md:flex relative h-[96px] items-center justify-between gap-x-4 ${fullWidth ? 'w-full px-4 sm:px-8 lg:px-8 xl:px-[150px] max-w-[1440px] mx-auto' : 'container'}`}>
+        <div className={`hidden md:flex relative h-[96px] items-center justify-between gap-x-4 ${fullWidth ? 'w-full px-4 sm:px-8 lg:px-8 xl:px-[150px] max-w-[1500px] mx-auto' : 'container'}`}>
               <div className="absolute left-1/2 -translate-x-1/2 sm:static sm:transform-none">
                 <Link href="/" aria-label="Home">
                   <SafeImage alt="Logo" className="h-[28px] w-[28px] sm:h-12 sm:w-12" src={IMAGES.logo} />

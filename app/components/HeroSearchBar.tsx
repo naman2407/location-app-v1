@@ -41,24 +41,16 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
     return filterBrands(query).slice(0, 3) // Max 3 brand suggestions
   }, [query])
 
+  // Locations are not shown in dropdown - only brands
   const filteredLocations = React.useMemo(() => {
-    if (!query.trim()) return []
-    // Only include locations that have business pages
-    const allLocations = filterLocations(query)
-    return allLocations
-      .filter(location => {
-        if (!location.address) return false
-        const businessUrl = getBusinessPageUrl(location.address)
-        return businessUrl !== null
-      })
-      .slice(0, 3) // Exactly 3 location suggestions
-  }, [query])
+    return [] // No locations in dropdown
+  }, [])
 
-  // Combine suggestions: brands first, then locations
+  // Combine suggestions: only brands, no locations
   const suggestions = React.useMemo(() => {
     const result: Suggestion[] = []
     
-    // Add brand suggestions
+    // Add brand suggestions only
     filteredBrands.forEach(brand => {
       result.push({
         type: 'brand',
@@ -68,18 +60,8 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
       })
     })
     
-    // Add location suggestions
-    filteredLocations.forEach(location => {
-      result.push({
-        type: 'location',
-        id: location.id,
-        brandName: location.brandName,
-        address: location.address,
-      })
-    })
-    
     return result
-  }, [filteredBrands, filteredLocations])
+  }, [filteredBrands])
 
   // Click outside handler
   useEffect(() => {
@@ -262,7 +244,6 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
 
   const hasSuggestions = suggestions.length > 0
   const showBrands = filteredBrands.length > 0
-  const showLocations = filteredLocations.length > 0
   const hasQuery = query.trim().length > 0
 
   // Mobile header icon variant
@@ -308,7 +289,7 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
           onFocus={handleInputFocus}
           onBlur={handleInputBlur}
           onKeyDown={handleKeyDown}
-          placeholder={variant === 'overlay' ? "Search brands or locations" : "Search brands or locations"}
+          placeholder={variant === 'overlay' ? "Search brands" : "Search brands"}
           className={`flex-1 outline-none text-sm text-[#222222] placeholder:text-[#717171] bg-transparent w-full font-normal border-0 p-0 m-0 appearance-none search-input-reset ${inputPadding}`}
           aria-expanded={showDropdown}
             aria-autocomplete="list"
@@ -422,57 +403,7 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
                     </div>
                 </div>
               )
-            })}
-              
-              {/* Divider between brands and locations */}
-              {showLocations && (
-                <div className="h-px bg-[#ebebeb] w-full" />
-              )}
-            </>
-          )}
-
-          {/* Location Suggestions */}
-          {showLocations && (
-            <>
-              {filteredLocations.map((location, index) => {
-                const suggestionIndex = filteredBrands.length + index
-                const isHighlighted = highlightedIndex === suggestionIndex
-                return (
-                  <div
-                    key={location.id}
-                    id={`suggestion-${suggestionIndex}`}
-                    role="option"
-                    aria-selected={isHighlighted}
-                    onClick={() => selectSuggestion({
-                      type: 'location',
-                      id: location.id,
-                      brandName: location.brandName,
-                      address: location.address,
-                    })}
-                    className={`flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors ${
-                      isHighlighted ? 'bg-[#F6F6F6]' : 'hover:bg-[#F6F6F6]'
-                    } ${index < filteredLocations.length - 1 ? 'border-b border-[#ebebeb]' : ''}`}
-                  >
-                    {/* Location Icon */}
-                    <div className="w-5 h-5 flex-shrink-0 flex items-center justify-center">
-                      <SafeImage 
-                        alt="Location" 
-                        className="w-5 h-5" 
-                        src={IMAGES.location} 
-                      />
-                    </div>
-                    {/* Brand Name and Address */}
-                    <div className="flex-1 min-w-0">
-                      <span className="text-sm text-[#000000] font-normal block">
-                        {location.brandName}
-                      </span>
-                      <span className="text-sm text-[#5C5D60] font-normal block">
-                        {location.address}
-                      </span>
-          </div>
-                </div>
-              )
-            })}
+              })}
             </>
           )}
           </div>

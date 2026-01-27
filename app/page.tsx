@@ -15,7 +15,7 @@ export default function Home() {
         <Hero />
         
         {/* Main Content */}
-        <div className="flex flex-col gap-12 sm:gap-16 md:gap-[100px] items-center pb-12 sm:pb-16 md:pb-[100px] pt-8 sm:pt-12 md:pt-[60px] px-4 sm:px-8 lg:px-8 xl:px-[150px] relative w-full max-w-[1440px] mx-auto">
+        <div className="flex flex-col gap-12 sm:gap-16 md:gap-[100px] items-center pb-12 sm:pb-16 md:pb-[100px] pt-8 sm:pt-12 md:pt-[60px] px-4 sm:px-8 lg:px-8 xl:px-[150px] relative w-full max-w-[1500px] mx-auto">
           <BrandsSection />
           <CategoriesSection />
           <VerifiedSection />

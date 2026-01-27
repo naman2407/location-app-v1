@@ -1,9 +1,11 @@
 'use client'
 
+import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { BrandHeader } from '../../../components/BrandHeader'
 import { Footer } from '../../../components/Footer'
+import { VerifiedBusinessBanner } from '../../../components/VerifiedBusinessBanner'
 import { SafeImage } from '../../../components/SafeImage'
 import { IMAGES } from '../../../constants/images'
 import { getBrandBySlug, countBrandLocations, countStateLocations, countCityLocations } from '../../../constants/brandData'
@@ -12,9 +14,12 @@ interface PageProps {
   params: { brandSlug: string }
 }
 
+type TabType = 'united-states' | 'canada'
+
 export default function BrandTopLevelPage({ params }: PageProps) {
   const router = useRouter()
   const brand = getBrandBySlug(params.brandSlug)
+  const [activeTab, setActiveTab] = useState<TabType>('united-states')
 
   if (!brand) {
     router.push('/search?q=' + encodeURIComponent(params.brandSlug))
@@ -35,179 +40,216 @@ export default function BrandTopLevelPage({ params }: PageProps) {
     <div className="bg-white min-h-screen w-full flex flex-col">
       <BrandHeader />
 
-      <div className="pb-4 flex-1 flex flex-col">
-        <div className="relative w-full bg-white">
-          <nav className="my-4 container" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap">
-              {breadcrumbs.map((crumb, index) => (
-                <li key={crumb.label}>
-                  {index < breadcrumbs.length - 1 ? (
-                    <>
-                      <Link href={crumb.href} className="link-primary">
-                        <span>{crumb.label}</span>
-                      </Link>
-                      <span className="mx-2 text-[#767676]">/</span>
-                    </>
-                  ) : (
-                    <span>{crumb.label}</span>
-                  )}
-                </li>
-              ))}
-            </ol>
-          </nav>
-          <div className="container relative py-8 sm:py-12">
-            {/* Badge - Mobile: above image, Desktop: in content area */}
-            <div className="mb-4 sm:mb-0 sm:hidden">
-              {brand.claimed && (
-                <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0">
-                  <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
-                  Brand-Verified Information
-                </span>
-              )}
-              {!brand.claimed && (
-                <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0">
-                  <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
-                  Publicly Sourced Information
-                </span>
-              )}
-            </div>
-            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-              {/* Brand Image - Square with rounded border */}
-              <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
-                <SafeImage 
-                  alt={`${brand.name} logo`} 
-                  className="w-full h-full object-contain p-2" 
-                  src={
-                    brand.slug === 'taco-bell' 
-                      ? IMAGES.brands.tacoBell 
-                      : brand.slug === 'baskin-robbins'
-                      ? IMAGES.brands.baskinRobbins
-                      : IMAGES.brands.all
-                  } 
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                {/* Badge - Desktop only */}
-                <div className="hidden sm:block mb-2">
-                  {brand.claimed && (
-                    <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0">
-                      <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
-                      Brand-Verified Information
-                    </span>
-                  )}
-                  {!brand.claimed && (
-                    <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0">
-                      <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
-                      Publicly Sourced Information
-                    </span>
-                  )}
-                </div>
-                <h1 className="mb-2 text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
-                  <span className="flex items-center gap-2 flex-wrap">
-                    {brand.name}
-                  </span>
-                </h1>
-                <p className="text-sm sm:text-base">{description}</p>
-              </div>
-            </div>
+      <div className="flex-1 flex flex-col">
+        <div className="relative w-full bg-[#FAFCFE]">
+          <div className="container py-8 sm:py-12">
+            {/* Breadcrumbs */}
+            <nav aria-label="Breadcrumb" className="mb-6">
+              <ol className="flex flex-wrap items-center gap-x-2">
+                {breadcrumbs.map((crumb, index) => (
+                  <li key={crumb.label} className="flex items-center">
+                    {index < breadcrumbs.length - 1 ? (
+                      <>
+                        <Link href={crumb.href} className={`link-primary font-normal ${index === 0 ? 'flex items-center gap-1.5' : ''}`}>
+                          {index === 0 && <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />}
+                          <span>{crumb.label}</span>
+                        </Link>
+                        <span className="mx-2 text-[#DADCE0]">/</span>
+                      </>
+                    ) : (
+                      <span className="font-medium">{crumb.label}</span>
+                    )}
+                  </li>
+                ))}
+              </ol>
+            </nav>
 
-            {/* Unclaimed Brand Banner - Below title, description, and image */}
-            {!brand.claimed && (
-              <div className="mt-6 w-full">
-                <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-                  <div className="flex-1 grid sm:flex items-start gap-4">
+            {/* Hero Content - Horizontal Layout */}
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-center">
+              {/* Left side: Icon, Title, Badge, Description */}
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                  {/* Brand Image - Square with rounded border */}
+                  <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
                     <SafeImage 
-                      alt="TX3Y logo" 
-                      src={IMAGES.logo} 
-                      className="h-full shrink-0"
+                      alt={`${brand.name} logo`} 
+                      className="w-full h-full object-contain p-2" 
+                      src={
+                        brand.slug === 'taco-bell' 
+                          ? IMAGES.brands.tacoBell 
+                          : brand.slug === 'baskin-robbins'
+                          ? IMAGES.brands.baskinRobbins
+                          : IMAGES.brands.all
+                      } 
                     />
-                    <div>
-                      <h2 className="text-xl font-semibold text-[#4a48e0] mb-1">
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {/* Title with icon inline */}
+                    <h1 className="text-[32px] sm:text-[40px] leading-[1.1] font-semibold text-[#1c1d20] mb-3">
+                      {brand.name}
+                      {brand.claimed && (
+                        <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-6 h-6 inline-block align-middle ml-2" />
+                      )}
+                      {!brand.claimed && (
+                        <SafeImage 
+                          alt="Warning" 
+                          src={IMAGES.warning_icon} 
+                          className="w-6 h-6 inline-block align-middle ml-2"
+                        />
+                      )}
+                    </h1>
+                    {/* Badge without icon below title */}
+                    <div className="mb-3">
+                      {brand.claimed && (
+                        <span className="inline-flex w-fit px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1]">
+                          Brand-Verified Information
+                        </span>
+                      )}
+                      {!brand.claimed && (
+                        <span className="inline-flex w-fit px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39]">
+                          Publicly Sourced Information
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-base text-[#1c1d20] leading-relaxed">{description}</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right side: Banner (only for publicly sourced brands) */}
+              {!brand.claimed && (
+                <div className="lg:w-[420px] xl:w-[480px] shrink-0">
+                    <div className="bg-[#F2F2FA] rounded-2xl p-5 lg:p-6 flex flex-col gap-5">
+                      <h2 className="text-xl font-semibold text-[#5A58F2]">
                         The Advantage of Brand-Verified Information
                       </h2>
-                        <div>
-                          <p className="text-base text-gray-700">
-                            Brands that manage certified business facts through TX3Y see up to <span className="font-semibold">30% more traffic</span> compared to pages without brand-verified information.
+                      <div className="flex flex-col gap-3">
+                        <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
+                          <SafeImage
+                            src={IMAGES.check}
+                            alt=""
+                            className="w-5 h-5 shrink-0 mt-0.5"
+                          />
+                          <p className="leading-relaxed">
+                            Brands that manage certified business facts through TX3Y see up to 30% more traffic compared to pages without brand-verified information.
                           </p>
-                          <p className="text-sm text-[#5b5d60] italic mt-2">See how other brands do this at scale → <a href="https://www.yext.com/customers" target="_blank" rel="noopener noreferrer" className="link-primary">Customer stories</a></p>
                         </div>
+                        <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
+                          <SafeImage
+                            src={IMAGES.arrow}
+                            alt=""
+                            className="w-5 h-5 shrink-0 mt-0.5"
+                          />
+                          <a
+                            href="https://www.yext.com/customers"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-[#1c1d20] underline hover:no-underline leading-relaxed"
+                          >
+                            Discover how other brands do this at scale
+                          </a>
+                        </div>
+                      </div>
+                      <a
+                        href="https://www.yext.com/demo"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-6 py-3 rounded-full transition-colors w-fit mt-1 text-center"
+                      >
+                        Claim your competitive edge
+                      </a>
                     </div>
-                  </div>
-                  <a
-                    href="https://www.yext.com/demo"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0"
-                  >
-                    Get in touch
-                  </a>
                 </div>
-              </div>
-            )}
+              )}
+              {/* Empty space for verified brands to maintain 50/50 split */}
+              {brand.claimed && (
+                <div className="lg:w-[420px] xl:w-[480px] shrink-0"></div>
+              )}
+            </div>
           </div>
         </div>
 
         <div className="container pt-8 pb-12 sm:pb-[100px]">
-          <p className="text-base mb-6">
-            Explore verified locations by state:
-          </p>
-          <ul className="block columns-1 sm:columns-2 lg:columns-4">
-            {brand.states.map((state) => {
-              const isClickable = state.slug === 'new-york'
-              // Always use actual count for Taco Bell and Baskin-Robbins
-              // For other brands, use actual count if available, otherwise generate random
-              let locationCount = countStateLocations(state)
-              
-              // For non-clickable states with 0 locations, calculate from cities
-              // This ensures the state total equals the sum of city totals
-              if (!isClickable && locationCount === 0 && state.cities.length > 0) {
-                // Sum up city counts (cities will generate their own random numbers)
-                locationCount = state.cities.reduce((sum, city) => {
-                  const cityCount = countCityLocations(city)
-                  if (cityCount === 0) {
-                    // Generate consistent random number for city
-                    let hash = 0
-                    for (let i = 0; i < city.name.length; i++) {
-                      hash = ((hash << 5) - hash) + city.name.charCodeAt(i)
-                      hash = hash & hash
+          {/* Tabs - only show if canadianProvinces exist */}
+          {brand.canadianProvinces && brand.canadianProvinces.length > 0 && (
+            <div className="flex justify-start md:justify-center gap-2 mb-8">
+              <button
+                onClick={() => setActiveTab('united-states')}
+                className={`px-6 py-2.5 rounded-full font-medium transition-colors ${
+                  activeTab === 'united-states'
+                    ? 'bg-[#1c1d20] text-white'
+                    : 'bg-white text-[#1c1d20] border border-[#e0e0e0] hover:border-[#1c1d20]'
+                }`}
+              >
+                United States
+              </button>
+              <button
+                onClick={() => setActiveTab('canada')}
+                className={`px-6 py-2.5 rounded-full font-medium transition-colors ${
+                  activeTab === 'canada'
+                    ? 'bg-[#1c1d20] text-white'
+                    : 'bg-white text-[#1c1d20] border border-[#e0e0e0] hover:border-[#1c1d20]'
+                }`}
+              >
+                Canada
+              </button>
+            </div>
+          )}
+
+          {/* Title */}
+          <h2 className="text-lg font-medium text-[#1c1d20] mb-6">
+            {activeTab === 'united-states' ? 'United States' : 'Canada'}
+          </h2>
+
+          {/* States Grid */}
+          {(() => {
+            const states = activeTab === 'united-states' ? brand.states : (brand.canadianProvinces || [])
+            // Sort states alphabetically
+            const sortedStates = [...states].sort((a, b) => a.name.localeCompare(b.name))
+            
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+                {sortedStates.map((state, index) => {
+                  const isClickable = activeTab === 'united-states' && state.slug === 'new-york'
+                  const href = isClickable ? `/categories/food-and-dining/${brand.slug}/${state.slug}` : '#'
+                  const CardWrapper = isClickable ? Link : 'div'
+                  
+                  // Center align logic for last row
+                  const isLastCard = index === sortedStates.length - 1
+                  const lgRemainder = sortedStates.length % 5
+                  const mdRemainder = sortedStates.length % 4
+                  
+                  let centerClasses = ''
+                  if (isLastCard) {
+                    // For lg (5 columns): center if only 1 card in last row
+                    if (lgRemainder === 1) {
+                      centerClasses += ' lg:col-start-3'
                     }
-                    return sum + (Math.abs(hash % 190) + 10)
+                    // For md (4 columns): center if only 1 card in last row
+                    if (mdRemainder === 1) {
+                      centerClasses += ' md:col-start-2'
+                    }
                   }
-                  return sum + cityCount
-                }, 0)
-              } else if (!isClickable && locationCount === 0) {
-                // Fallback: generate random number if no cities
-                let hash = 0
-                for (let i = 0; i < state.name.length; i++) {
-                  hash = ((hash << 5) - hash) + state.name.charCodeAt(i)
-                  hash = hash & hash
-                }
-                locationCount = Math.abs(hash % 450) + 50
-              }
-              
-              // Multiply by 1000 to show in thousands for Taco Bell and Baskin-Robbins only
-              if (brand.slug === 'taco-bell' || brand.slug === 'baskin-robbins') {
-                locationCount = locationCount * 1000
-              }
-              
-              return (
-                <li key={state.slug} className="mb-6">
-                  {isClickable ? (
-                    <Link href={`/categories/food-and-dining/${brand.slug}/${state.slug}`} className="link-primary">
-                      {state.name}
-                    </Link>
-                  ) : (
-                    <span className="text-[#5A58F2] font-medium cursor-default pointer-events-none">
-                      {state.name}
-                    </span>
-                  )}
-                </li>
-              )
-            })}
-          </ul>
+
+                  return (
+                    <CardWrapper
+                      key={state.slug}
+                      href={href}
+                      className={`card-border-normal bg-white p-6 flex items-center justify-center text-center min-h-[100px] ${
+                        isClickable ? 'cursor-pointer' : 'cursor-default'
+                      }${centerClasses}`}
+                    >
+                      <span className="text-[#1c1d20] font-medium">{state.name}</span>
+                    </CardWrapper>
+                  )
+                })}
+              </div>
+            )
+          })()}
         </div>
       </div>
 
+      <VerifiedBusinessBanner />
       <Footer />
     </div>
   )

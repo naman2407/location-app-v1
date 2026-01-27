@@ -4,7 +4,7 @@ import { brands } from '../constants/data'
 
 export function BrandsSection() {
   return (
-    <div className="flex flex-col gap-6 sm:gap-8 md:gap-[32px] items-center relative w-full max-w-[1440px] mx-auto">
+    <div className="flex flex-col gap-6 sm:gap-8 md:gap-[32px] items-center relative w-full max-w-[1500px] mx-auto">
       <div className="flex flex-col gap-[8px] items-center leading-[1.5] relative w-full">
         <p className="font-semibold text-center relative shrink-0 text-2xl sm:text-3xl md:text-[32px] text-black">
           Brands

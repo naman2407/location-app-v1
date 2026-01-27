@@ -37,7 +37,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
     const locationInfo = findLocationBySlug(business.slug)
     
     if (locationInfo) {
-      const { brand, state, city } = locationInfo
+      const { brand, state, city, relatedBusiness } = locationInfo
       
       // Add category
       const categorySlug = brand.category === 'Food & Dining' ? 'food-and-dining' : brand.category.toLowerCase().replace(/\s+/g, '-')
@@ -58,11 +58,19 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
         href: `/categories/${categorySlug}/${brand.slug}/${state.slug}` 
       })
       
-      // Add city
-      crumbs.push({ 
-        label: city.name, 
-        href: `/categories/${categorySlug}/${brand.slug}/${state.slug}/${city.slug}` 
-      })
+      // If it's a related business, add related business filter to URL
+      if (relatedBusiness) {
+        crumbs.push({ 
+          label: city.name, 
+          href: `/categories/${categorySlug}/${brand.slug}/${state.slug}?city=${city.slug}&relatedBusiness=${relatedBusiness.slug}` 
+        })
+      } else {
+        // Add city (links to state page with city filter applied)
+        crumbs.push({ 
+          label: city.name, 
+          href: `/categories/${categorySlug}/${brand.slug}/${state.slug}?city=${city.slug}` 
+        })
+      }
     } else {
       // Fallback to old breadcrumb logic for businesses not in brand data
       let primaryCategory = categories[0] || 'Food & Dining'
@@ -112,22 +120,27 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
   const detailsToShow = showMoreDetails ? [...primaryDetails, ...moreDetails] : primaryDetails
 
   return (
-    <div className="biz-page w-full">
-      <div className="w-full px-4 sm:px-8 lg:px-8 xl:px-[150px] pb-6 lg:pb-8 flex-1 flex flex-col max-w-[1440px] mx-auto min-h-0">
-        <nav className="breadcrumb-container flex flex-wrap items-center gap-x-2 my-4 px-4 sm:px-0 sm:-ml-8 lg:-ml-8 xl:-ml-[150px]" aria-label="Breadcrumb">
-          {breadcrumbs.map((crumb, index) => (
-            <span key={index} className="flex items-center">
-              {index > 0 && <span className="breadcrumb-separator mx-2 text-[#767676]">/</span>}
-              {index === breadcrumbs.length - 1 ? (
-                <span className="breadcrumb-current">{crumb.label}</span>
-              ) : (
-                <Link href={crumb.href} className="link-primary">
-                  {crumb.label}
-                </Link>
-              )}
-            </span>
-          ))}
-        </nav>
+    <div className="bg-white min-h-screen w-full flex flex-col">
+      <div className="flex-1 flex flex-col">
+        <div className="relative w-full bg-white">
+          <div className="container py-8 sm:py-12">
+            <nav aria-label="Breadcrumb" className="mb-6">
+              <div className="flex flex-wrap items-center gap-x-2">
+              {breadcrumbs.map((crumb, index) => (
+                <span key={index} className="flex items-center">
+                  {index > 0 && <span className="mx-2 text-[#DADCE0]">/</span>}
+                  {index === breadcrumbs.length - 1 ? (
+                    <span className="font-medium">{crumb.label}</span>
+                  ) : (
+                    <Link href={crumb.href} className={`link-primary font-normal ${index === 0 ? 'flex items-center gap-1.5' : ''}`}>
+                      {index === 0 && <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />}
+                      {crumb.label}
+                    </Link>
+                  )}
+                </span>
+              ))}
+              </div>
+            </nav>
 
       <div>
         <SafeImage
@@ -189,19 +202,25 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
               </div>
             )}
             {business.claimed && (
-                <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0 mb-2">
-                  <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
+                <span className="inline-flex w-fit items-center px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0 mb-2">
                   Brand-Verified Information
                 </span>
             )}
             {!business.claimed && (
-              <span className="inline-flex w-fit items-center gap-2 px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0 mb-2">
-                <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
+              <span className="inline-flex w-fit items-center px-2.5 py-1 rounded-[6px] text-sm font-medium bg-[#FFCD39] shrink-0">
                 Publicly Sourced Information
               </span>
             )}
             <div className="flex items-center gap-3 flex-wrap">
-              <h1 className="heading heading-lead">{business.name}</h1>
+              <h1 className="heading heading-lead inline-block">
+                {business.name}
+                {business.claimed && (
+                  <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-6 h-6 inline-block align-middle ml-2" />
+                )}
+                {!business.claimed && (
+                  <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-6 h-6 inline-block align-middle ml-2" />
+                )}
+              </h1>
             </div>
             <div className="biz-rating">
               <span className="biz-rating-score">{business.rating.toFixed(1)}</span>
@@ -344,7 +363,7 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
           </section>
         </div>
 
-        <div className="biz-hours-col">
+        <div className={`biz-hours-col ${business.claimed ? 'biz-hours-col-right-align' : ''}`}>
           {business.claimed ? (
             <div className="biz-hero-banner biz-hero-banner-desktop biz-hero-banner-spacer" aria-hidden="true">
               <div className="biz-claim-banner">
@@ -472,6 +491,8 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
         <FaqAccordion faqs={business.faqs} businessName={business.name} />
       </div>
        )}
+          </div>
+        </div>
       </div>
     </div>
 

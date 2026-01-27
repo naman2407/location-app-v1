@@ -3,7 +3,7 @@ import { IMAGES } from '../constants/images'
 
 export function VerifiedSection() {
   return (
-    <div className="flex gap-8 sm:gap-12 md:gap-[80px] items-center relative w-full flex-col lg:flex-row px-4 sm:px-0 max-w-[1440px] mx-auto">
+    <div className="flex gap-8 sm:gap-12 md:gap-[80px] items-center relative w-full flex-col lg:flex-row max-w-[1500px] mx-auto">
       <div className="h-[220px] sm:h-[270px] md:h-[300px] relative shrink-0 w-full lg:w-[380px]">
         <SafeImage alt="Verified Business Information" className="block max-w-none w-full h-full object-contain" src={IMAGES.emptyDone} />
       </div>

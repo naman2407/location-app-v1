@@ -1,103 +1,93 @@
 'use client'
 
-import { Suspense, useMemo, useRef, useEffect } from 'react'
+import { Suspense, useMemo, useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { SafeImage } from '../components/SafeImage'
 import { IMAGES } from '../constants/images'
 import { Footer } from '../components/Footer'
+import { VerifiedBusinessBanner } from '../components/VerifiedBusinessBanner'
 import { BrandHeader } from '../components/BrandHeader'
 import Link from 'next/link'
-import { brands, locations, filterBrands, filterLocations } from '../constants/searchData'
-import { getBrandPageUrl, getBusinessPageUrl } from '../constants/brandNavigation'
+import { brands, filterBrands } from '../constants/searchData'
+import { getBrandPageUrl } from '../constants/brandNavigation'
+import { BrandCard } from '../components/BrandCard'
+import { brandNameToCardData } from '../utils/brandCardData'
+import { PageSizeDropdown } from '../components/PageSizeDropdown'
+
+const DEFAULT_PAGE_SIZE = 20
+const PAGE_SIZE_OPTIONS = [20, 40, 60, 80]
 
 function SearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const searchTerm = searchParams?.get('q') || ''
-  const statusParam = searchParams?.get('status')
-  const activeTab = statusParam === 'unclaimed' ? 'unclaimed' : 'claimed'
-  const scrollPositionRef = useRef<number>(0)
+  const pageParam = Number(searchParams?.get('page') || '1')
+  const pageSizeParam = Number(searchParams?.get('pageSize') || DEFAULT_PAGE_SIZE)
+  const [pageSize, setPageSize] = useState(pageSizeParam)
 
-  const tabs = useMemo(
-    () => [
-      {
-        id: 'claimed' as const,
-        label: 'Brand-Verified',
-        icon: IMAGES.verified_icon,
-        description:
-          'Business information provided and managed by the brand through TX3Y, ensuring consistent, up-to-date details across locations and platforms.',
-      },
-      {
-        id: 'unclaimed' as const,
-        label: 'Publicly Sourced',
-        icon: IMAGES.warning_icon,
-        description: (
-          <>
-            Business profiles generated from publicly available sources, reflecting information aggregated across the web. Interested in verifying your brand with TX3Y?{' '}
-            <a
-              href="https://www.yext.com/demo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-primary"
-            >
-              Get in touch
-            </a>
-            .
-          </>
-        ),
-      },
-    ],
-    []
-  )
-
-  // Filter brands and locations based on search term
-  const allResults = useMemo(() => {
-    if (!searchTerm.trim()) return { brands: [], locations: [] }
-    
-    const filteredBrands = filterBrands(searchTerm)
-    const filteredLocations = filterLocations(searchTerm)
-    
-    return { brands: filteredBrands, locations: filteredLocations }
-  }, [searchTerm])
-
-  // Filter results by tab (claimed/unclaimed)
-  const filteredResults = useMemo(() => {
-    const { brands: allBrands, locations: allLocations } = allResults
-    
-    if (activeTab === 'claimed') {
-      return {
-        brands: allBrands.filter(b => b.claimed === true),
-        locations: allLocations.filter(loc => {
-          const brand = brands.find(b => b.name === loc.brandName)
-          return brand?.claimed === true
-        }),
-      }
-    } else {
-      return {
-        brands: allBrands.filter(b => b.claimed === false),
-        locations: allLocations.filter(loc => {
-          const brand = brands.find(b => b.name === loc.brandName)
-          return brand?.claimed === false
-        }),
-      }
-    }
-  }, [allResults, activeTab])
-
-  // Restore scroll position after tab change
+  // Responsive page size based on screen width
   useEffect(() => {
-    if (scrollPositionRef.current > 0) {
-      requestAnimationFrame(() => {
-        window.scrollTo(0, scrollPositionRef.current)
-        scrollPositionRef.current = 0
-      })
+    const updatePageSize = () => {
+      const width = window.innerWidth
+      let newSize = 20 // desktop default
+      
+      if (width < 768) {
+        // mobile
+        newSize = 10
+      } else if (width < 1024) {
+        // tablet
+        newSize = 18
+      }
+      
+      // Only update if not manually set via dropdown
+      if (!searchParams?.get('pageSize')) {
+        setPageSize(newSize)
+      }
     }
-  }, [activeTab])
+    
+    updatePageSize()
+    window.addEventListener('resize', updatePageSize)
+    return () => window.removeEventListener('resize', updatePageSize)
+  }, [searchParams])
 
-  const activeTabDescription = tabs.find((tab) => tab.id === activeTab)?.description ?? ''
-  const heroDescription = 'Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.'
-  
   // Check if search term contains "hardware" (case-insensitive)
   const isHardwareSearch = searchTerm.toLowerCase().includes('hardware')
+
+  // Filter brands based on search term and convert to card data
+  const brandCards = useMemo(() => {
+    if (!searchTerm.trim() || !isHardwareSearch) return []
+    
+    const filteredBrands = filterBrands(searchTerm)
+    // Convert to card data and sort alphabetically
+    const cardData = filteredBrands.map(b => brandNameToCardData(b.name, b.claimed))
+    return cardData.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+  }, [searchTerm, isHardwareSearch])
+
+  const totalPages = Math.max(1, Math.ceil(brandCards.length / pageSize))
+  const currentPage = Number.isFinite(pageParam) ? Math.min(Math.max(pageParam, 1), totalPages) : 1
+  const startIndex = (currentPage - 1) * pageSize
+  const pageItems = brandCards.slice(startIndex, startIndex + pageSize)
+
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize)
+    const params = new URLSearchParams()
+    params.set('q', searchTerm)
+    params.set('page', '1')
+    params.set('pageSize', newSize.toString())
+    router.push(`/search?${params.toString()}`)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams()
+    params.set('q', searchTerm)
+    params.set('page', newPage.toString())
+    if (pageSize !== DEFAULT_PAGE_SIZE) {
+      params.set('pageSize', pageSize.toString())
+    }
+    router.push(`/search?${params.toString()}`)
+  }
+
+  const heroDescription = 'Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.'
 
   // If not a hardware search, show simple empty results page
   if (!isHardwareSearch) {
@@ -105,7 +95,7 @@ function SearchContent() {
       <div className="bg-white min-h-screen w-full flex flex-col">
         <BrandHeader showSearch={true} />
 
-        <div className="pb-4 flex-1 flex flex-col">
+        <div className="flex-1 flex flex-col">
           {/* Breadcrumbs */}
           <nav className="my-4 container" aria-label="Breadcrumb">
             <ol className="flex flex-wrap">
@@ -157,165 +147,260 @@ function SearchContent() {
     <div className="bg-white min-h-screen w-full flex flex-col">
       <BrandHeader showSearch={true} />
 
-      <div className="pb-4 flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col">
         <div className="relative w-full bg-white">
-          <nav className="my-4 container" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2">
-              <li className="flex items-center">
-                <Link href="/" className="link-primary">
-                  <span>Home</span>
-                </Link>
-                <span className="mx-2 text-[#767676]">/</span>
-              </li>
-              <li className="flex items-center">
-                <span>Search Results</span>
-              </li>
-            </ol>
-          </nav>
-          <div className="container relative py-8 sm:py-12">
-            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-              {/* All Brands Icon - Square with rounded border */}
-              <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
-                <SafeImage
-                  src={IMAGES.all_brands}
-                  alt="All Brands"
-                  className="w-[50%] object-contain p-2"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h1 className="mb-2 text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
-                  <span className="flex items-center gap-2 flex-wrap">
-                    Search Results For {searchTerm ? `"${searchTerm}"` : ''}
-                  </span>
-                </h1>
-                <p className="text-sm sm:text-base">{heroDescription}</p>
-              </div>
-            </div>
+          <div className="container py-8 sm:py-12">
+              {/* Breadcrumbs */}
+              <nav aria-label="Breadcrumb" className="mb-6">
+                <ol className="flex flex-wrap items-center gap-x-2">
+                  <li className="flex items-center">
+                    <Link href="/" className="link-primary flex items-center gap-1.5 font-normal">
+                      <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />
+                      <span>Home</span>
+                    </Link>
+                    <span className="mx-2 text-[#DADCE0]">/</span>
+                  </li>
+                  <li className="flex items-center">
+                    <span className="font-medium">Search Results</span>
+                  </li>
+                </ol>
+              </nav>
 
-            {/* Banner - Below title, description, and image */}
-            <div className="mt-6 w-full">
-              <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-                <div className="flex-1 grid sm:flex items-start gap-4">
-                  <SafeImage 
-                    alt="TX3Y logo" 
-                    src={IMAGES.logo} 
-                    className="h-full shrink-0"
-                  />
-                  <div>
-                    <h2 className="text-xl font-semibold text-[#4a48e0] mb-1">
-                      The Advantage of Brand-Verified Information
-                    </h2>
-                    <div>
-                      <p className="text-base text-gray-700">
-                        Brands that manage certified business facts through TX3Y see up to <span className="font-semibold">30% more traffic</span> compared to pages without brand-verified information.
-                      </p>
-                      <p className="text-sm text-[#5b5d60] italic mt-2">See how other brands do this at scale → <a href="https://www.yext.com/customers" target="_blank" rel="noopener noreferrer" className="link-primary">Customer stories</a></p>
-                    </div>
+            {/* Hero Content - Horizontal Layout */}
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-center">
+              {/* Left side: Icon, Title, Description */}
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                  {/* All Brands Icon - Square with rounded border */}
+                  <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
+                    <SafeImage
+                      src={IMAGES.all_brands}
+                      alt="All Brands"
+                      className="w-[50%] object-contain p-2"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h1 className="mb-3 text-[32px] sm:text-[40px] leading-[1.1] font-semibold text-[#1c1d20]">
+                      Search Results For {searchTerm ? `"${searchTerm}"` : ''}
+                    </h1>
+                    <p className="text-base text-[#767676] leading-relaxed">
+                      Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.
+                    </p>
                   </div>
                 </div>
-                <a
-                  href="https://www.yext.com/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0"
-                >
-                  Get in touch
-                </a>
+              </div>
+
+              {/* Right side: Banner */}
+              <div className="lg:w-[420px] xl:w-[480px] shrink-0">
+                <div className="bg-[#F2F2FA] rounded-2xl p-5 lg:p-6 flex flex-col gap-5">
+                  <h2 className="text-xl font-semibold text-[#5A58F2]">
+                    The Advantage of Brand-Verified Information
+                  </h2>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
+                      <SafeImage
+                        src={IMAGES.check}
+                        alt=""
+                        className="w-5 h-5 shrink-0 mt-0.5"
+                      />
+                      <p className="leading-relaxed">
+                        Brands that manage certified business facts through TX3Y see up to 30% more traffic compared to pages without brand-verified information.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
+                      <SafeImage
+                        src={IMAGES.arrow}
+                        alt=""
+                        className="w-5 h-5 shrink-0 mt-0.5"
+                      />
+                      <a
+                        href="https://www.yext.com/customers"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1c1d20] underline hover:no-underline leading-relaxed"
+                      >
+                        Discover how other brands do this at scale
+                      </a>
+                    </div>
+                  </div>
+                  <a
+                    href="https://www.yext.com/demo"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-6 py-3 rounded-full transition-colors w-fit mt-1 text-center"
+                  >
+                    Claim your competitive edge
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="container pt-8">
-          <div role="tablist" aria-label="Brand status tabs" className="flex flex-wrap items-center gap-4">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id
-              return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => {
-                    scrollPositionRef.current = window.scrollY
-                    const nextStatus = tab.id === 'claimed' ? 'claimed' : 'unclaimed'
-                    const params = new URLSearchParams()
-                    params.set('q', searchTerm)
-                    params.set('status', nextStatus)
-                    router.push(`/search?${params.toString()}`)
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                    isActive
-                      ? 'bg-[#f5f5f5] text-[#1c1d20]'
-                      : 'text-[#767676] hover:text-[#1c1d20]'
-                  }`}
-                >
-                  <SafeImage
-                    alt=""
-                    className="h-4 w-4"
-                    src={tab.icon}
-                    style={{
-                      filter: isActive
-                        ? 'brightness(0) saturate(100%) invert(11%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(95%)'
-                        : 'brightness(0) saturate(100%) invert(46%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(95%)',
-                    }}
+        {/* Brand Cards Grid */}
+        <div className="container pt-8 pb-12 sm:pb-[100px]">
+          {brandCards.length > 0 ? (
+            <>
+              {/* Show dropdown - Top Right */}
+              <div className="flex justify-end mb-6">
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-[#767676]">Show</span>
+                  <PageSizeDropdown
+                    value={pageSize}
+                    options={PAGE_SIZE_OPTIONS}
+                    onChange={handlePageSizeChange}
                   />
-                  <span>{tab.label}</span>
-                </button>
-              )
-            })}
-          </div>
-
-          <p className="mt-4 text-sm sm:text-base max-w-[672px]">{activeTabDescription}</p>
-
-          {/* Results Section */}
-          <div className="mt-8">
-            {/* Brand-Verified Tab: Show no results */}
-            {activeTab === 'claimed' && (
-              <div className="flex flex-col items-center justify-center py-12">
-                <SafeImage alt="No results" className="mb-7" src={IMAGES.noResult} />
-                <h2 className="text-lg font-semibold text-center mb-2">
-                  No results found for "{searchTerm}"
-                </h2>
-                <p className="text-sm font-normal text-[#5C5D60] text-center mb-[28px]">
-                  Try adjusting your search, or contact our team for help adding or updating a business listing.
-                </p>
-                <a 
-                  href="https://www.yext.com/demo" 
-                  target="_blank" 
-                  rel="noopener noreferrer"
-                  className="my-2 px-[14px] py-2 bg-[#5A58F2] text-white text-base font-normal rounded-full hover:opacity-90 transition-opacity inline-block text-center"
-                >
-                  Get in touch
-                </a>
+                </div>
               </div>
-            )}
 
-            {/* Publicly Sourced Tab: Show hardware stores as links */}
-            {activeTab === 'unclaimed' && (
-              <div className="pt-8 pb-12 sm:pb-[100px]">
-                <ul className="block columns-1 sm:columns-2 lg:columns-4">
-                  {filteredResults.brands.map((brand) => {
-                    const brandUrl = getBrandPageUrl(brand.name)
-                    return (
-                      <li key={brand.id} className="mb-6">
-                        {brandUrl ? (
-                          <Link href={brandUrl} className="link-primary">
-                            {brand.name}
-                          </Link>
-                        ) : (
-                          <span className="text-[#5A58F2] font-medium cursor-default pointer-events-none">{brand.name}</span>
-                        )}
-                      </li>
-                    )
-                  })}
-                </ul>
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
+                {pageItems.map((brand) => {
+                  const brandUrl = getBrandPageUrl(brand.name)
+                  return (
+                    <div key={brand.name}>
+                      <BrandCard brand={brand} href={brandUrl || undefined} showClaimedBadge={true} variant="compact" />
+                    </div>
+                  )
+                })}
               </div>
-            )}
-          </div>
+
+              {/* Pagination - Bottom Center */}
+              <div className="mt-8 lg:mt-10">
+                <div className="flex justify-center items-center">
+                  {/* Page navigation */}
+                  <div className="flex items-center gap-2">
+                    {/* Previous button */}
+                    <button
+                      onClick={() => handlePageChange(currentPage - 1)}
+                      disabled={currentPage === 1}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                        currentPage === 1
+                          ? 'border-[#DADCE0] cursor-not-allowed'
+                          : 'border-[#1c1d20] hover:bg-[#f5f5f5] cursor-pointer'
+                      }`}
+                      aria-label="Previous page"
+                    >
+                      <SafeImage 
+                        src={IMAGES.chevron} 
+                        alt="Previous" 
+                        className={`w-4 h-4 rotate-180 ${currentPage === 1 ? 'opacity-30' : ''}`}
+                      />
+                    </button>
+                    
+                    {/* Page numbers */}
+                    {(() => {
+                      const pages: JSX.Element[] = []
+                      const showEllipsis = totalPages > 10
+                      
+                      if (showEllipsis) {
+                        // Show first 8 pages
+                        for (let i = 1; i <= Math.min(8, totalPages); i++) {
+                          pages.push(
+                            <button
+                              key={i}
+                              onClick={() => handlePageChange(i)}
+                              className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                                currentPage === i
+                                  ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                                  : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                              }`}
+                            >
+                              {i}
+                            </button>
+                          )
+                        }
+                        
+                        // Ellipsis
+                        if (totalPages > 9) {
+                          pages.push(
+                            <span key="ellipsis" className="flex items-center justify-center w-12 h-12 text-[#1c1d20]">
+                              ...
+                            </span>
+                          )
+                        }
+                        
+                        // Last page
+                        if (totalPages > 8) {
+                          pages.push(
+                            <button
+                              key={totalPages}
+                              onClick={() => handlePageChange(totalPages)}
+                              className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                                currentPage === totalPages
+                                  ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                                  : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                              }`}
+                            >
+                              {totalPages}
+                            </button>
+                          )
+                        }
+                      } else {
+                        // Show all pages if 10 or fewer
+                        for (let i = 1; i <= totalPages; i++) {
+                          pages.push(
+                            <button
+                              key={i}
+                              onClick={() => handlePageChange(i)}
+                              className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                                currentPage === i
+                                  ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                                  : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                              }`}
+                            >
+                              {i}
+                            </button>
+                          )
+                        }
+                      }
+                      
+                      return pages
+                    })()}
+                    
+                    {/* Next button */}
+                    <button
+                      onClick={() => handlePageChange(currentPage + 1)}
+                      disabled={currentPage === totalPages}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                        currentPage === totalPages
+                          ? 'border-[#DADCE0] cursor-not-allowed'
+                          : 'border-[#1c1d20] hover:bg-[#f5f5f5] cursor-pointer'
+                      }`}
+                      aria-label="Next page"
+                    >
+                      <SafeImage 
+                        src={IMAGES.chevron} 
+                        alt="Next" 
+                        className={`w-4 h-4 ${currentPage === totalPages ? 'opacity-30' : ''}`}
+                      />
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex flex-col items-center justify-center py-12">
+              <SafeImage alt="No results" className="mb-7" src={IMAGES.noResult} />
+              <h2 className="text-lg font-semibold text-center mb-2">
+                No results found for "{searchTerm}"
+              </h2>
+              <p className="text-sm font-normal text-[#5C5D60] text-center mb-[28px]">
+                Try adjusting your search, or contact our team for help adding or updating a business listing.
+              </p>
+              <a 
+                href="https://www.yext.com/demo" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="my-2 px-[14px] py-2 bg-[#5A58F2] text-white text-base font-normal rounded-full hover:opacity-90 transition-opacity inline-block text-center"
+              >
+                Get in touch
+              </a>
+            </div>
+          )}
         </div>
       </div>
 
+      <VerifiedBusinessBanner />
       <Footer />
     </div>
   )

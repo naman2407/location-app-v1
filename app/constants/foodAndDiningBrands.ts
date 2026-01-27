@@ -44,7 +44,7 @@ export const foodAndDiningBrands = [
   'Barro\'s Pizza',
   'Baskin-Robbins',
   'Ben & Jerry\'s',
-  'Bertucci\'s Italian Restaurant',
+  'Bertucci\'s Restaurant',
   'Bibibop Asian Grill',
   'Big Chicken',
   'Blaze Pizza LLC',

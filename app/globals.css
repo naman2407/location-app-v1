@@ -60,13 +60,16 @@ body {
 }
 
 .card-border-normal {
-  border: 2px solid transparent;
-  box-shadow: inset 0 0 0 1px #ededed;
+  border: 1px solid #ededed;
+  box-shadow: none;
+  border-radius: 8px;
+  box-sizing: border-box;
 }
 
 .card-border-normal:hover {
-  border-color: #5A58F2;
+  border: 1px solid #5A58F2;
   box-shadow: none;
+  background-color: #F7F9FE !important;
 }
 
 /* Hide browser autocomplete dropdown indicators */
@@ -101,7 +104,7 @@ input::-webkit-calendar-picker-indicator {
 /* Location page styles - Standardized container with max-width and consistent gutters */
 .container {
   width: 100%;
-  max-width: 1440px;
+  max-width: 1500px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 16px;
@@ -673,7 +676,19 @@ input::-webkit-calendar-picker-indicator {
 
 .biz-hours-col {
   width: 100%;
-  max-width: 320px;
+}
+
+@media (min-width: 1280px) {
+  .biz-hours-col-right-align {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+  }
+  
+  .biz-hours-col-right-align > *:last-child {
+    width: 100%;
+    max-width: 400px;
+  }
 }
 
 .biz-section {

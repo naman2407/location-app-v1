@@ -202,7 +202,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                 setHighlightedIndex(-1)
               }}
               onKeyDown={handleKeyDown}
-              placeholder="Search brands or locations"
+              placeholder="Search brands"
               className="flex-1 outline-none text-base text-[#222222] placeholder:text-[#717171] bg-transparent w-full font-normal border-0 p-0 m-0 appearance-none px-5 py-3.5"
             />
             {hasQuery && (

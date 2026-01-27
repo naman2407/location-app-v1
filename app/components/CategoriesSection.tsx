@@ -40,7 +40,7 @@ export function CategoriesSection() {
       <p className="font-semibold text-center relative shrink-0 text-2xl sm:text-3xl md:text-[32px] text-black">
         Categories
       </p>
-      <div className="flex flex-col relative px-4 sm:px-0 w-full max-w-[1440px] mx-auto">
+      <div className="flex flex-col relative w-full max-w-[1500px] mx-auto">
         <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center">
           {visibleCategories.map((category) => {
             const categoryName = getCategoryLabel(category)

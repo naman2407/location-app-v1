@@ -46,7 +46,7 @@ export function Header() {
         </div>
 
         {/* Desktop: Original layout */}
-        <div className="hidden md:flex relative items-center justify-between overflow-hidden px-4 sm:px-8 lg:px-8 xl:px-[150px] h-[96px] w-full max-w-[1440px] mx-auto">
+        <div className="hidden md:flex relative items-center justify-between overflow-hidden px-4 sm:px-8 lg:px-8 xl:px-[150px] h-[96px] w-full max-w-[1500px] mx-auto">
               {/* Logo - left on desktop */}
               <div className="overflow-hidden relative shrink-0 w-[48px] h-[48px]">
                 <Link href="/" aria-label="Home">

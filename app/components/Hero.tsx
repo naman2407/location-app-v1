@@ -6,7 +6,7 @@ import { HeroSearchBar } from './HeroSearchBar'
 
 export function Hero() {
   return (
-    <div className="w-full flex flex-col gap-8 lg:gap-12 pb-6 sm:pb-10 lg:pb-20 pt-12 sm:pt-16 lg:pt-20 px-4 sm:px-8 lg:px-8 xl:px-[150px] relative w-full max-w-[1440px] mx-auto">
+    <div className="w-full flex flex-col gap-8 lg:gap-12 pb-6 sm:pb-10 lg:pb-20 pt-12 sm:pt-16 lg:pt-20 px-4 sm:px-8 lg:px-8 xl:px-[150px] relative w-full max-w-[1500px] mx-auto">
       <div className="relative flex flex-col lg:flex-row gap-8 lg:gap-14 items-center justify-between text-black w-full">
         {/* Left Section */}
         <div className="flex flex-col gap-2 sm:gap-3 w-full lg:w-1/2 text-center lg:text-left">
@@ -42,8 +42,8 @@ export function Hero() {
       
       {/* Banner Section */}
       <div className="w-full bg-[white]">
-        <div className="max-w-[1440px] mx-auto">
-          <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
+        <div className="max-w-[1500px] mx-auto">
+          <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start justify-between gap-4 sm:gap-6">
             <div className="flex-1 grid sm:flex items-start gap-4">
               <SafeImage 
                 alt="TX3Y logo" 

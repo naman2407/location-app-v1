@@ -1,58 +1,56 @@
 'use client'
 
-import { useMemo, useRef, useEffect, Suspense } from 'react'
+import { useMemo, Suspense, useState, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { BrandHeader } from '../components/BrandHeader'
 import { Footer } from '../components/Footer'
-import { Link as CustomLink } from '../components/Link'
+import { VerifiedBusinessBanner } from '../components/VerifiedBusinessBanner'
 import Link from 'next/link'
 import { SafeImage } from '../components/SafeImage'
 import { IMAGES } from '../constants/images'
 import { allBrandNames } from '../constants/allBrandsData'
+import { BrandCard } from '../components/BrandCard'
+import { brandNamesToCardData } from '../utils/brandCardData'
+import { getBrandPageUrl } from '../constants/brandNavigation'
+import { PageSizeDropdown } from '../components/PageSizeDropdown'
 
-const PAGE_SIZE = 40
+const DEFAULT_PAGE_SIZE = 20
+const PAGE_SIZE_OPTIONS = [20, 40, 60, 80]
 
 function AllBrandsContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const pageParam = Number(searchParams?.get('page') || '1')
-  const statusParam = searchParams?.get('status')
-  const activeTab = statusParam === 'unclaimed' ? 'unclaimed' : 'claimed'
-  const scrollPositionRef = useRef<number>(0)
+  const pageSizeParam = Number(searchParams?.get('pageSize') || DEFAULT_PAGE_SIZE)
+  const [pageSize, setPageSize] = useState(pageSizeParam)
 
-  const tabs = useMemo(
-    () => [
-      {
-        id: 'claimed' as const,
-        label: 'Brand-Verified',
-        icon: IMAGES.verified_icon,
-        description:
-          'Business information provided and managed by the brand through TX3Y, ensuring consistent, up-to-date details across locations and platforms.',
-      },
-      {
-        id: 'unclaimed' as const,
-        label: 'Publicly Sourced',
-        icon: IMAGES.warning_icon,
-        description: (
-          <>
-            Business profiles generated from publicly available sources, reflecting information aggregated across the web. Interested in verifying your brand with TX3Y?{' '}
-            <a
-              href="https://www.yext.com/demo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="link-primary"
-            >
-              Get in touch
-            </a>
-            .
-          </>
-        ),
-      },
-    ],
-    []
-  )
+  // Responsive page size based on screen width
+  useEffect(() => {
+    const updatePageSize = () => {
+      const width = window.innerWidth
+      let newSize = 20 // desktop default
+      
+      if (width < 768) {
+        // mobile
+        newSize = 10
+      } else if (width < 1024) {
+        // tablet
+        newSize = 18
+      }
+      
+      // Only update if not manually set via dropdown
+      if (!searchParams?.get('pageSize')) {
+        setPageSize(newSize)
+      }
+    }
+    
+    updatePageSize()
+    window.addEventListener('resize', updatePageSize)
+    return () => window.removeEventListener('resize', updatePageSize)
+  }, [searchParams])
 
-  const filteredBrands = useMemo(() => {
+  // Convert all brand names to card data and sort alphabetically
+  const brandCards = useMemo(() => {
     const isClaimed = (name: string) => {
       const normalized = name.toLowerCase()
       if (normalized === 'taco bell') return true
@@ -64,223 +62,272 @@ function AllBrandsContent() {
       return hash % 3 !== 0
     }
 
-    const filtered = allBrandNames.filter((name) => (activeTab === 'claimed' ? isClaimed(name) : !isClaimed(name)))
-    
-    // For unclaimed tab, ensure Baskin-Robbins appears on page 3
-    if (activeTab === 'unclaimed') {
-      const baskinIndex = filtered.findIndex(name => name.toLowerCase() === 'baskin-robbins')
-      if (baskinIndex !== -1) {
-        // Calculate target index for page 3 (items 81-120, so target around index 100)
-        const targetIndex = Math.min(100, filtered.length - 1)
-        if (baskinIndex !== targetIndex) {
-          const baskin = filtered[baskinIndex]
-          filtered.splice(baskinIndex, 1)
-          filtered.splice(targetIndex, 0, baskin)
-        }
-      }
-    }
-    
-    return filtered
-  }, [activeTab])
+    const cardData = brandNamesToCardData(allBrandNames, isClaimed)
+    // Sort alphabetically by name
+    return cardData.sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+  }, [])
 
-  const totalFilteredPages = Math.max(1, Math.ceil(filteredBrands.length / PAGE_SIZE))
-  const currentPage = Number.isFinite(pageParam) ? Math.min(Math.max(pageParam, 1), totalFilteredPages) : 1
-  const startIndex = (currentPage - 1) * PAGE_SIZE
+  const totalPages = Math.max(1, Math.ceil(brandCards.length / pageSize))
+  const currentPage = Number.isFinite(pageParam) ? Math.min(Math.max(pageParam, 1), totalPages) : 1
+  const startIndex = (currentPage - 1) * pageSize
+  const pageItems = brandCards.slice(startIndex, startIndex + pageSize)
 
-  // Restore scroll position after tab change
-  useEffect(() => {
-    if (scrollPositionRef.current > 0) {
-      // Use requestAnimationFrame to ensure DOM is updated
-      requestAnimationFrame(() => {
-        window.scrollTo(0, scrollPositionRef.current)
-        scrollPositionRef.current = 0 // Reset after restoring
-      })
+  const handlePageSizeChange = (newSize: number) => {
+    setPageSize(newSize)
+    const params = new URLSearchParams()
+    params.set('page', '1')
+    params.set('pageSize', newSize.toString())
+    router.push(`/brands?${params.toString()}`)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    const params = new URLSearchParams()
+    params.set('page', newPage.toString())
+    if (pageSize !== DEFAULT_PAGE_SIZE) {
+      params.set('pageSize', pageSize.toString())
     }
-  }, [activeTab])
-  const pageItems = filteredBrands.slice(startIndex, startIndex + PAGE_SIZE)
+    router.push(`/brands?${params.toString()}`)
+  }
+
   const heroDescription =
     'Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.'
-  const activeTabDescription = tabs.find((tab) => tab.id === activeTab)?.description ?? ''
 
   return (
     <div className="bg-white min-h-screen w-full flex flex-col">
       <BrandHeader showSearch={true} />
 
-      <div className="pb-4 flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col">
         <div className="relative w-full bg-white">
-          <nav className="my-4 container" aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-x-2">
-              <li className="flex items-center">
-                <Link href="/" className="link-primary">
-                  <span>Home</span>
-                </Link>
-                <span className="mx-2 text-[#767676]">/</span>
-              </li>
-              <li className="flex items-center">
-                <span>All Brands</span>
-              </li>
-            </ol>
-          </nav>
-          <div className="container relative py-8 sm:py-12">
-            <div className="flex flex-col sm:flex-row items-start gap-4 sm:gap-6">
-              {/* All Brands Icon - Square with rounded border */}
-              <div className="h-20 w-20 sm:h-24 sm:w-24 md:h-28 md:w-28 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
-                <SafeImage
-                  src={IMAGES.all_brands}
-                  alt="All Brands"
-                  className="w-[50%] object-contain p-2"
-                />
-              </div>
-              <div className="flex-1 min-w-0">
-                <h1 className="mb-2 text-[32px] leading-[1] font-bold text-[#1c1d20] sm:text-[48px] sm:leading-[1.33]">
-                  <span className="flex items-center gap-2 flex-wrap">
-                    All Brands
-                  </span>
-                </h1>
-                <p className="text-sm sm:text-base">{heroDescription}</p>
-              </div>
-            </div>
+          <div className="container py-8 sm:py-12">
+            {/* Breadcrumbs */}
+            <nav aria-label="Breadcrumb" className="mb-6">
+              <ol className="flex flex-wrap items-center gap-x-2">
+                <li className="flex items-center">
+                  <Link href="/" className="link-primary flex items-center gap-1.5 font-normal">
+                    <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />
+                <span>Home</span>
+                  </Link>
+                  <span className="mx-2 text-[#DADCE0]">/</span>
+            </li>
+                <li className="flex items-center">
+                  <span className="font-medium">All Brands</span>
+            </li>
+          </ol>
+        </nav>
 
-            {/* Banner - Below title, description, and image */}
-            <div className="mt-6 w-full">
-              <div className="bg-[white] rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] p-6 sm:p-8 lg:p-10 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-6">
-                <div className="flex-1 grid sm:flex items-start gap-4">
-                  <SafeImage 
-                    alt="TX3Y logo" 
-                    src={IMAGES.logo} 
-                    className="h-full shrink-0"
-                  />
-                  <div>
-                    <h2 className="text-xl font-semibold text-[#4a48e0] mb-1">
-                      The Advantage of Brand-Verified Information
-                    </h2>
-                    <div>
-                      <p className="text-base text-gray-700">
-                        Brands that manage certified business facts through TX3Y see up to <span className="font-semibold">30% more traffic</span> compared to pages without brand-verified information.
-                      </p>
-                      <p className="text-sm text-[#5b5d60] italic mt-2">See how other brands do this at scale → <a href="https://www.yext.com/customers" target="_blank" rel="noopener noreferrer" className="link-primary">Customer stories</a></p>
-                    </div>
+            {/* Hero Content - Horizontal Layout */}
+            <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-center">
+              {/* Left side: Icon, Title, Description */}
+              <div className="flex-1">
+                <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                  {/* All Brands Icon - Square with rounded border */}
+                  <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
+                    <SafeImage
+                      src={IMAGES.all_brands}
+                      alt="All Brands"
+                      className="w-[50%] object-contain p-2"
+                    />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h1 className="mb-3 text-[32px] sm:text-[40px] leading-[1.1] font-semibold text-[#1c1d20]">
+                      All Brands
+                    </h1>
+                    <p className="text-base text-[#767676] leading-relaxed">
+                      Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.
+                    </p>
                   </div>
                 </div>
-                <a
-                  href="https://www.yext.com/demo"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-4 py-2 sm:px-6 sm:py-3 rounded-full transition-colors whitespace-nowrap shrink-0"
-                >
-                  Get in touch
-                </a>
+              </div>
+
+              {/* Right side: Banner */}
+              <div className="lg:w-[420px] xl:w-[480px] shrink-0">
+                <div className="bg-[#F2F2FA] rounded-2xl p-5 lg:p-6 flex flex-col gap-5">
+                  <h2 className="text-xl font-semibold text-[#5A58F2]">
+                    The Advantage of Brand-Verified Information
+                  </h2>
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
+                      <SafeImage
+                        src={IMAGES.check}
+                        alt=""
+                        className="w-5 h-5 shrink-0 mt-0.5"
+                      />
+                      <p className="leading-relaxed">
+                        Brands that manage certified business facts through TX3Y see up to 30% more traffic compared to pages without brand-verified information.
+                      </p>
+                    </div>
+                    <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
+                      <SafeImage
+                        src={IMAGES.arrow}
+                        alt=""
+                        className="w-5 h-5 shrink-0 mt-0.5"
+                      />
+                      <a
+                        href="https://www.yext.com/customers"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-[#1c1d20] underline hover:no-underline leading-relaxed"
+                      >
+                        Discover how other brands do this at scale
+                      </a>
+                    </div>
+                  </div>
+                  <a
+                    href="https://www.yext.com/demo"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-6 py-3 rounded-full transition-colors w-fit mt-1 text-center"
+                  >
+                    Claim your competitive edge
+                  </a>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
-        <div className="container pt-8">
-          <div role="tablist" aria-label="Brand status tabs" className="flex flex-wrap items-center gap-4">
-            {tabs.map((tab) => {
-              const isActive = activeTab === tab.id
+        {/* Brand Cards Grid */}
+        <div className="container pt-8 pb-12 sm:pb-[100px]">
+          {/* Show dropdown - Top Right */}
+          <div className="flex justify-end mb-6">
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-[#767676]">Show</span>
+              <PageSizeDropdown
+                value={pageSize}
+                options={PAGE_SIZE_OPTIONS}
+                onChange={handlePageSizeChange}
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
+            {pageItems.map((brand) => {
+              const brandUrl = getBrandPageUrl(brand.name)
               return (
-                <button
-                  key={tab.id}
-                  type="button"
-                  role="tab"
-                  aria-selected={isActive}
-                  onClick={() => {
-                    // Save current scroll position
-                    scrollPositionRef.current = window.scrollY
-                    const nextStatus = tab.id === 'claimed' ? 'claimed' : 'unclaimed'
-                    router.push(`/brands?status=${nextStatus}`)
-                  }}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold transition-all ${
-                    isActive
-                      ? 'bg-[#f5f5f5] text-[#1c1d20]'
-                      : 'text-[#767676] hover:text-[#1c1d20]'
-                  }`}
-                >
-                  <SafeImage
-                    alt=""
-                    className="h-4 w-4"
-                    src={tab.icon}
-                    style={{
-                      filter: isActive
-                        ? 'brightness(0) saturate(100%) invert(11%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(95%)'
-                        : 'brightness(0) saturate(100%) invert(46%) sepia(0%) saturate(0%) hue-rotate(0deg) brightness(95%) contrast(95%)',
-                    }}
-                  />
-                  <span>{tab.label}</span>
-                </button>
+                <div key={brand.name}>
+                  <BrandCard brand={brand} href={brandUrl || undefined} showClaimedBadge={true} variant="compact" />
+                </div>
               )
             })}
           </div>
 
-          <p className="mt-4 text-sm sm:text-base max-w-[672px]">{activeTabDescription}</p>
-
-          <nav className="mt-6 flex items-center gap-x-2" aria-label="Pagination Navigation">
-            {Array.from({ length: totalFilteredPages }, (_, index) => index + 1).map((pageNumber) => {
-              if (pageNumber > 3 && pageNumber < totalFilteredPages) {
-                if (pageNumber === 4) {
-                  return (
-                    <span key="ellipsis" className="px-1">
+          {/* Pagination - Bottom Center */}
+          <div className="mt-8 lg:mt-10">
+            <div className="flex justify-center items-center">
+            {/* Page navigation */}
+            <div className="flex items-center gap-2">
+              {/* Previous button */}
+              <button
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+                className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                  currentPage === 1
+                    ? 'border-[#DADCE0] cursor-not-allowed'
+                    : 'border-[#1c1d20] hover:bg-[#f5f5f5] cursor-pointer'
+                }`}
+                aria-label="Previous page"
+              >
+                <SafeImage 
+                  src={IMAGES.chevron} 
+                  alt="Previous" 
+                  className={`w-4 h-4 rotate-180 ${currentPage === 1 ? 'opacity-30' : ''}`}
+                />
+              </button>
+              
+              {/* Page numbers */}
+              {(() => {
+                const pages: JSX.Element[] = []
+                const showEllipsis = totalPages > 10
+                
+                if (showEllipsis) {
+                  // Show first 8 pages
+                  for (let i = 1; i <= Math.min(8, totalPages); i++) {
+                    pages.push(
+                      <button
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                          currentPage === i
+                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                        }`}
+                      >
+                        {i}
+                      </button>
+                    )
+                  }
+                  
+                  // Ellipsis
+                  if (totalPages > 9) {
+                    pages.push(
+                      <span key="ellipsis" className="flex items-center justify-center w-12 h-12 text-[#1c1d20]">
                       ...
                     </span>
                   )
                 }
-                return null
-              }
-
-              const isActive = pageNumber === currentPage
-              const href =
-                pageNumber === 1
-                  ? `/brands?status=${activeTab}`
-                  : `/brands?status=${activeTab}&page=${pageNumber}`
-
-              return (
-                <CustomLink
-                  key={pageNumber}
-                  href={href}
-                  className={`link-primary--dark flex items-center justify-center px-2 py-1 border rounded-lg no-underline hover:no-underline hover:border-[#5A58F2] ${
-                    isActive
-                      ? 'border-[#5b5d60] bg-[#f7f7f7]'
-                      : 'border-[#ededed]'
+                  
+                  // Last page
+                  if (totalPages > 8) {
+                    pages.push(
+                      <button
+                        key={totalPages}
+                        onClick={() => handlePageChange(totalPages)}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                          currentPage === totalPages
+                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                        }`}
+                      >
+                        {totalPages}
+                      </button>
+                    )
+                  }
+                } else {
+                  // Show all pages if 10 or fewer
+                  for (let i = 1; i <= totalPages; i++) {
+                    pages.push(
+                      <button
+                        key={i}
+                        onClick={() => handlePageChange(i)}
+                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                          currentPage === i
+                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
                   }`}
                 >
-                  {pageNumber}
-                </CustomLink>
+                        {i}
+                      </button>
               )
-            })}
-            {currentPage < totalFilteredPages && (
-              <CustomLink
-                href={`/brands?status=${activeTab}&page=${currentPage + 1}`}
-                className="link-primary--dark flex items-center justify-center px-2 py-1 border border-[#ededed] rounded-lg no-underline hover:no-underline hover:border-[#5A58F2]"
+                  }
+                }
+                
+                return pages
+              })()}
+              
+              {/* Next button */}
+              <button
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages}
+                className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                  currentPage === totalPages
+                    ? 'border-[#DADCE0] cursor-not-allowed'
+                    : 'border-[#1c1d20] hover:bg-[#f5f5f5] cursor-pointer'
+                }`}
+                aria-label="Next page"
               >
-                Next
-              </CustomLink>
-            )}
-          </nav>
+                <SafeImage 
+                  src={IMAGES.chevron} 
+                  alt="Next" 
+                  className={`w-4 h-4 ${currentPage === totalPages ? 'opacity-30' : ''}`}
+                />
+              </button>
+            </div>
+          </div>
         </div>
-
-        <div className="container pt-8 pb-12 sm:pb-[100px]">
-          <ul className="block columns-1 sm:columns-2 lg:columns-4">
-            {pageItems.map((brand) => {
-              const isTacoBell = brand.toLowerCase() === 'taco bell'
-              const href = isTacoBell ? '/categories/food-and-dining/taco-bell' : '#'
-
-              return (
-                <li key={brand} className="mb-6">
-                  {isTacoBell ? (
-                    <CustomLink href={href}>
-                      {brand}
-                    </CustomLink>
-                  ) : (
-                    <span className="text-[#5A58F2] font-medium cursor-default pointer-events-none">{brand}</span>
-                  )}
-                </li>
-              )}
-            )}
-          </ul>
         </div>
       </div>
 
+      <VerifiedBusinessBanner />
       <Footer />
     </div>
   )

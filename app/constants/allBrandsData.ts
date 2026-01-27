@@ -226,7 +226,7 @@ export const allBrandNames = [
   "Benchmark Senior Living",
   "BenchMark Website Design",
   "Berkshire Group",
-  "Bertucci's Italian Restaurant",
+  "Bertucci's Restaurant",
   "Bessemer Trust",
   "Best Buy",
   "Best Buy Canada",

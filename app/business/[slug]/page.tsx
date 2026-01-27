@@ -13,7 +13,7 @@ export default function Page({ params }: PageProps) {
   return (
     <div className="bg-white min-h-screen w-full flex flex-col">
       <BrandHeader showSearch={true} fullWidth={true} />
-      <div className="pb-4 flex-1 flex flex-col">
+      <div className="flex-1 flex flex-col">
         <BusinessProfilePage params={params} />
       </div>
       <Footer />
