@@ -99,10 +99,7 @@ export function RelatedBusinessDropdown({ value, options, onChange }: RelatedBus
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-sm text-[#1c1d20] bg-[#E9EBEF] focus:outline-none appearance-none cursor-pointer flex items-center gap-2 relative whitespace-nowrap"
-        style={{
-          paddingRight: '32px',
-        }}
+        className="px-3 sm:px-4 py-2 sm:py-2.5 pr-8 rounded-full text-sm text-[#1c1d20] bg-[#E9EBEF] focus:outline-none appearance-none cursor-pointer flex items-center gap-2 relative whitespace-nowrap"
       >
         {displayText}
         <svg 

@@ -686,9 +686,38 @@ input::-webkit-calendar-picker-indicator {
   }
   
   .biz-hours-col-right-align > *:last-child {
-    width: 100%;
+    width: auto;
     max-width: 400px;
+    margin-left: auto;
+    align-self: flex-end;
   }
+  
+  .biz-hours-col-right-align .biz-hours {
+    width: auto;
+  }
+}
+
+/* Banner title container background */
+.biz-banner-title-container {
+  background-color: #FEF8E0;
+}
+
+/* White filter for icons */
+.icon-white-filter {
+  filter: brightness(0) saturate(100%) invert(100%);
+}
+
+/* Dropdown button padding */
+.dropdown-button-padding {
+  padding-right: 2rem;
+}
+
+/* Blurred reviews container */
+.reviews-blurred {
+  filter: blur(0.75rem);
+  pointer-events: none;
+  max-height: 37.5rem;
+  overflow: hidden;
 }
 
 .biz-section {
@@ -1651,6 +1680,3 @@ input::-webkit-calendar-picker-indicator {
   display: none;
 }
 
-.biz-banner-title-container {
-  padding-top: 24px;
-}

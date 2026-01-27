@@ -35,7 +35,7 @@ export function VerifiedBusinessBanner() {
                 src={IMAGES.check} 
                 alt="" 
                 className="w-6 h-6 shrink-0 mt-0.5"
-                style={{ filter: 'brightness(0) saturate(100%) invert(100%)' }}
+                className="icon-white-filter"
               />
               <p className="text-white text-base">
                 Control how your business is presented by AI
@@ -46,7 +46,7 @@ export function VerifiedBusinessBanner() {
                 src={IMAGES.check} 
                 alt="" 
                 className="w-6 h-6 shrink-0 mt-0.5"
-                style={{ filter: 'brightness(0) saturate(100%) invert(100%)' }}
+                className="icon-white-filter"
               />
               <p className="text-white text-base">
                 See how your business stacks up to the competition
@@ -57,7 +57,7 @@ export function VerifiedBusinessBanner() {
                 src={IMAGES.check} 
                 alt="" 
                 className="w-6 h-6 shrink-0 mt-0.5"
-                style={{ filter: 'brightness(0) saturate(100%) invert(100%)' }}
+                className="icon-white-filter"
               />
               <p className="text-white text-base">
                 Get deeper insights from real customer feedback
@@ -68,7 +68,7 @@ export function VerifiedBusinessBanner() {
                 src={IMAGES.arrow} 
                 alt="" 
                 className="w-6 h-6 shrink-0 mt-0.5"
-                style={{ filter: 'brightness(0) saturate(100%) invert(100%)' }}
+                className="icon-white-filter"
               />
               <a
                 href="https://www.yext.com/customers"

@@ -70,10 +70,7 @@ export function PageSizeDropdown({ value, options, onChange }: PageSizeDropdownP
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 py-1.5 border border-[#ededed] rounded-full text-sm text-[#1c1d20] bg-white focus:outline-none focus:border-[#5A58F2] appearance-none cursor-pointer flex items-center gap-2 relative"
-        style={{
-          paddingRight: '32px',
-        }}
+        className="px-3 py-1.5 pr-8 border border-[#ededed] rounded-full text-sm text-[#1c1d20] bg-white focus:outline-none focus:border-[#5A58F2] appearance-none cursor-pointer flex items-center gap-2 relative"
       >
         {value}
         <svg 

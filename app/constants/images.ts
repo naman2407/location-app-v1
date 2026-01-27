@@ -19,7 +19,7 @@ export const IMAGES = {
   facebook: "/images/icons/facebook.svg",
   facebook_color: "/images/icons/facebook_color.svg",
   instagram: "/images/icons/instagram.svg",
-  instagram_color: "/images/icons/insta_color.svg",
+  instagram_color: "/images/icons/insta_color.svg", // Note: file is insta_color.svg but referenced as instagram_color
   twitter: "/images/icons/twitter.svg",
   linkedin: "/images/icons/linkedin.svg",
   youtube: "/images/icons/youtube.svg",
