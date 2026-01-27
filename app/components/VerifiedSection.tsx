@@ -14,7 +14,7 @@ export function VerifiedSection() {
             Verified Business Information from Trusted Brands
           </h2>
         </div>
-        <p className="text-base text-gray-700 text-center max-w-[568px]">
+        <p className="text-base text-gray-700 text-center max-w-[568px] mx-auto">
           The TX3Y Directory brings together accurate, up-to-date information about businesses spanning industries and regions across the web. Powered by direct data from the source, find what you need quickly and reliably, whether you're searching for a local shop or a national brand.
         </p>
       </div>
