@@ -1680,3 +1680,68 @@ input::-webkit-calendar-picker-indicator {
   display: none;
 }
 
+/* Verified Section Hero with responsive clip-path */
+.verified-hero {
+  position: relative;
+  padding: 120px 16px 80px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.verified-hero-bg {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(140% 140% at 50% 0%, #FAFCFE 0%, #E9E8FC 100%);
+  clip-path: ellipse(100% 100% at 75% 100%);
+  -webkit-clip-path: ellipse(100% 100% at 75% 100%);
+}
+
+.verified-hero-content {
+  position: relative;
+  max-width: 1500px;
+  margin: 0 auto;
+  text-align: center;
+  align-items: center;
+  padding: 0 16px;
+}
+
+@media (min-width: 640px) {
+  .verified-hero-content {
+    padding: 0 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .verified-hero-content {
+    padding: 0 32px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .verified-hero-content {
+    padding: 0 150px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1024px) {
+  .verified-hero {
+    padding-top: 104px;
+  }
+  .verified-hero-bg {
+    clip-path: ellipse(150% 92% at 75% 100%);
+    -webkit-clip-path: ellipse(150% 92% at 75% 100%);
+  }
+}
+
+/* Mobile */
+@media (max-width: 640px) {
+  .verified-hero {
+    padding: 60px 16px 48px;
+  }
+  .verified-hero-bg {
+    clip-path: none;
+    -webkit-clip-path: none;
+  }
+}
+

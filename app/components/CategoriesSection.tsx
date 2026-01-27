@@ -36,8 +36,8 @@ export function CategoriesSection() {
   const remainingCategories = categories.slice(visibleCount)
 
   return (
-    <div className="flex flex-col gap-6 sm:gap-8 md:gap-[32px] items-center justify-center relative w-full">
-      <p className="font-semibold text-center relative shrink-0 text-2xl sm:text-3xl md:text-[32px] text-black">
+    <div className="bg-white flex flex-col gap-6 sm:gap-8 md:gap-[32px] items-center justify-center relative w-full">
+      <p className="text-2xl sm:text-3xl font-medium text-[#1c1d20]">
         Categories
       </p>
       <div className="flex flex-col relative w-full max-w-[1500px] mx-auto">

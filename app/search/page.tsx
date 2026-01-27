@@ -75,8 +75,8 @@ function SearchContent() {
     params.set('page', '1')
     params.set('pageSize', newSize.toString())
     router.push(`/search?${params.toString()}`)
-  }
-
+    }
+    
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams()
     params.set('q', searchTerm)
@@ -91,12 +91,12 @@ function SearchContent() {
 
   // If not a hardware search, show simple empty results page
   if (!isHardwareSearch) {
-    return (
-      <div className="bg-white min-h-screen w-full flex flex-col">
+  return (
+    <div className="bg-white min-h-screen w-full flex flex-col">
         <BrandHeader showSearch={true} />
 
         <div className="flex-1 flex flex-col">
-          {/* Breadcrumbs */}
+        {/* Breadcrumbs */}
           <nav className="my-4 container" aria-label="Breadcrumb">
             <ol className="flex flex-wrap">
               <li>
@@ -109,28 +109,28 @@ function SearchContent() {
                 <span>No results found</span>
               </li>
             </ol>
-          </nav>
+        </nav>
 
           <div className="container py-6 lg:py-8 flex-1 flex flex-col">
-            <div className="flex flex-col items-center justify-center flex-1 min-h-0">
-              <div className="flex flex-col items-center text-center max-w-[420px] w-full">
+          <div className="flex flex-col items-center justify-center flex-1 min-h-0">
+            <div className="flex flex-col items-center text-center max-w-[420px] w-full">
                 <SafeImage alt="No results" className="mb-7" src={IMAGES.noResult} />
-
-                <h2 className="text-lg font-semibold text-center mb-2">
+              
+              <h2 className="text-lg font-semibold text-center mb-2">
                   {searchTerm ? `No results found for "${searchTerm}"` : "Can't find what you're looking for?"}
-                </h2>
-
-                <p className="text-sm font-normal text-[#5C5D60] text-center mb-[28px]">
-                  No results were found. Try adjusting your search, or contact our team for help adding or updating a business listing.
-                </p>
-
+              </h2>
+              
+              <p className="text-sm font-normal text-[#5C5D60] text-center mb-[28px]">
+                No results were found. Try adjusting your search, or contact our team for help adding or updating a business listing.
+              </p>
+              
                 <a 
                   href="https://www.yext.com/demo" 
                   target="_blank" 
                   rel="noopener noreferrer"
                   className="my-2 px-[14px] py-2 bg-[#5A58F2] text-white text-base font-normal rounded-full hover:opacity-90 transition-opacity inline-block text-center"
-                >
-                  Get in touch
+              >
+                Get in touch
                 </a>
               </div>
             </div>
@@ -187,7 +187,7 @@ function SearchContent() {
                       Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.
                     </p>
                   </div>
-                </div>
+                    </div>
               </div>
 
               {/* Right side: Banner */}
@@ -221,7 +221,7 @@ function SearchContent() {
                       >
                         Discover how other brands do this at scale
                       </a>
-                    </div>
+              </div>
                   </div>
                   <a
                     href="https://www.yext.com/demo"
@@ -234,9 +234,9 @@ function SearchContent() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-
+                </div>
+                          </div>
+                          
         {/* Brand Cards Grid */}
         <div className="container pt-8 pb-12 sm:pb-[100px]">
           {brandCards.length > 0 ? (
@@ -249,21 +249,21 @@ function SearchContent() {
                     value={pageSize}
                     options={PAGE_SIZE_OPTIONS}
                     onChange={handlePageSizeChange}
-                  />
-                </div>
-              </div>
-
+                            />
+                          </div>
+                        </div>
+                        
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
                 {pageItems.map((brand) => {
                   const brandUrl = getBrandPageUrl(brand.name)
                   return (
                     <div key={brand.name}>
                       <BrandCard brand={brand} href={brandUrl || undefined} showClaimedBadge={true} variant="compact" />
-                    </div>
+                          </div>
                   )
                 })}
-              </div>
-
+                          </div>
+                          
               {/* Pagination - Bottom Center */}
               <div className="mt-8 lg:mt-10 w-full">
                 <div className="flex justify-center items-center w-full">
@@ -280,13 +280,13 @@ function SearchContent() {
                       }`}
                       aria-label="Previous page"
                     >
-                      <SafeImage 
+                                  <SafeImage
                         src={IMAGES.chevron} 
                         alt="Previous" 
                         className={`w-4 h-4 rotate-180 ${currentPage === 1 ? 'opacity-30' : ''}`}
-                      />
+                                  />
                     </button>
-                    
+                            
                     {/* Page numbers */}
                     {(() => {
                       const pages: JSX.Element[] = []
@@ -322,7 +322,7 @@ function SearchContent() {
                           pages.push(
                             <span key="ellipsis-mobile" className="md:hidden flex items-center justify-center w-12 h-12 text-[#1c1d20]">
                               ...
-                            </span>
+                                  </span>
                           )
                         }
                         
@@ -365,14 +365,14 @@ function SearchContent() {
                               >
                                 {i}
                               </button>
-                            )
+                  )
                           }
                         }
                         
                         // Last page
                         if (totalPages > 1) {
                           pages.push(
-                            <button
+                <button
                               key={totalPages}
                               onClick={() => handlePageChange(totalPages)}
                               className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
@@ -382,7 +382,7 @@ function SearchContent() {
                               }`}
                             >
                               {totalPages}
-                            </button>
+                </button>
                           )
                         }
                       }
@@ -391,26 +391,26 @@ function SearchContent() {
                     })()}
                     
                     {/* Next button */}
-                    <button
+                <button
                       onClick={() => handlePageChange(currentPage + 1)}
-                      disabled={currentPage === totalPages}
+                  disabled={currentPage === totalPages}
                       className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
                         currentPage === totalPages
                           ? 'border-[#DADCE0] cursor-not-allowed'
                           : 'border-[#1c1d20] hover:bg-[#f5f5f5] cursor-pointer'
                       }`}
-                      aria-label="Next page"
-                    >
+                  aria-label="Next page"
+                >
                       <SafeImage 
                         src={IMAGES.chevron} 
                         alt="Next" 
                         className={`w-4 h-4 ${currentPage === totalPages ? 'opacity-30' : ''}`}
                       />
-                    </button>
-                  </div>
+            </button>
+          </div>
                 </div>
-              </div>
-            </>
+          </div>
+          </>
           ) : (
             <div className="flex flex-col items-center justify-center py-12">
               <SafeImage alt="No results" className="mb-7" src={IMAGES.noResult} />
@@ -432,7 +432,7 @@ function SearchContent() {
           )}
         </div>
       </div>
-
+      
       <VerifiedBusinessBanner />
       <Footer />
     </div>

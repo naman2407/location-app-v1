@@ -13,7 +13,7 @@ export function Header() {
 
   return (
     <>
-      <div className="bg-white relative w-full">
+      <div className="bg-[#FAFCFE] relative w-full">
         {/* Mobile: Search icon left, Logo center, Hamburger right */}
         <div className="md:hidden relative flex items-center px-4 py-4">
           {/* Search icon - extreme left */}

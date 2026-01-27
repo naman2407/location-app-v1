@@ -269,10 +269,10 @@ function AllBrandsContent() {
                   if (totalPages > 2) {
                     pages.push(
                       <span key="ellipsis-mobile" className="md:hidden flex items-center justify-center w-12 h-12 text-[#1c1d20]">
-                        ...
-                      </span>
-                    )
-                  }
+                      ...
+                    </span>
+                  )
+                }
                   
                   // Desktop: Show first 8 pages
                   if (totalPages > 10) {
@@ -311,11 +311,11 @@ function AllBrandsContent() {
                             currentPage === i
                               ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
                               : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
-                          }`}
-                        >
+                  }`}
+                >
                           {i}
                         </button>
-                      )
+              )
                     }
                   }
                   
