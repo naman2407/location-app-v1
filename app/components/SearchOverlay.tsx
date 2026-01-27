@@ -293,7 +293,7 @@ export function SearchOverlay({ isOpen, onClose }: SearchOverlayProps) {
                             {brand.claimed ? (
                               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-[6px] text-xs font-medium bg-[#EEE8F7] text-[#6F42C1] shrink-0">
                                 <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-3 h-3 shrink-0" />
-                                Brand Verified
+                                Brand-Verified
                               </span>
                             ) : (
                               <span className="inline-flex w-fit items-center gap-1 px-2 py-0.5 rounded-[6px] text-xs font-medium bg-[#FFCD39] shrink-0">
