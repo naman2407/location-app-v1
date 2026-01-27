@@ -27,9 +27,8 @@ export function CategoriesSection() {
   }, [])
 
   const visibleCount = useMemo(() => {
-    if (viewport === 'xl') return 10 // 5 per row, 2 rows
-    if (viewport === 'lg') return 6 // 3 per row, 2 rows
-    return 6 // mobile/tablet: 2 per row, 3 rows
+    if (viewport === 'xl' || viewport === 'lg') return 10 // 5 per row, 2 rows on lg+
+    return 6 // mobile/tablet: 1 per row on mobile, 3 per row on tablet
   }, [viewport])
 
   const visibleCategories = categories.slice(0, visibleCount)
@@ -41,7 +40,7 @@ export function CategoriesSection() {
         Categories
       </p>
       <div className="flex flex-col relative w-full max-w-[1500px] mx-auto">
-        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center">
+        <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center">
           {visibleCategories.map((category) => {
             const categoryName = getCategoryLabel(category)
             const href = getCategoryHref(categoryName)
@@ -52,7 +51,7 @@ export function CategoriesSection() {
         {remainingCategories.length > 0 && (
           <>
             <div
-              className={`grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center transition-all duration-500 ease-in-out categories-expandable mt-4 sm:mt-5 md:mt-[20px] ${
+              className={`grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-[20px] justify-items-center transition-all duration-500 ease-in-out categories-expandable mt-4 sm:mt-5 md:mt-[20px] ${
                 showAllCategories ? 'categories-expanded' : 'categories-collapsed'
               }`}
             >
