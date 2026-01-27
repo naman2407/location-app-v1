@@ -175,13 +175,26 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
             )}
             <div className="flex items-center gap-3 flex-wrap">
               <h1 className="heading heading-lead inline-block">
-                {business.name}
-                {business.claimed && (
-                  <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-6 h-6 inline-block align-middle ml-2" />
-                )}
-                {!business.claimed && (
-                  <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-6 h-6 inline-block align-middle ml-2" />
-                )}
+                {(() => {
+                  const nameParts = business.name.split(' ')
+                  const lastWord = nameParts[nameParts.length - 1]
+                  const restOfName = nameParts.slice(0, -1).join(' ')
+                  
+                  return (
+                    <>
+                      {restOfName && <span>{restOfName} </span>}
+                      <span className="whitespace-nowrap inline-flex items-center">
+                        {lastWord}
+                        {business.claimed && (
+                          <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-5 h-5 inline-block align-middle ml-3" />
+                        )}
+                        {!business.claimed && (
+                          <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-5 h-5 inline-block align-middle ml-3" />
+                        )}
+                      </span>
+                    </>
+                  )
+                })()}
               </h1>
             </div>
             <div className="biz-rating">

@@ -12,7 +12,7 @@ export function UnclaimedBusinessBanner({ variant = 'desktop' }: UnclaimedBusine
   return (
     <div className={`biz-hero-banner ${isMobile ? 'biz-hero-banner-mobile' : 'biz-hero-banner-desktop'}`} role="note" aria-label="Own this business">
       <div className="bg-white rounded-2xl shadow-[0_4px_20px_rgba(0,0,0,0.08),0_1px_4px_rgba(0,0,0,0.04)] overflow-hidden flex flex-col items-start">
-        <div className="biz-banner-title-container px-4 lg:px-6 pb-3 w-full">
+        <div className="biz-banner-title-container px-4 lg:px-6 pt-4 pb-3 w-full">
           <h2 className="text-lg font-medium text-left">
             This profile is unverified and using publicly sourced data
           </h2>

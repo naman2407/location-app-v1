@@ -271,17 +271,31 @@ export default function BrandStatePage({ params }: PageProps) {
                   <div className="flex-1 min-w-0">
                     {/* Title with icon inline */}
                     <h1 className="text-[32px] sm:text-[40px] leading-[1.1] font-semibold text-[#1c1d20] mb-3">
-                      {brand.name} in {state.name}
-                      {brand.claimed && (
-                        <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-6 h-6 inline-block align-middle ml-2" />
-                      )}
-                      {!brand.claimed && (
-                        <SafeImage 
-                          alt="Warning" 
-                          src={IMAGES.warning_icon} 
-                          className="w-6 h-6 inline-block align-middle ml-2"
-                        />
-                      )}
+                      {(() => {
+                        const fullTitle = `${brand.name} in ${state.name}`
+                        const titleParts = fullTitle.split(' ')
+                        const lastWord = titleParts[titleParts.length - 1]
+                        const restOfTitle = titleParts.slice(0, -1).join(' ')
+                        
+                        return (
+                          <>
+                            {restOfTitle && <span>{restOfTitle} </span>}
+                            <span className="whitespace-nowrap inline-flex items-center">
+                              {lastWord}
+                              {brand.claimed && (
+                                <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-5 h-5 inline-block align-middle ml-3" />
+                              )}
+                              {!brand.claimed && (
+                                <SafeImage 
+                                  alt="Warning" 
+                                  src={IMAGES.warning_icon} 
+                                  className="w-5 h-5 inline-block align-middle ml-3"
+                                />
+                              )}
+                            </span>
+                          </>
+                        )
+                      })()}
                     </h1>
                     {/* Badge without icon below title */}
                     <div className="mb-3">
@@ -369,7 +383,7 @@ export default function BrandStatePage({ params }: PageProps) {
               <CityDropdown
                 value={selectedCity}
                 options={[
-                  { slug: 'all', name: 'All' },
+                  { slug: 'all', name: 'All Cities' },
                   ...state.cities.map(city => ({ slug: city.slug, name: city.name }))
                 ]}
                 onChange={handleCityChange}
@@ -380,7 +394,7 @@ export default function BrandStatePage({ params }: PageProps) {
                 <RelatedBusinessDropdown
                   value={selectedRelatedBusiness}
                   options={[
-                    { slug: 'all', name: 'All' },
+                    { slug: 'all', name: 'All Related Businesses' },
                     ...brand.relatedBusinesses.map(rb => ({ slug: rb.slug, name: rb.name }))
                   ]}
                   onChange={handleRelatedBusinessChange}
@@ -427,7 +441,8 @@ export default function BrandStatePage({ params }: PageProps) {
           </ul>
 
           {/* Pagination */}
-          <div className="flex items-center justify-center gap-2 mt-6 lg:mt-7">
+          <div className="w-full">
+            <div className="flex items-center justify-center gap-2 mt-6 lg:mt-7 px-4 sm:px-0">
               {/* Previous button */}
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -448,37 +463,87 @@ export default function BrandStatePage({ params }: PageProps) {
               {/* Page numbers */}
               {(() => {
                 const pages: JSX.Element[] = []
-                const showEllipsis = totalPages > 10
                 
-                if (showEllipsis) {
-                  // Show first 8 pages
-                  for (let i = 1; i <= Math.min(8, totalPages); i++) {
-                    pages.push(
-                      <button
-                        key={i}
-                        onClick={() => handlePageChange(i)}
-                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
-                          currentPage === i
-                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
-                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
-                        }`}
-                      >
-                        {i}
-                      </button>
-                    )
-                  }
+                if (totalPages <= 1) {
+                  pages.push(
+                    <button
+                      key={1}
+                      onClick={() => handlePageChange(1)}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors bg-[#1c1d20] text-white border-[#1c1d20]`}
+                    >
+                      1
+                    </button>
+                  )
+                } else {
+                  // Mobile: Show only 1 ... last
+                  pages.push(
+                    <button
+                      key={1}
+                      onClick={() => handlePageChange(1)}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                        currentPage === 1
+                          ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                          : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                      }`}
+                    >
+                      1
+                    </button>
+                  )
                   
-                  // Ellipsis
-                  if (totalPages > 9) {
+                  // Ellipsis on mobile
+                  if (totalPages > 2) {
                     pages.push(
-                      <span key="ellipsis" className="flex items-center justify-center w-12 h-12 text-[#1c1d20]">
+                      <span key="ellipsis-mobile" className="md:hidden flex items-center justify-center w-12 h-12 text-[#1c1d20]">
                         ...
                       </span>
                     )
                   }
                   
+                  // Desktop: Show first 8 pages
+                  if (totalPages > 10) {
+                    for (let i = 2; i <= Math.min(8, totalPages - 1); i++) {
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i)}
+                          className={`hidden md:flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                            currentPage === i
+                              ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                              : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      )
+                    }
+                    
+                    if (totalPages > 9) {
+                      pages.push(
+                        <span key="ellipsis-desktop" className="hidden md:flex items-center justify-center w-12 h-12 text-[#1c1d20]">
+                          ...
+                        </span>
+                      )
+                    }
+                  } else {
+                    for (let i = 2; i < totalPages; i++) {
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i)}
+                          className={`hidden md:flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                            currentPage === i
+                              ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                              : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      )
+                    }
+                  }
+                  
                   // Last page
-                  if (totalPages > 8) {
+                  if (totalPages > 1) {
                     pages.push(
                       <button
                         key={totalPages}
@@ -490,23 +555,6 @@ export default function BrandStatePage({ params }: PageProps) {
                         }`}
                       >
                         {totalPages}
-                      </button>
-                    )
-                  }
-                } else {
-                  // Show all pages if 10 or fewer
-                  for (let i = 1; i <= totalPages; i++) {
-                    pages.push(
-                      <button
-                        key={i}
-                        onClick={() => handlePageChange(i)}
-                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
-                          currentPage === i
-                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
-                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
-                        }`}
-                      >
-                        {i}
                       </button>
                     )
                   }
@@ -531,6 +579,7 @@ export default function BrandStatePage({ params }: PageProps) {
                   className={`w-4 h-4 ${currentPage === totalPages ? 'opacity-30' : ''}`}
                 />
               </button>
+            </div>
           </div>
 
           {/* Related Businesses Section - Only show when no related business filter is active */}

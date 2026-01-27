@@ -14,8 +14,8 @@ import { BrandCard } from '../../components/BrandCard'
 import { brandNamesToCardData } from '../../utils/brandCardData'
 import { PageSizeDropdown } from '../../components/PageSizeDropdown'
 
-const DEFAULT_PAGE_SIZE = 20
-const PAGE_SIZE_OPTIONS = [20, 40, 60, 80]
+const DEFAULT_PAGE_SIZE = 25
+const PAGE_SIZE_OPTIONS = [25, 50, 75, 100]
 
 function FoodAndDiningContent() {
   const router = useRouter()
@@ -28,7 +28,7 @@ function FoodAndDiningContent() {
   useEffect(() => {
     const updatePageSize = () => {
       const width = window.innerWidth
-      let newSize = 20 // desktop default
+      let newSize = 25 // desktop default
       
       if (width < 768) {
         // mobile
@@ -189,7 +189,7 @@ function FoodAndDiningContent() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
+          <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
             {pageItems.map((brand) => {
               const brandUrl = getBrandPageUrl(brand.name)
               return (
@@ -201,10 +201,10 @@ function FoodAndDiningContent() {
           </div>
 
           {/* Pagination - Bottom Center */}
-          <div className="mt-8 lg:mt-10">
-            <div className="flex justify-center items-center">
+          <div className="mt-8 lg:mt-10 w-full">
+            <div className="flex justify-center items-center w-full">
             {/* Page navigation */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 justify-center px-4 sm:px-0">
               {/* Previous button */}
               <button
                 onClick={() => handlePageChange(currentPage - 1)}
@@ -226,37 +226,87 @@ function FoodAndDiningContent() {
               {/* Page numbers */}
               {(() => {
                 const pages: JSX.Element[] = []
-                const showEllipsis = totalPages > 10
                 
-                if (showEllipsis) {
-                  // Show first 8 pages
-                  for (let i = 1; i <= Math.min(8, totalPages); i++) {
-                    pages.push(
-                      <button
-                        key={i}
-                        onClick={() => handlePageChange(i)}
-                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
-                          currentPage === i
-                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
-                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
-                        }`}
-                      >
-                        {i}
-                      </button>
-                    )
-                  }
+                if (totalPages <= 1) {
+                  pages.push(
+                    <button
+                      key={1}
+                      onClick={() => handlePageChange(1)}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors bg-[#1c1d20] text-white border-[#1c1d20]`}
+                    >
+                      1
+                    </button>
+                  )
+                } else {
+                  // Mobile: Show only 1 ... last
+                  pages.push(
+                    <button
+                      key={1}
+                      onClick={() => handlePageChange(1)}
+                      className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                        currentPage === 1
+                          ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                          : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                      }`}
+                    >
+                      1
+                    </button>
+                  )
                   
-                  // Ellipsis
-                  if (totalPages > 9) {
+                  // Ellipsis on mobile
+                  if (totalPages > 2) {
                     pages.push(
-                      <span key="ellipsis" className="flex items-center justify-center w-12 h-12 text-[#1c1d20]">
+                      <span key="ellipsis-mobile" className="md:hidden flex items-center justify-center w-12 h-12 text-[#1c1d20]">
                         ...
                       </span>
                     )
                   }
                   
+                  // Desktop: Show first 8 pages
+                  if (totalPages > 10) {
+                    for (let i = 2; i <= Math.min(8, totalPages - 1); i++) {
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i)}
+                          className={`hidden md:flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                            currentPage === i
+                              ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                              : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      )
+                    }
+                    
+                    if (totalPages > 9) {
+                      pages.push(
+                        <span key="ellipsis-desktop" className="hidden md:flex items-center justify-center w-12 h-12 text-[#1c1d20]">
+                          ...
+                        </span>
+                      )
+                    }
+                  } else {
+                    for (let i = 2; i < totalPages; i++) {
+                      pages.push(
+                        <button
+                          key={i}
+                          onClick={() => handlePageChange(i)}
+                          className={`hidden md:flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
+                            currentPage === i
+                              ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
+                              : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
+                          }`}
+                        >
+                          {i}
+                        </button>
+                      )
+                    }
+                  }
+                  
                   // Last page
-                  if (totalPages > 8) {
+                  if (totalPages > 1) {
                     pages.push(
                       <button
                         key={totalPages}
@@ -268,23 +318,6 @@ function FoodAndDiningContent() {
                         }`}
                       >
                         {totalPages}
-                      </button>
-                    )
-                  }
-                } else {
-                  // Show all pages if 10 or fewer
-                  for (let i = 1; i <= totalPages; i++) {
-                    pages.push(
-                      <button
-                        key={i}
-                        onClick={() => handlePageChange(i)}
-                        className={`flex items-center justify-center w-12 h-12 rounded-full border transition-colors ${
-                          currentPage === i
-                            ? 'bg-[#1c1d20] text-white border-[#1c1d20]'
-                            : 'border-[#1c1d20] text-[#1c1d20] hover:bg-[#f5f5f5]'
-                        }`}
-                      >
-                        {i}
                       </button>
                     )
                   }

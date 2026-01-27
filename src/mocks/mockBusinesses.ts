@@ -380,8 +380,8 @@ export const mockBusinesses: Business[] = [
   // Taco Bell locations linked from brand pages
   // New York locations
   createBusinessFromSearchResult(
-    'taco-bell-200-w-34th-st',
-    'Taco Bell',
+    'taco-bell-go-express-200-w-34th-st',
+    'Taco Bell Go Express',
     '200 W 34th St, New York, NY 10001',
     4.2,
     862,
@@ -393,8 +393,8 @@ export const mockBusinesses: Business[] = [
     true
   ),
   createBusinessFromSearchResult(
-    'taco-bell-81-delancey-st',
-    'Taco Bell',
+    'taco-bell-go-express-81-delancey-st',
+    'Taco Bell Go Express',
     '81 Delancey St, New York, NY 10002',
     4.5,
     523,
@@ -459,8 +459,8 @@ export const mockBusinesses: Business[] = [
   ),
   // Albany location
   createBusinessFromSearchResult(
-    'taco-bell-albany-main-st',
-    'Taco Bell',
+    'taco-bell-go-express-albany-main-st',
+    'Taco Bell Go Express',
     '123 Main St, Albany, NY 12201',
     4.2,
     234,

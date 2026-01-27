@@ -78,8 +78,8 @@ export function RelatedBusinessDropdown({ value, options, onChange }: RelatedBus
   }, [isOpen])
 
   const selectedOption = options.find(opt => opt.slug === value)
-  // Show "Related Businesses" when "All" is selected, otherwise show just the business name
-  const displayText = (!selectedOption || selectedOption.slug === 'all') ? 'Related Businesses' : selectedOption.name
+  // Show the selected option name (will be "All Related Businesses" or business name)
+  const displayText = selectedOption?.name || 'All Related Businesses'
 
   // Filter and sort options
   const filteredOptions = options.filter(opt => 
@@ -99,16 +99,16 @@ export function RelatedBusinessDropdown({ value, options, onChange }: RelatedBus
         ref={buttonRef}
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="px-3 sm:px-4 py-2 sm:py-2.5 pr-8 rounded-full text-sm text-[#1c1d20] bg-[#E9EBEF] focus:outline-none appearance-none cursor-pointer flex items-center gap-2 relative whitespace-nowrap"
+        className="px-3 sm:px-4 py-2 sm:py-2.5 rounded-full text-sm text-[#1c1d20] bg-[#E9EBEF] focus:outline-none appearance-none cursor-pointer flex items-center gap-2 whitespace-nowrap"
       >
-        {displayText}
+        <span>{displayText}</span>
         <svg 
           width="12" 
           height="12" 
           viewBox="0 0 12 12" 
           fill="none" 
           xmlns="http://www.w3.org/2000/svg"
-          className={`absolute right-2 sm:right-3 top-1/2 -translate-y-1/2 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
+          className={`shrink-0 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`}
         >
           <path d="M3 4.5L6 7.5L9 4.5" stroke="#767676" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" fill="none"/>
         </svg>

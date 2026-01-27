@@ -42,26 +42,39 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
             {/* Brand name with icon */}
             <div className="text-center w-full min-w-0 px-2 leading-normal">
               <h1 className="font-medium text-base inline-block max-w-full">
-                {brand.name}
-                {showClaimedBadge && (
-                  <span 
-                    className="relative hidden lg:inline-block cursor-pointer ml-1 whitespace-nowrap"
-                    onMouseEnter={() => setShowTooltip(true)}
-                    onMouseLeave={() => setShowTooltip(false)}
-                  >
-                    <SafeImage 
-                      alt={brand.claimed ? "Verified" : "Warning"}
-                      src={brand.claimed ? IMAGES.verified_icon : IMAGES.warning_icon}
-                      className="w-5 h-5 inline-block align-middle"
-                    />
-                    {showTooltip && (
-                      <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-50 pointer-events-none">
-                        {brand.claimed ? 'Brand-Verified Information' : 'Publicly Sourced Information'}
-                        <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900"></div>
-                      </div>
-                    )}
-                  </span>
-                )}
+                {(() => {
+                  const nameParts = brand.name.split(' ')
+                  const lastWord = nameParts[nameParts.length - 1]
+                  const restOfName = nameParts.slice(0, -1).join(' ')
+                  
+                  return (
+                    <>
+                      {restOfName && <span>{restOfName} </span>}
+                      <span className="whitespace-nowrap inline-flex items-center">
+                        {lastWord}
+                        {showClaimedBadge && (
+                          <span 
+                            className="relative hidden lg:inline-flex cursor-pointer ml-2"
+                            onMouseEnter={() => setShowTooltip(true)}
+                            onMouseLeave={() => setShowTooltip(false)}
+                          >
+                            <SafeImage 
+                              alt={brand.claimed ? "Verified" : "Warning"}
+                              src={brand.claimed ? IMAGES.verified_icon : IMAGES.warning_icon}
+                              className="w-4 h-4 inline-block align-middle"
+                            />
+                            {showTooltip && (
+                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-50 pointer-events-none">
+                                {brand.claimed ? 'Brand-Verified Information' : 'Publicly Sourced Information'}
+                                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900"></div>
+                              </div>
+                            )}
+                          </span>
+                        )}
+                      </span>
+                    </>
+                  )
+                })()}
               </h1>
             </div>
             
@@ -92,14 +105,14 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
           <>
             {brand.claimed ? (
               <div className="lg:hidden bg-[#EEE8F7] px-4 py-1 flex items-center justify-center gap-2 mt-auto">
-                <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-4 h-4 shrink-0" />
+                <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-3.5 h-3.5 shrink-0" />
                 <span className="text-[14px] font-medium text-[#6F42C1]">
                   Brand-Verified
                 </span>
               </div>
             ) : (
               <div className="lg:hidden bg-[#FFCD39] px-4 py-1 flex items-center justify-center gap-2 mt-auto">
-                <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-4 h-4 shrink-0" />
+                <SafeImage alt="Warning" src={IMAGES.warning_icon} className="w-3.5 h-3.5 shrink-0" />
                 <span className="text-[14px] font-medium text-[#1c1d20]">
                   Publicly Sourced
                 </span>

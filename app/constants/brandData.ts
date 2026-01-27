@@ -254,14 +254,14 @@ export const tacoBellData: Brand = {
   ],
   relatedBusinesses: [
     {
-      name: 'Taco Bell',
-      slug: 'taco-bell',
+      name: 'Taco Bell Go Express',
+      slug: 'taco-bell-go-express',
       locations: [
         {
-          id: 'tb-ny-1',
-          name: 'Taco Bell',
+          id: 'tbge-ny-1',
+          name: 'Taco Bell Go Express',
           address: '200 W 34th St, New York, NY 10001',
-          slug: 'taco-bell-200-w-34th-st',
+          slug: 'taco-bell-go-express-200-w-34th-st',
           phone: '(212) 555-0123',
           claimed: true,
           rating: 4.2,
@@ -270,10 +270,10 @@ export const tacoBellData: Brand = {
           cityName: 'New York City',
         },
         {
-          id: 'tb-ny-2',
-          name: 'Taco Bell',
+          id: 'tbge-ny-2',
+          name: 'Taco Bell Go Express',
           address: '81 Delancey St, New York, NY 10002',
-          slug: 'taco-bell-81-delancey-st',
+          slug: 'taco-bell-go-express-81-delancey-st',
           phone: '(212) 555-0124',
           claimed: true,
           rating: 4.5,
@@ -282,10 +282,10 @@ export const tacoBellData: Brand = {
           cityName: 'New York City',
         },
         {
-          id: 'tb-albany-1',
-          name: 'Taco Bell',
+          id: 'tbge-albany-1',
+          name: 'Taco Bell Go Express',
           address: '123 Main St, Albany, NY 12201',
-          slug: 'taco-bell-albany-main-st',
+          slug: 'taco-bell-go-express-albany-main-st',
           phone: '(518) 555-0123',
           claimed: true,
           rating: 4.2,

@@ -86,17 +86,30 @@ export default function BrandTopLevelPage({ params }: PageProps) {
                   <div className="flex-1 min-w-0">
                     {/* Title with icon inline */}
                     <h1 className="text-[32px] sm:text-[40px] leading-[1.1] font-semibold text-[#1c1d20] mb-3">
-                      {brand.name}
-                      {brand.claimed && (
-                        <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-6 h-6 inline-block align-middle ml-2" />
-                      )}
-                      {!brand.claimed && (
-                        <SafeImage 
-                          alt="Warning" 
-                          src={IMAGES.warning_icon} 
-                          className="w-6 h-6 inline-block align-middle ml-2"
-                        />
-                      )}
+                      {(() => {
+                        const nameParts = brand.name.split(' ')
+                        const lastWord = nameParts[nameParts.length - 1]
+                        const restOfName = nameParts.slice(0, -1).join(' ')
+                        
+                        return (
+                          <>
+                            {restOfName && <span>{restOfName} </span>}
+                            <span className="whitespace-nowrap inline-flex items-center">
+                              {lastWord}
+                              {brand.claimed && (
+                                <SafeImage alt="Verified" src={IMAGES.verified_icon} className="w-5 h-5 inline-block align-middle ml-3" />
+                              )}
+                              {!brand.claimed && (
+                                <SafeImage 
+                                  alt="Warning" 
+                                  src={IMAGES.warning_icon} 
+                                  className="w-5 h-5 inline-block align-middle ml-3"
+                                />
+                              )}
+                            </span>
+                          </>
+                        )
+                      })()}
                     </h1>
                     {/* Badge without icon below title */}
                     <div className="mb-3">
