@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useMemo, useState, useEffect } from 'react'
+import { Suspense, useMemo } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
 import { SafeImage } from '../components/SafeImage'
 import { IMAGES } from '../constants/images'
@@ -12,43 +12,14 @@ import { brands, filterBrands } from '../constants/searchData'
 import { getBrandPageUrl } from '../constants/brandNavigation'
 import { BrandCard } from '../components/BrandCard'
 import { brandNameToCardData } from '../utils/brandCardData'
-import { PageSizeDropdown } from '../components/PageSizeDropdown'
-
-const DEFAULT_PAGE_SIZE = 20
-const PAGE_SIZE_OPTIONS = [20, 40, 60, 80]
+const DEFAULT_PAGE_SIZE = 30
 
 function SearchContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const searchTerm = searchParams?.get('q') || ''
   const pageParam = Number(searchParams?.get('page') || '1')
-  const pageSizeParam = Number(searchParams?.get('pageSize') || DEFAULT_PAGE_SIZE)
-  const [pageSize, setPageSize] = useState(pageSizeParam)
-
-  // Responsive page size based on screen width
-  useEffect(() => {
-    const updatePageSize = () => {
-      const width = window.innerWidth
-      let newSize = 25 // desktop default
-      
-      if (width < 768) {
-        // mobile
-        newSize = 10
-      } else if (width < 1024) {
-        // tablet
-        newSize = 18
-      }
-      
-      // Only update if not manually set via dropdown
-      if (!searchParams?.get('pageSize')) {
-        setPageSize(newSize)
-      }
-    }
-    
-    updatePageSize()
-    window.addEventListener('resize', updatePageSize)
-    return () => window.removeEventListener('resize', updatePageSize)
-  }, [searchParams])
+  const pageSize = DEFAULT_PAGE_SIZE
 
   // Check if search term contains "hardware" (case-insensitive)
   const isHardwareSearch = searchTerm.toLowerCase().includes('hardware')
@@ -68,22 +39,10 @@ function SearchContent() {
   const startIndex = (currentPage - 1) * pageSize
   const pageItems = brandCards.slice(startIndex, startIndex + pageSize)
 
-  const handlePageSizeChange = (newSize: number) => {
-    setPageSize(newSize)
-    const params = new URLSearchParams()
-    params.set('q', searchTerm)
-    params.set('page', '1')
-    params.set('pageSize', newSize.toString())
-    router.push(`/search?${params.toString()}`)
-    }
-    
   const handlePageChange = (newPage: number) => {
     const params = new URLSearchParams()
     params.set('q', searchTerm)
     params.set('page', newPage.toString())
-    if (pageSize !== DEFAULT_PAGE_SIZE) {
-      params.set('pageSize', pageSize.toString())
-    }
     router.push(`/search?${params.toString()}`)
   }
 
@@ -148,46 +107,46 @@ function SearchContent() {
       <BrandHeader showSearch={true} />
 
       <div className="flex-1 flex flex-col">
-        <div className="relative w-full bg-white">
+        <div className="relative w-full bg-[#FAFCFE]">
           <div className="container py-8 sm:py-12">
-              {/* Breadcrumbs */}
-              <nav aria-label="Breadcrumb" className="mb-6">
-                <ol className="flex flex-wrap items-center gap-x-2">
-                  <li className="flex items-center">
-                    <Link href="/" className="link-primary flex items-center gap-1.5 font-normal">
-                      <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />
-                      <span>Home</span>
-                    </Link>
-                    <span className="mx-2 text-[#DADCE0]">/</span>
-                  </li>
-                  <li className="flex items-center">
-                    <span className="font-medium">Search Results</span>
-                  </li>
-                </ol>
-              </nav>
+            {/* Breadcrumbs */}
+            <nav aria-label="Breadcrumb" className="mb-6">
+              <ol className="flex flex-wrap items-center gap-x-2">
+                <li className="flex items-center">
+                  <Link href="/" className="link-primary flex items-center gap-1.5 font-normal">
+                    <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />
+                    <span>Home</span>
+                  </Link>
+                  <span className="mx-2 text-[#DADCE0]">/</span>
+                </li>
+                <li className="flex items-center">
+                  <span className="font-medium">Search Results</span>
+                </li>
+              </ol>
+            </nav>
 
             {/* Hero Content - Horizontal Layout */}
             <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 lg:items-center">
               {/* Left side: Icon, Title, Description */}
               <div className="flex-1">
                 <div className="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
-                  {/* All Brands Icon - Square with rounded border */}
+                  {/* Search Icon - Square with rounded border */}
                   <div className="h-20 w-20 sm:h-24 sm:w-24 rounded-lg border border-[#e0e0e0] flex items-center justify-center shrink-0 overflow-hidden bg-white">
                     <SafeImage
-                      src={IMAGES.all_brands}
-                      alt="All Brands"
-                      className="w-[50%] object-contain p-2"
+                      src={IMAGES.search}
+                      alt="Search"
+                      className="w-[50%] object-contain p-2 brightness-0"
                     />
                   </div>
                   <div className="flex-1 min-w-0">
                     <h1 className="mb-3 text-[32px] sm:text-[40px] leading-[1.1] font-semibold text-[#1c1d20]">
                       Search Results For {searchTerm ? `"${searchTerm}"` : ''}
                     </h1>
-                    <p className="text-base text-[#767676] leading-relaxed">
+                    <p className="text-base text-[#1c1d20] leading-relaxed">
                       Browse brands and locations with business information from brand-verified profiles and publicly sourced data across the web.
                     </p>
                   </div>
-                    </div>
+                </div>
               </div>
 
               {/* Right side: Banner */}
@@ -241,18 +200,6 @@ function SearchContent() {
         <div className="container pt-8 pb-12 sm:pb-[100px]">
           {brandCards.length > 0 ? (
             <>
-              {/* Show dropdown - Top Right */}
-              <div className="flex justify-end mb-6">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm text-[#767676]">Show</span>
-                  <PageSizeDropdown
-                    value={pageSize}
-                    options={PAGE_SIZE_OPTIONS}
-                    onChange={handlePageSizeChange}
-                            />
-                          </div>
-                        </div>
-                        
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
                 {pageItems.map((brand) => {
                   const normalizedName = brand.name.toLowerCase().trim()
