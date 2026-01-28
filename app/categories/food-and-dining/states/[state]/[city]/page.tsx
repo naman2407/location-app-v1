@@ -99,7 +99,7 @@ function CategoryCityContent({ params }: PageProps) {
     { label: 'Home', href: '/' },
     { label: 'Food & Dining', href: '/categories/food-and-dining' },
     { label: stateName, href: `/categories/food-and-dining/states/${params.state}` },
-    { label: cityName, href: `/categories/food-and-dining/states/${params.state}/${params.city}` },
+    { label: cityName, href: '#' },
   ]
 
   return (

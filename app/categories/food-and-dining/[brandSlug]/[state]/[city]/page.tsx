@@ -60,7 +60,7 @@ function BrandCityContent({ params }: PageProps) {
     },
     { label: brand.name, href: `/categories/food-and-dining/${brand.slug}` },
     { label: state.name, href: `/categories/food-and-dining/${brand.slug}/${state.slug}` },
-    { label: city.name, href: `/categories/food-and-dining/states/${params.state}/${params.city}` },
+    { label: city.name, href: '#' },
   ]
 
   const description = brand.claimed
@@ -100,15 +100,7 @@ function BrandCityContent({ params }: PageProps) {
                           <span className="mx-2 text-[#DADCE0]">/</span>
                         </>
                       ) : (
-                        <>
-                          {crumb.href !== '#' ? (
-                            <Link href={crumb.href} className="link-primary font-medium">
-                              {crumb.label}
-                            </Link>
-                          ) : (
-                            <span className="font-medium">{crumb.label}</span>
-                          )}
-                        </>
+                        <span className="font-medium">{crumb.label}</span>
                       )}
                     </li>
                   )

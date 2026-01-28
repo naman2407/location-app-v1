@@ -75,7 +75,7 @@ export default function CategoryStateCitiesPage({ params }: PageProps) {
           <div className="container py-8 sm:py-12">
             <Breadcrumbs items={[
               { label: 'Food & Dining', href: '/categories/food-and-dining' },
-              { label: stateName, href: `/categories/food-and-dining/states/${params.state}` },
+              { label: stateName, href: '#' },
             ]} />
 
             {/* Hero Content - Horizontal Layout */}

@@ -59,19 +59,11 @@ export default function BusinessProfilePage({ params }: BusinessProfilePageProps
         href: `/categories/${categorySlug}/${brand.slug}/${state.slug}` 
       })
       
-      // If it's a related business, add related business filter to URL
-      if (relatedBusiness) {
-        crumbs.push({ 
-          label: city.name, 
-          href: `/categories/${categorySlug}/${brand.slug}/${state.slug}?city=${city.slug}&relatedBusiness=${relatedBusiness.slug}` 
-        })
-      } else {
-        // Add city (links to state page with city filter applied)
-        crumbs.push({ 
-          label: city.name, 
-          href: `/categories/${categorySlug}/${brand.slug}/${state.slug}?city=${city.slug}` 
-        })
-      }
+      // Add city (links to category city restaurants page)
+      crumbs.push({ 
+        label: city.name, 
+        href: `/categories/${categorySlug}/states/${state.slug}/${city.slug}` 
+      })
     } else {
       // Fallback to old breadcrumb logic for businesses not in brand data
     let primaryCategory = categories[0] || 'Food & Dining'

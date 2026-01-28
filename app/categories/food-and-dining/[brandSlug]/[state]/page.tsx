@@ -32,7 +32,7 @@ export default function BrandStatePage({ params }: PageProps) {
       href: isSpecialBrand ? '/brands' : (brand.category === 'Food & Dining' ? '/categories/food-and-dining' : '#') 
     },
     { label: brand.name, href: `/categories/food-and-dining/${brand.slug}` },
-    { label: state.name, href: `/categories/food-and-dining/${brand.slug}/${state.slug}` },
+    { label: state.name, href: '#' },
   ]
 
   const description = brand.claimed
@@ -72,15 +72,7 @@ export default function BrandStatePage({ params }: PageProps) {
                           <span className="mx-2 text-[#DADCE0]">/</span>
                         </>
                       ) : (
-                        <>
-                          {crumb.href !== '#' ? (
-                            <Link href={crumb.href} className="link-primary font-medium">
-                              {crumb.label}
-                            </Link>
-                          ) : (
-                            <span className="font-medium">{crumb.label}</span>
-                          )}
-                        </>
+                        <span className="font-medium">{crumb.label}</span>
                       )}
                     </li>
                   )

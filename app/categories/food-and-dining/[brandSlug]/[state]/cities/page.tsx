@@ -72,15 +72,7 @@ export default function BrandStateCitiesPage({ params }: PageProps) {
                           <span className="mx-2 text-[#DADCE0]">/</span>
                         </>
                       ) : (
-                        <>
-                          {crumb.href !== '#' ? (
-                            <Link href={crumb.href} className="link-primary font-medium">
-                              {crumb.label}
-                            </Link>
-                          ) : (
-                            <span className="font-medium">{crumb.label}</span>
-                          )}
-                        </>
+                        <span className="font-medium">{crumb.label}</span>
                       )}
                     </li>
                   )
