@@ -558,7 +558,6 @@ input::-webkit-calendar-picker-indicator {
 .biz-title-block {
   display: flex;
   flex-direction: column;
-  gap: 10px;
 }
 
 @media (min-width: 1280px) {

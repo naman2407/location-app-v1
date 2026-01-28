@@ -699,16 +699,3 @@ export function countBrandLocations(brand: Brand): number {
   return count
 }
 
-// Helper function to count locations for a state
-export function countStateLocations(state: State): number {
-  let count = 0
-  for (const city of state.cities) {
-    count += city.locations.length
-  }
-  return count
-}
-
-// Helper function to count locations for a city
-export function countCityLocations(city: City): number {
-  return city.locations.length
-}

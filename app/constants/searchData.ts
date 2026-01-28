@@ -81,19 +81,6 @@ export const locations = [
   { id: 'hd25', brandName: '84 Lumber', address: '963 12th Ave, New York, NY 10027' },
 ]
 
-// Legacy exports for backward compatibility (if needed elsewhere)
-export const brandSuggestions = brands.map(b => ({ 
-  id: b.id, 
-  name: b.name, 
-  address: '', 
-  rating: 4.2 
-}))
-
-export const locationSuggestions = [
-  { id: '1', city: 'New York', state: 'NY', full: 'New York, NY' },
-  { id: '2', city: 'Los Angeles', state: 'CA', full: 'Los Angeles, CA' },
-  { id: '3', city: 'Chicago', state: 'IL', full: 'Chicago, IL' },
-]
 
 // Function to filter brands based on search query
 export function filterBrands(query: string) {

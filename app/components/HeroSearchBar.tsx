@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter, usePathname } from 'next/navigation'
-import { brands, locations, filterBrands, filterLocations } from '../constants/searchData'
+import { filterBrands } from '../constants/searchData'
 import { SafeImage } from './SafeImage'
 import { IMAGES } from '../constants/images'
 import { getBrandPageUrl, getBusinessPageUrl } from '../constants/brandNavigation'

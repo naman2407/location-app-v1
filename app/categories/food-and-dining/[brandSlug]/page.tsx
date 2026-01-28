@@ -8,7 +8,7 @@ import { Footer } from '../../../components/Footer'
 import { VerifiedBusinessBanner } from '../../../components/VerifiedBusinessBanner'
 import { SafeImage } from '../../../components/SafeImage'
 import { IMAGES } from '../../../constants/images'
-import { getBrandBySlug, countBrandLocations, countStateLocations, countCityLocations } from '../../../constants/brandData'
+import { getBrandBySlug } from '../../../constants/brandData'
 
 interface PageProps {
   params: { brandSlug: string }
@@ -26,9 +26,14 @@ export default function BrandTopLevelPage({ params }: PageProps) {
     return null
   }
 
+  // For Taco Bell and Baskin-Robbins, show "All Brands" instead of category
+  const isSpecialBrand = params.brandSlug === 'taco-bell' || params.brandSlug === 'baskin-robbins'
   const breadcrumbs = [
     { label: 'Home', href: '/' },
-    { label: brand.category, href: brand.category === 'Food & Dining' ? '/categories/food-and-dining' : '#' },
+    { 
+      label: isSpecialBrand ? 'All Brands' : brand.category, 
+      href: isSpecialBrand ? '/brands' : (brand.category === 'Food & Dining' ? '/categories/food-and-dining' : '#') 
+    },
     { label: brand.name, href: '#' },
   ]
 
@@ -46,21 +51,39 @@ export default function BrandTopLevelPage({ params }: PageProps) {
             {/* Breadcrumbs */}
             <nav aria-label="Breadcrumb" className="mb-6">
               <ol className="flex flex-wrap items-center gap-x-2">
-                {breadcrumbs.map((crumb, index) => (
-                  <li key={crumb.label} className="flex items-center">
-                    {index < breadcrumbs.length - 1 ? (
-                      <>
-                        <Link href={crumb.href} className={`link-primary font-normal ${index === 0 ? 'flex items-center gap-1.5' : ''}`}>
-                          {index === 0 && <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />}
-                          <span>{crumb.label}</span>
-                        </Link>
-                        <span className="mx-2 text-[#DADCE0]">/</span>
-                      </>
-                    ) : (
-                      <span className="font-medium">{crumb.label}</span>
-                    )}
-                  </li>
-                ))}
+                {breadcrumbs.map((crumb, index) => {
+                  const isLast = index === breadcrumbs.length - 1
+                  return (
+                    <li key={crumb.label} className="flex items-center">
+                      {!isLast ? (
+                        <>
+                          {crumb.href !== '#' ? (
+                            <Link href={crumb.href} className={`link-primary font-normal ${index === 0 ? 'flex items-center gap-1.5' : ''}`}>
+                              {index === 0 && <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />}
+                              <span>{crumb.label}</span>
+                            </Link>
+                          ) : (
+                            <span className={`link-primary font-normal ${index === 0 ? 'flex items-center gap-1.5' : ''}`}>
+                              {index === 0 && <SafeImage src={IMAGES.home} alt="" className="w-4 h-4" />}
+                              <span>{crumb.label}</span>
+                            </span>
+                          )}
+                          <span className="mx-2 text-[#DADCE0]">/</span>
+                        </>
+                      ) : (
+                        <>
+                          {crumb.href !== '#' ? (
+                            <Link href={crumb.href} className="link-primary font-medium">
+                              {crumb.label}
+                            </Link>
+                          ) : (
+                            <span className="font-medium">{crumb.label}</span>
+                          )}
+                        </>
+                      )}
+                    </li>
+                  )
+                })}
               </ol>
             </nav>
 

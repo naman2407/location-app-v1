@@ -23,14 +23,14 @@ export function Hero() {
             {/* Description */}
             <p className="font-regular text-[16px] leading-[1.4] sm:text-[20px] sm:leading-normal text-gray-700">
               Trusted, reliable business information. Powered by TX3Y.
-            </p>
-            
+      </p>
+      
             {/* Search Bar - Hidden on mobile */}
             <div className="hidden md:block mt-6 w-full mb-4 sm:mb-0">
-              <HeroSearchBar />
+        <HeroSearchBar />
             </div>
-          </div>
-          
+      </div>
+      
           {/* Right Section */}
           <div className="flex items-center justify-center w-full lg:w-1/2">
             <SafeImage 

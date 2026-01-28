@@ -2,18 +2,18 @@
 
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { BrandHeader } from '../../../../components/BrandHeader'
-import { Footer } from '../../../../components/Footer'
-import { VerifiedBusinessBanner } from '../../../../components/VerifiedBusinessBanner'
-import { SafeImage } from '../../../../components/SafeImage'
-import { IMAGES } from '../../../../constants/images'
-import { getBrandBySlug, getStateBySlug } from '../../../../constants/brandData'
+import { BrandHeader } from '../../../../../components/BrandHeader'
+import { Footer } from '../../../../../components/Footer'
+import { VerifiedBusinessBanner } from '../../../../../components/VerifiedBusinessBanner'
+import { SafeImage } from '../../../../../components/SafeImage'
+import { IMAGES } from '../../../../../constants/images'
+import { getBrandBySlug, getStateBySlug } from '../../../../../constants/brandData'
 
 interface PageProps {
   params: { brandSlug: string; state: string }
 }
 
-export default function BrandStatePage({ params }: PageProps) {
+export default function BrandStateCitiesPage({ params }: PageProps) {
   const router = useRouter()
   const brand = getBrandBySlug(params.brandSlug)
   const state = getStateBySlug(params.brandSlug, params.state)
@@ -33,11 +33,11 @@ export default function BrandStatePage({ params }: PageProps) {
     },
     { label: brand.name, href: `/categories/food-and-dining/${brand.slug}` },
     { label: state.name, href: `/categories/food-and-dining/${brand.slug}/${state.slug}` },
+    { label: 'Cities', href: '#' },
   ]
 
-  const description = brand.claimed
-    ? `Official, brand-verified information for ${brand.name} locations in ${state.name}, including hours, FAQs, and customer feedback, sourced from the TX3Y Knowledge Graph.`
-    : `General business location information for ${brand.name} in ${state.name}.`
+  // Sort cities alphabetically
+  const sortedCities = [...state.cities].sort((a, b) => a.name.localeCompare(b.name))
 
   return (
     <div className="bg-white min-h-screen w-full flex flex-col">
@@ -149,60 +149,12 @@ export default function BrandStatePage({ params }: PageProps) {
                         </span>
                       )}
                     </div>
-                    <p className="text-base text-[#1c1d20] leading-relaxed">{description}</p>
+                    <p className="text-base text-[#1c1d20] leading-relaxed">
+                      Official, brand-verified information for {brand.name} locations in {state.name}, including hours, FAQs, and customer feedback, sourced from the TX3Y Knowledge Graph.
+                    </p>
                   </div>
                 </div>
               </div>
-
-              {/* Right side: Banner (only for unclaimed brands) */}
-              {!brand.claimed && (
-                <div className="lg:w-[420px] xl:w-[480px] shrink-0">
-                    <div className="bg-[#F2F2FA] rounded-2xl p-5 lg:p-6 flex flex-col gap-5">
-                      <h2 className="text-xl font-semibold text-[#5A58F2]">
-                        The Advantage of Brand-Verified Information
-                      </h2>
-                      <div className="flex flex-col gap-3">
-                        <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
-                          <SafeImage
-                            src={IMAGES.check}
-                            alt=""
-                            className="w-5 h-5 shrink-0 mt-0.5"
-                          />
-                          <p className="leading-relaxed">
-                            Brands that manage certified business facts through TX3Y see up to 30% more traffic compared to pages without brand-verified information.
-                          </p>
-                        </div>
-                        <div className="flex items-start gap-3 text-[15px] text-[#1c1d20]">
-                          <SafeImage
-                            src={IMAGES.arrow}
-                            alt=""
-                            className="w-5 h-5 shrink-0 mt-0.5"
-                          />
-                          <a
-                            href="https://www.yext.com/customers"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-[#1c1d20] underline hover:no-underline leading-relaxed"
-                          >
-                            Discover how other brands do this at scale
-                          </a>
-                        </div>
-                      </div>
-                      <a
-                        href="https://www.yext.com/demo"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="bg-[#5A58F2] hover:bg-[#4a48e0] text-white font-semibold px-6 py-3 rounded-full transition-colors w-fit mt-1 text-center"
-                      >
-                        Claim your competitive edge
-                      </a>
-                    </div>
-                </div>
-              )}
-              {/* Empty space for verified brands to maintain 50/50 split */}
-              {brand.claimed && (
-                <div className="lg:w-[420px] xl:w-[480px] shrink-0"></div>
-              )}
             </div>
           </div>
         </div>
@@ -210,45 +162,38 @@ export default function BrandStatePage({ params }: PageProps) {
         <div className="container pt-8 pb-12 sm:pb-[100px]">
 
           {/* Cities Grid */}
-          {(() => {
-            // Sort cities alphabetically
-            const sortedCities = [...state.cities].sort((a, b) => a.name.localeCompare(b.name))
-            
-            return (
-              <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                {sortedCities.map((city, index) => {
-                  const href = `/categories/food-and-dining/${brand.slug}/${state.slug}/${city.slug}`
-                  
-                  // Center align logic for last row
-                  const isLastCard = index === sortedCities.length - 1
-                  const lgRemainder = sortedCities.length % 5
-                  const mdRemainder = sortedCities.length % 4
-                  
-                  let centerClasses = ''
-                  if (isLastCard) {
-                    // For lg (5 columns): center if only 1 card in last row
-                    if (lgRemainder === 1) {
-                      centerClasses += ' lg:col-start-3'
-                    }
-                    // For md (4 columns): center if only 1 card in last row
-                    if (mdRemainder === 1) {
-                      centerClasses += ' md:col-start-2'
-                    }
-                  }
+          <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            {sortedCities.map((city, index) => {
+              const href = `/categories/food-and-dining/${brand.slug}/${state.slug}/${city.slug}`
+              
+              // Center align logic for last row
+              const isLastCard = index === sortedCities.length - 1
+              const lgRemainder = sortedCities.length % 5
+              const mdRemainder = sortedCities.length % 4
+              
+              let centerClasses = ''
+              if (isLastCard) {
+                // For lg (5 columns): center if only 1 card in last row
+                if (lgRemainder === 1) {
+                  centerClasses += ' lg:col-start-3'
+                }
+                // For md (4 columns): center if only 1 card in last row
+                if (mdRemainder === 1) {
+                  centerClasses += ' md:col-start-2'
+                }
+              }
 
-                  return (
-                    <Link
-                      key={city.slug}
-                      href={href}
-                      className={`card-border-normal bg-white p-6 flex items-center justify-center text-center min-h-[100px] cursor-pointer hover:bg-[#f5f5f5] transition-colors${centerClasses}`}
-                    >
-                      <span className="text-[#1c1d20] font-medium">{city.name}</span>
-                    </Link>
-                  )
-                })}
-              </div>
-            )
-          })()}
+              return (
+                <Link
+                  key={city.slug}
+                  href={href}
+                  className={`card-border-normal bg-white p-6 flex items-center justify-center text-center min-h-[100px] cursor-pointer hover:bg-[#f5f5f5] transition-colors${centerClasses}`}
+                >
+                  <span className="text-[#1c1d20] font-medium">{city.name}</span>
+                </Link>
+              )
+            })}
+          </div>
         </div>
       </div>
 
@@ -257,3 +202,4 @@ export default function BrandStatePage({ params }: PageProps) {
     </div>
   )
 }
+

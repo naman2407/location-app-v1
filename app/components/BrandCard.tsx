@@ -29,7 +29,7 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
   // Compact variant (for pages with pagination)
   if (variant === 'compact') {
     const cardContent = (
-      <div className="bg-white card-border-normal flex flex-col h-full w-full min-w-0 relative overflow-hidden lg:overflow-visible transition-[border,background-color] duration-200 group cursor-pointer">
+      <div className={`bg-white card-border-normal flex flex-col h-full w-full min-w-0 relative overflow-hidden lg:overflow-visible transition-[border,background-color] duration-200 group ${href ? 'cursor-pointer' : 'cursor-default'}`}>
         {/* Content section */}
         <div className="flex flex-col gap-2.5 p-4 min-w-0 flex-1 items-center text-center">
           {/* Logo - Square with rounded corners */}
@@ -38,9 +38,9 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
           </div>
           
           {/* Business info */}
-          <div className="flex flex-col gap-1.5 items-center leading-tight min-w-0 w-full">
-            {/* Brand name with icon */}
-            <div className="text-center w-full min-w-0 px-2 leading-normal">
+          <div className="flex flex-col gap-1.5 items-center leading-tight min-w-0 w-full flex-1">
+            {/* Brand name with icon - Top-aligned and center, natural height */}
+            <div className="text-center w-full min-w-0 px-2 leading-normal flex items-start justify-center">
               <h1 className="font-medium text-base inline-block max-w-full">
                 {(() => {
                   const nameParts = brand.name.split(' ')
@@ -78,23 +78,21 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
               </h1>
             </div>
             
-            {/* Category */}
-            <p className="font-normal text-sm text-[#767676]">
-              {brand.category}
-            </p>
-            
-            {/* Location count */}
-            <p className="font-normal text-sm text-[#767676]">
-              {locationCount} locations
-            </p>
-            
-            {/* Rating */}
-            <div className="flex gap-1.5 items-center justify-center">
+            {/* Location count and Rating - Grouped together and pushed to bottom for consistent alignment */}
+            <div className="flex flex-col gap-1.5 items-center mt-auto">
+              {/* Location count */}
               <p className="font-normal text-sm text-[#767676]">
-                {brand.rating.toFixed(1)}
+                {locationCount} locations
               </p>
-              <div className="relative shrink-0 w-[80px] h-4">
-                <SafeImage alt="Stars" className="block max-w-none w-full h-full" src={IMAGES.stars} />
+              
+              {/* Rating */}
+              <div className="flex gap-1.5 items-center justify-center">
+                <p className="font-normal text-sm text-[#767676]">
+                  {brand.rating.toFixed(1)}
+                </p>
+                <div className="relative shrink-0 w-[80px] h-4">
+                  <SafeImage alt="Stars" className="block max-w-none w-full h-full" src={IMAGES.stars} />
+                </div>
               </div>
             </div>
           </div>
@@ -136,7 +134,7 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
   
   // Default variant (for homepage)
   const cardContent = (
-    <div className="bg-white card-border-normal flex flex-col h-full w-full min-w-0 relative overflow-hidden transition-[border,background-color] duration-200 group cursor-pointer" title={brand.name}>
+    <div className={`bg-white card-border-normal flex flex-col h-full w-full min-w-0 relative overflow-hidden transition-[border,background-color] duration-200 group ${href ? 'cursor-pointer' : 'cursor-default'}`} title={brand.name}>
       {/* White upper section */}
       <div className="flex gap-3 sm:gap-4 p-4 sm:p-5 md:p-6 min-w-0 flex-1">
         {/* Logo - Square with rounded corners */}

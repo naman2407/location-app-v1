@@ -255,7 +255,10 @@ function SearchContent() {
                         
               <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-5 md:gap-6 lg:gap-6 w-full items-stretch">
                 {pageItems.map((brand) => {
-                  const brandUrl = getBrandPageUrl(brand.name)
+                  const normalizedName = brand.name.toLowerCase().trim()
+                  // Only Taco Bell and Baskin-Robbins are clickable
+                  const isClickable = normalizedName === 'taco bell' || normalizedName === 'baskin-robbins' || normalizedName === 'baskin robbins'
+                  const brandUrl = isClickable ? getBrandPageUrl(brand.name) : null
                   return (
                     <div key={brand.name}>
                       <BrandCard brand={brand} href={brandUrl || undefined} showClaimedBadge={true} variant="compact" />

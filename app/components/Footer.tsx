@@ -14,16 +14,16 @@ export function Footer() {
             <SafeImage alt="Facebook" className="block max-w-none w-full h-full" src={IMAGES.facebook} />
           </div>
           <div className="relative shrink-0 w-5 h-5 flex items-center justify-center">
-            <SafeImage alt="Instagram" className="block max-w-none w-full h-full" src={IMAGES.instagram} />
-          </div>
+              <SafeImage alt="Instagram" className="block max-w-none w-full h-full" src={IMAGES.instagram} />
+            </div>
           <div className="relative shrink-0 w-5 h-5 flex items-center justify-center">
-            <SafeImage alt="Twitter" className="block max-w-none w-full h-full" src={IMAGES.twitter} />
-          </div>
+              <SafeImage alt="Twitter" className="block max-w-none w-full h-full" src={IMAGES.twitter} />
+            </div>
           <div className="relative shrink-0 w-5 h-5 flex items-center justify-center">
-            <SafeImage alt="LinkedIn" className="block max-w-none w-full h-full" src={IMAGES.linkedin} />
-          </div>
+              <SafeImage alt="LinkedIn" className="block max-w-none w-full h-full" src={IMAGES.linkedin} />
+            </div>
           <div className="relative shrink-0 w-5 h-5 flex items-center justify-center">
-            <SafeImage alt="YouTube" className="block max-w-none w-full h-full" src={IMAGES.youtube} />
+              <SafeImage alt="YouTube" className="block max-w-none w-full h-full" src={IMAGES.youtube} />
           </div>
         </div>
       </div>

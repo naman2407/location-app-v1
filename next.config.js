@@ -12,16 +12,13 @@ const nextConfig = {
     ],
     unoptimized: true,
   },
-  // Prevent webpack chunk loading issues
-  webpack: (config, { dev }) => {
-    if (dev) {
-      // Avoid stale disk cache/chunk mismatch in dev.
-      config.cache = false
-      // Ensure consistent chunk naming across recompiles.
-      config.optimization = {
-        ...config.optimization,
-        moduleIds: 'deterministic',
-        chunkIds: 'deterministic',
+  webpack: (config, { isServer }) => {
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        net: false,
+        tls: false,
       }
     }
     return config
@@ -29,4 +26,3 @@ const nextConfig = {
 }
 
 module.exports = nextConfig
-

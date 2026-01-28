@@ -133,7 +133,7 @@ export const allBrandNames = [
   "Apple Montessori Schools",
   "Apt CoWork",
   "Aptive Environmental, LLC",
-  "aquariuswaterconditioning",
+  "Aquarius Water Conditioning",
   "aquasystems",
   "AR Sync",
   "Arcadia Home Care & Staffing",

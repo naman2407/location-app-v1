@@ -11,9 +11,10 @@ import { SearchOverlay } from './SearchOverlay'
 interface BrandHeaderProps {
   showSearch?: boolean
   fullWidth?: boolean
+  dynamicTitle?: string // For showing state or city name dynamically
 }
 
-export function BrandHeader({ showSearch = true, fullWidth = false }: BrandHeaderProps) {
+export function BrandHeader({ showSearch = true, fullWidth = false, dynamicTitle }: BrandHeaderProps) {
   const [searchOverlayOpen, setSearchOverlayOpen] = useState(false)
 
   return (
@@ -70,9 +71,15 @@ export function BrandHeader({ showSearch = true, fullWidth = false }: BrandHeade
           )}
 
           <nav className="hidden sm:flex">
-                <CustomLink href="#" className="leading-[24px] text-sm sm:text-[16px] text-center">
-                  TX3Y for Businesses
-                </CustomLink>
+                {dynamicTitle ? (
+                  <span className="leading-[24px] text-sm sm:text-[16px] text-center text-[#1c1d20] font-medium">
+                    {dynamicTitle}
+                  </span>
+                ) : (
+                  <CustomLink href="#" className="leading-[24px] text-sm sm:text-[16px] text-center">
+                    TX3Y for Businesses
+                  </CustomLink>
+                )}
           </nav>
         </div>
       </header>
