@@ -39,8 +39,8 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
           
           {/* Business info */}
           <div className="flex flex-col gap-1.5 items-center leading-tight min-w-0 w-full flex-1">
-            {/* Brand name with icon - Top-aligned and center, natural height */}
-            <div className="text-center w-full min-w-0 px-2 leading-normal flex items-start justify-center">
+            {/* Brand name with icon - Desktop: icon attached to last word, Mobile: normal layout */}
+            <div className="text-center w-full min-w-0 px-2 leading-normal">
               <h1 className="font-medium text-base inline-block max-w-full">
                 {(() => {
                   const nameParts = brand.name.split(' ')
@@ -49,37 +49,42 @@ export function BrandCard({ brand, href, showClaimedBadge = false, variant = 'de
                   
                   return (
                     <>
-                      {restOfName && <span>{restOfName} </span>}
-                      <span className="whitespace-nowrap inline-flex items-center">
-                        {lastWord}
-                        {showClaimedBadge && (
-                          <span 
-                            className="relative hidden lg:inline-flex cursor-pointer ml-2"
-                            onMouseEnter={() => setShowTooltip(true)}
-                            onMouseLeave={() => setShowTooltip(false)}
-                          >
-                            <SafeImage 
-                              alt={brand.claimed ? "Verified" : "Warning"}
-                              src={brand.claimed ? IMAGES.verified_icon : IMAGES.warning_icon}
-                              className="w-4 h-4 inline-block align-middle"
-                            />
-                            {showTooltip && (
-                              <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-50 pointer-events-none">
-                                {brand.claimed ? 'Brand-Verified Information' : 'Publicly Sourced Information'}
-                                <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900"></div>
-                              </div>
-                            )}
-                          </span>
-                        )}
+                      {/* Desktop: show split name with icon on last word */}
+                      <span className="hidden lg:inline">
+                        {restOfName && <span>{restOfName} </span>}
+                        <span className="lg:whitespace-nowrap lg:inline-flex lg:items-center">
+                          {lastWord}
+                          {showClaimedBadge && (
+                            <span 
+                              className="relative hidden lg:inline-flex cursor-pointer lg:ml-2"
+                              onMouseEnter={() => setShowTooltip(true)}
+                              onMouseLeave={() => setShowTooltip(false)}
+                            >
+                              <SafeImage 
+                                alt={brand.claimed ? "Verified" : "Warning"}
+                                src={brand.claimed ? IMAGES.verified_icon : IMAGES.warning_icon}
+                                className="w-4 h-4 inline-block align-middle"
+                              />
+                              {showTooltip && (
+                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 px-3 py-1.5 bg-gray-900 text-white text-xs rounded whitespace-nowrap z-50 pointer-events-none">
+                                  {brand.claimed ? 'Brand-Verified Information' : 'Publicly Sourced Information'}
+                                  <div className="absolute top-full left-1/2 -translate-x-1/2 -mt-px border-4 border-transparent border-t-gray-900"></div>
+                                </div>
+                              )}
+                            </span>
+                          )}
+                        </span>
                       </span>
+                      {/* Mobile/Tablet: show full name normally */}
+                      <span className="lg:hidden">{brand.name}</span>
                     </>
                   )
                 })()}
               </h1>
             </div>
             
-            {/* Location count and Rating - Grouped together and pushed to bottom for consistent alignment */}
-            <div className="flex flex-col gap-1.5 items-center mt-auto">
+            {/* Location count and Rating - Normal spacing, no mt-auto */}
+            <div className="flex flex-col gap-1.5 items-center">
               {/* Location count */}
               <p className="font-normal text-sm text-[#767676]">
                 {locationCount} locations
