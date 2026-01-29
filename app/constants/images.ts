@@ -31,6 +31,7 @@ export const IMAGES = {
   link: "/images/icons/link.svg",
   lock: "/images/icons/lock.svg",
   google_location: "/images/illustrations/google_location.png",
+  gradient: "/images/illustrations/gradient.png",
   all_brands: "/images/categories/all_brands.svg",
   brands: {
     // Brand logos for homepage

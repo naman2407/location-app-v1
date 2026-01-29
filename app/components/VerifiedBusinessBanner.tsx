@@ -3,7 +3,7 @@ import { IMAGES } from '../constants/images'
 
 export function VerifiedBusinessBanner() {
   return (
-    <div className="w-full bg-gradient-to-b from-[#1C1D20] to-[#5B2B99] py-12 sm:py-16 lg:py-20">
+    <div className="w-full py-12 sm:py-16 lg:py-20 bg-cover bg-center bg-no-repeat" style={{ backgroundImage: `url(${IMAGES.gradient})` }}>
       <div className="container">
         <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 items-start">
           {/* Left side - Title, description, and CTA */}
@@ -21,7 +21,7 @@ export function VerifiedBusinessBanner() {
                 href="https://www.yext.com/demo"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-block bg-white hover:bg-gray-200 text-[#1C1D20] font-semibold px-8 py-3 rounded-full transition-colors"
+                className="inline-block bg-[#6F42C1] hover:bg-[#5B2B99] text-white font-semibold px-8 py-3 rounded-full transition-colors"
               >
                 Claim your competitive edge
               </a>
@@ -34,7 +34,7 @@ export function VerifiedBusinessBanner() {
               <SafeImage 
                 src={IMAGES.check} 
                 alt="" 
-                className="w-6 h-6 shrink-0 mt-0.5 icon-white-filter"
+                className="w-6 h-6 shrink-0 mt-0.5 icon-green-filter"
               />
               <p className="text-white text-base">
                 Control how your business is presented by AI
@@ -44,7 +44,7 @@ export function VerifiedBusinessBanner() {
               <SafeImage 
                 src={IMAGES.check} 
                 alt="" 
-                className="w-6 h-6 shrink-0 mt-0.5 icon-white-filter"
+                className="w-6 h-6 shrink-0 mt-0.5 icon-green-filter"
               />
               <p className="text-white text-base">
                 See how your business stacks up to the competition
@@ -54,7 +54,7 @@ export function VerifiedBusinessBanner() {
               <SafeImage 
                 src={IMAGES.check} 
                 alt="" 
-                className="w-6 h-6 shrink-0 mt-0.5 icon-white-filter"
+                className="w-6 h-6 shrink-0 mt-0.5 icon-green-filter"
               />
               <p className="text-white text-base">
                 Get deeper insights from real customer feedback
@@ -83,7 +83,7 @@ export function VerifiedBusinessBanner() {
               href="https://www.yext.com/demo"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block bg-white hover:bg-gray-200 text-[#1C1D20] font-semibold px-8 py-3 rounded-full transition-colors"
+              className="inline-block bg-[#6F42C1] hover:bg-[#5B2B99] text-white font-semibold px-8 py-3 rounded-full transition-colors"
             >
               Claim your competitive edge
             </a>

@@ -706,6 +706,10 @@ input::-webkit-calendar-picker-indicator {
   filter: brightness(0) saturate(100%) invert(100%);
 }
 
+.icon-green-filter {
+  filter: brightness(0) saturate(100%) invert(88%) sepia(20%) saturate(1500%) hue-rotate(100deg) brightness(110%) contrast(90%);
+}
+
 /* Dropdown button padding */
 .dropdown-button-padding {
   padding-right: 2rem;
