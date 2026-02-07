@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useMemo, useRef, useState } from 'react'
+import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, motion, useAnimation, useReducedMotion } from 'framer-motion'
 import type { CSSProperties } from 'react'
@@ -880,7 +880,7 @@ function MiniLineChart({ reduceMotion, active, showLegend, shellVisible = true }
   )
 }
 
-export default function LineChartsDemoPage() {
+function LineChartsDemoInner() {
   const [scale, setScale] = useState(1)
   const [showCard, setShowCard] = useState(false)
   const [showContent, setShowContent] = useState(false)
@@ -1359,5 +1359,13 @@ export default function LineChartsDemoPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function LineChartsDemoPage() {
+  return (
+    <Suspense fallback={null}>
+      <LineChartsDemoInner />
+    </Suspense>
   )
 }
