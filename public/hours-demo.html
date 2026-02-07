@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Business Hours Consistency Demo</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      width: 1920px;
+      height: 1080px;
+      margin: 0;
+      padding: 0;
+      overflow: hidden;
+      background: linear-gradient(180deg, #FFFFFF 0%, #F7F9FE 100%);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      position: relative;
+    }
+
+    .browser-frame {
+      width: 1200px;
+      height: 700px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+      position: absolute;
+      transition: all 0.8s ease-in-out;
+      overflow: hidden;
+    }
+
+    .browser-frame.left {
+      left: 50%;
+      top: 50%;
+      margin-left: -600px; /* Half of browser width (1200px / 2) */
+      margin-top: -350px; /* Half of browser height (700px / 2) */
+      transform: translate(0, 0);
+    }
+
+    .browser-frame.left.zoomed {
+      left: 50%;
+      top: 50%;
+      margin-left: -660px; /* Adjusted for scale 1.1: (1200px * 1.1) / 2 */
+      margin-top: -385px; /* Adjusted for scale 1.1: (700px * 1.1) / 2 */
+      transform: scale(1.1);
+    }
+
+    .browser-frame.split-left {
+      left: 50px;
+      top: 50%;
+      transform: translateY(-50%) scale(0.9);
+    }
+
+    .browser-frame.split-right {
+      right: 50px;
+      top: 50%;
+      transform: translateY(-50%) scale(0.9);
+    }
+
+    .browser-frame.fade-out {
+      opacity: 0;
+      transform: translateY(-50%) scale(0.95);
+    }
+
+    .browser-topbar {
+      height: 48px;
+      background: #F5F5F5;
+      border-bottom: 1px solid #E0E0E0;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      gap: 8px;
+    }
+
+    .browser-button {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      background: #D0D0D0;
+    }
+
+    .browser-address-bar {
+      flex: 1;
+      height: 32px;
+      background: #fff;
+      border: 1px solid #D0D0D0;
+      border-radius: 6px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      color: #333;
+      margin: 0 8px;
+    }
+
+    .browser-content {
+      width: 100%;
+      height: calc(100% - 48px);
+      overflow-y: auto;
+      overflow-x: hidden;
+      position: relative;
+      background: #fff;
+      scroll-behavior: smooth;
+    }
+
+    .browser-content img {
+      width: 100%;
+      height: auto;
+      display: block;
+      transition: transform 1.5s ease-in-out;
+    }
+
+    .browser-content.scrolling {
+      scroll-behavior: smooth;
+    }
+
+    .browser-content.zooming {
+      overflow: hidden;
+    }
+
+    .browser-content.zooming img {
+      transform-origin: right center;
+      transform: scale(1.4) translateX(-20%);
+      transition: transform 1.5s ease-in-out;
+    }
+
+    .cursor {
+      width: 20px;
+      height: 20px;
+      position: absolute;
+      pointer-events: none;
+      z-index: 1000;
+      opacity: 0;
+    }
+
+    .cursor.visible {
+      opacity: 1;
+    }
+
+    .cursor svg {
+      width: 100%;
+      height: 100%;
+    }
+
+    .highlight-wednesday {
+      position: absolute;
+      background: rgba(135, 206, 250, 0.3);
+      border: 2px solid rgba(135, 206, 250, 0.6);
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(135, 206, 250, 0.4);
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(1);
+      transition: all 0.4s ease-in-out;
+    }
+
+    .highlight-wednesday.active {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease-in-out;
+    }
+
+    .modal-overlay.visible {
+      opacity: 1;
+      pointer-events: all;
+    }
+
+    .modal-content {
+      width: 90%;
+      max-width: 600px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      transform: scale(0.95);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    .modal-overlay.visible .modal-content {
+      transform: scale(1);
+    }
+
+    .modal-content img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .modal-highlight {
+      position: absolute;
+      background: rgba(135, 206, 250, 0.3);
+      border: 2px solid rgba(135, 206, 250, 0.6);
+      border-radius: 4px;
+      box-shadow: 0 0 20px rgba(135, 206, 250, 0.4);
+      pointer-events: none;
+      opacity: 0;
+      transform: scale(1);
+      transition: all 0.4s ease-in-out;
+    }
+
+    .modal-highlight.active {
+      opacity: 1;
+      transform: scale(1.03);
+    }
+
+    .fade-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #fff;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.5s ease-in-out;
+    }
+
+    .fade-overlay.visible {
+      opacity: 1;
+    }
+
+    .typing-text {
+      color: #333;
+      font-family: 'Courier New', monospace;
+    }
+
+    .typing-cursor {
+      display: inline-block;
+      width: 2px;
+      height: 16px;
+      background: #333;
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+  </style>
+</head>
+<body>
+  <div class="fade-overlay" id="fadeOverlay"></div>
+
+  <!-- Browser 1: Location Page -->
+  <div class="browser-frame left" id="browser1">
+    <div class="browser-topbar">
+      <div class="browser-button"></div>
+      <div class="browser-button"></div>
+      <div class="browser-button"></div>
+      <div class="browser-address-bar" id="addressBar1">
+        <span class="typing-text" id="typingText1"></span>
+        <span class="typing-cursor" id="typingCursor1"></span>
+      </div>
+    </div>
+    <div class="browser-content" id="content1">
+      <div class="highlight-wednesday" id="highlight1"></div>
+    </div>
+  </div>
+
+  <!-- Browser 2: Google Search -->
+  <div class="browser-frame split-right" id="browser2" style="opacity: 0;">
+    <div class="browser-topbar">
+      <div class="browser-button"></div>
+      <div class="browser-button"></div>
+      <div class="browser-button"></div>
+      <div class="browser-address-bar" id="addressBar2">
+        <span class="typing-text" id="typingText2"></span>
+        <span class="typing-cursor" id="typingCursor2"></span>
+      </div>
+    </div>
+    <div class="browser-content" id="content2">
+      <div class="modal-overlay" id="modalOverlay">
+        <div class="modal-content">
+          <div class="modal-highlight" id="modalHighlight"></div>
+          <img src="/images/demo/modal.png" alt="Hours Modal" id="modalImage">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cursor -->
+  <div class="cursor" id="cursor">
+    <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M3 3L10.07 19.97L12.58 12.58L19.97 10.07L3 3Z" fill="#333" stroke="#fff" stroke-width="1"/>
+    </svg>
+  </div>
+
+  <script>
+    // Animation timeline
+    const timeline = {
+      // Scene 1: Location page
+      showCursor: 500,
+      clickAddressBar1: 1000,
+      startTyping1: 1200,
+      finishTyping1: 3500,
+      loadLocationPage: 4000,
+      startScroll: 4500,
+      finishScroll: 8000,
+      zoomToHours: 8500,
+      highlightWednesday1: 9000,
+      pause1: 10000,
+
+      // Scene 2: Split screen
+      splitScreen: 9500,
+      showBrowser2: 11000,
+
+      // Scene 3: Google Search
+      clickAddressBar2: 12000,
+      startTyping2: 12200,
+      finishTyping2: 14500,
+      loadGooglePage: 15000,
+      moveToMoreHours: 16000,
+      clickMoreHours: 17000,
+
+      // Scene 4: Modal
+      showModal: 17500,
+      highlightWednesday2: 18000,
+      pause2: 19000,
+
+      // Scene 5: Outro
+      removeHighlights: 19500,
+      fadeOutBrowsers: 20000,
+      fadeToWhite: 21000,
+    };
+
+    const cursor = document.getElementById('cursor');
+    const browser1 = document.getElementById('browser1');
+    const browser2 = document.getElementById('browser2');
+    const content1 = document.getElementById('content1');
+    const content2 = document.getElementById('content2');
+    const addressBar1 = document.getElementById('addressBar1');
+    const addressBar2 = document.getElementById('addressBar2');
+    const typingText1 = document.getElementById('typingText1');
+    const typingText2 = document.getElementById('typingText2');
+    const typingCursor1 = document.getElementById('typingCursor1');
+    const typingCursor2 = document.getElementById('typingCursor2');
+    const highlight1 = document.getElementById('highlight1');
+    const modalOverlay = document.getElementById('modalOverlay');
+    const modalHighlight = document.getElementById('modalHighlight');
+    const fadeOverlay = document.getElementById('fadeOverlay');
+
+    // Calculate max scroll based on image height (assuming image is taller than viewport)
+    // This will be adjusted when image loads
+    let maxScroll = 2000; // Default, will be recalculated
+
+    function moveCursor(x, y, duration = 500) {
+      return new Promise(resolve => {
+        cursor.style.left = x + 'px';
+        cursor.style.top = y + 'px';
+        cursor.style.transition = `all ${duration}ms ease-in-out`;
+        setTimeout(resolve, duration);
+      });
+    }
+
+    function showCursor() {
+      cursor.classList.add('visible');
+    }
+
+    function hideCursor() {
+      cursor.classList.remove('visible');
+    }
+
+    function typeText(element, text, speed = 50) {
+      return new Promise(resolve => {
+        let index = 0;
+        const interval = setInterval(() => {
+          if (index < text.length) {
+            element.textContent = text.substring(0, index + 1);
+            index++;
+          } else {
+            clearInterval(interval);
+            resolve();
+          }
+        }, speed);
+      });
+    }
+
+    function loadImage(container, src) {
+      return new Promise(resolve => {
+        const img = document.createElement('img');
+        img.src = src;
+        img.onload = () => {
+          // Clear any existing content
+          const existingHighlight = container.querySelector('.highlight-wednesday');
+          container.innerHTML = '';
+          container.appendChild(img);
+          if (existingHighlight) {
+            container.appendChild(existingHighlight);
+          }
+          
+          // Calculate max scroll based on image height
+          const containerHeight = container.clientHeight;
+          const imageHeight = img.offsetHeight;
+          maxScroll = Math.max(0, imageHeight - containerHeight + 200); // Extra padding to show hours section
+          
+          // Reset scroll position
+          container.scrollTop = 0;
+          
+          resolve();
+        };
+        img.onerror = () => {
+          // Fallback if image doesn't exist
+          container.innerHTML = `<div style="padding: 40px; text-align: center; color: #666;">Image: ${src}</div>`;
+          resolve();
+        };
+      });
+    }
+
+    function scrollContent(container, targetScroll, duration) {
+      return new Promise(resolve => {
+        container.classList.add('scrolling');
+        const startScroll = container.scrollTop;
+        const startTime = Date.now();
+        
+        function animate() {
+          const elapsed = Date.now() - startTime;
+          const progress = Math.min(elapsed / duration, 1);
+          // Smooth ease-in-out curve
+          const easeProgress = progress < 0.5 
+            ? 2 * progress * progress 
+            : -1 + (4 - 2 * progress) * progress;
+          
+          const currentScroll = startScroll + (targetScroll - startScroll) * easeProgress;
+          container.scrollTop = currentScroll;
+          
+          if (progress < 1) {
+            requestAnimationFrame(animate);
+          } else {
+            container.classList.remove('scrolling');
+            resolve();
+          }
+        }
+        
+        requestAnimationFrame(animate);
+      });
+    }
+
+    function highlightWednesday(highlightElement, container, isModal = false) {
+      // Position highlight over Wednesday row in the right section
+      // These coordinates are approximate and should be adjusted based on actual image
+      const rect = container.getBoundingClientRect();
+      // For the location page, hours are typically on the right side
+      const highlightY = isModal ? rect.height * 0.4 : rect.height * 0.6;
+      // Position on the right side (around 60-80% from left)
+      const highlightX = isModal ? rect.width * 0.1 : rect.width * 0.6;
+      const highlightWidth = isModal ? rect.width * 0.8 : rect.width * 0.35;
+      const highlightHeight = rect.height * 0.05;
+
+      highlightElement.style.left = highlightX + 'px';
+      highlightElement.style.top = highlightY + 'px';
+      highlightElement.style.width = highlightWidth + 'px';
+      highlightElement.style.height = highlightHeight + 'px';
+      highlightElement.classList.add('active');
+    }
+
+    function zoomToHours() {
+      // First disable scrolling, then zoom smoothly
+      content1.classList.remove('scrolling');
+      content1.classList.add('zooming');
+      // Keep browser centered while zooming
+      browser1.classList.add('zoomed');
+      browser1.style.transition = 'transform 1.5s ease-in-out';
+    }
+
+    async function runAnimation() {
+      // Scene 1: Location Page
+      await new Promise(r => setTimeout(r, timeline.showCursor));
+      showCursor();
+      
+      await moveCursor(960, 540, 300);
+      await new Promise(r => setTimeout(r, timeline.clickAddressBar1 - timeline.showCursor - 300));
+      
+      // Click address bar
+      const addressBarRect = addressBar1.getBoundingClientRect();
+      await moveCursor(addressBarRect.left + addressBarRect.width / 2, addressBarRect.top + addressBarRect.height / 2, 200);
+      
+      await new Promise(r => setTimeout(r, timeline.startTyping1 - timeline.clickAddressBar1));
+      
+      // Type URL
+      typingCursor1.style.display = 'inline-block';
+      await typeText(typingText1, 'www.location.com', 60);
+      typingCursor1.style.display = 'none';
+      
+      await new Promise(r => setTimeout(r, timeline.loadLocationPage - timeline.finishTyping1));
+      
+      // Load location page
+      await loadImage(content1, '/images/demo/location.png');
+      
+      await new Promise(r => setTimeout(r, timeline.startScroll - timeline.loadLocationPage));
+      
+      // Scroll down
+      await scrollContent(content1, maxScroll, timeline.finishScroll - timeline.startScroll);
+      
+      await new Promise(r => setTimeout(r, timeline.zoomToHours - timeline.finishScroll));
+      
+      // Zoom to hours section
+      zoomToHours();
+      
+      await new Promise(r => setTimeout(r, timeline.highlightWednesday1 - timeline.zoomToHours));
+      
+      // Highlight Wednesday
+      highlightWednesday(highlight1, content1);
+      
+      await new Promise(r => setTimeout(r, timeline.pause1 - timeline.highlightWednesday1));
+      
+      // Scene 2: Split Screen
+      browser1.classList.remove('left', 'zoomed');
+      browser1.classList.add('split-left');
+      browser1.style.transform = ''; // Reset inline transform
+      
+      await new Promise(r => setTimeout(r, timeline.showBrowser2 - timeline.splitScreen));
+      
+      browser2.style.opacity = '1';
+      browser2.style.transition = 'opacity 0.5s ease-in-out';
+      
+      await new Promise(r => setTimeout(r, timeline.clickAddressBar2 - timeline.showBrowser2));
+      
+      // Scene 3: Google Search
+      const addressBar2Rect = addressBar2.getBoundingClientRect();
+      await moveCursor(addressBar2Rect.left + addressBar2Rect.width / 2, addressBar2Rect.top + addressBar2Rect.height / 2, 200);
+      
+      await new Promise(r => setTimeout(r, timeline.startTyping2 - timeline.clickAddressBar2));
+      
+      typingCursor2.style.display = 'inline-block';
+      await typeText(typingText2, 'www.google.com', 60);
+      typingCursor2.style.display = 'none';
+      
+      await new Promise(r => setTimeout(r, timeline.loadGooglePage - timeline.finishTyping2));
+      
+      await loadImage(content2, '/images/demo/Google Search.png');
+      
+      await new Promise(r => setTimeout(r, timeline.moveToMoreHours - timeline.loadGooglePage));
+      
+      // Move to "More hours" button (approximate position)
+      const content2Rect = content2.getBoundingClientRect();
+      await moveCursor(content2Rect.left + content2Rect.width * 0.7, content2Rect.top + content2Rect.height * 0.3, 300);
+      
+      await new Promise(r => setTimeout(r, timeline.clickMoreHours - timeline.moveToMoreHours));
+      
+      // Click
+      await new Promise(r => setTimeout(r, 200));
+      
+      await new Promise(r => setTimeout(r, timeline.showModal - timeline.clickMoreHours));
+      
+      // Scene 4: Modal
+      modalOverlay.classList.add('visible');
+      
+      await new Promise(r => setTimeout(r, timeline.highlightWednesday2 - timeline.showModal));
+      
+      highlightWednesday(modalHighlight, modalOverlay, true);
+      
+      await new Promise(r => setTimeout(r, timeline.pause2 - timeline.highlightWednesday2));
+      
+      // Scene 5: Outro
+      await new Promise(r => setTimeout(r, timeline.removeHighlights - timeline.pause2));
+      
+      highlight1.classList.remove('active');
+      modalHighlight.classList.remove('active');
+      
+      await new Promise(r => setTimeout(r, timeline.fadeOutBrowsers - timeline.removeHighlights));
+      
+      browser1.classList.add('fade-out');
+      browser2.classList.add('fade-out');
+      hideCursor();
+      
+      await new Promise(r => setTimeout(r, timeline.fadeToWhite - timeline.fadeOutBrowsers));
+      
+      fadeOverlay.classList.add('visible');
+    }
+
+    // Start animation on load
+    window.addEventListener('load', () => {
+      setTimeout(runAnimation, 500);
+    });
+  </script>
+</body>
+</html>
+

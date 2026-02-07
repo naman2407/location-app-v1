@@ -103,10 +103,10 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
   useEffect(() => {
     if (variant === 'overlay' && inputRef.current) {
       // Small delay to ensure overlay is rendered
-      setTimeout(() => {
+    setTimeout(() => {
         inputRef.current?.focus()
       }, 150)
-    }
+  }
   }, [variant])
 
   // Handle input blur (with delay to allow clicks)
@@ -194,8 +194,8 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
           router.push(businessUrl)
           setShowDropdown(false)
           setHighlightedIndex(-1)
-          return
-        }
+      return
+    }
       }
       // Fallback: populate input
       setQuery(`${suggestion.brandName} — ${suggestion.address}`)
@@ -278,7 +278,7 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
     <div 
       ref={containerRef}
       className={containerClasses}
-    >
+      >
       <div className="flex items-center relative flex-1">
         {/* Unified Input Field */}
           <input
@@ -370,7 +370,7 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
                     className={`flex items-center gap-3 px-5 py-3 cursor-pointer transition-colors ${
                       isHighlighted ? 'bg-[#F6F6F6]' : 'hover:bg-[#F6F6F6]'
                     } ${index < filteredBrands.length - 1 ? 'border-b border-[#ebebeb]' : ''}`}
-                  >
+                >
                     {/* Brand Image Placeholder */}
                     <div className="w-10 h-10 flex-shrink-0 flex items-center justify-center bg-[#f0f0f0] rounded overflow-hidden">
                       <SafeImage 
@@ -378,7 +378,7 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
                         className="w-full h-full object-contain" 
                         src={brand.image || '/images/brands/mcd.png'} 
                       />
-                    </div>
+                </div>
                     {/* Brand Name and Badge (Mobile) */}
                     <div className="flex flex-col gap-2 flex-1 md:flex-row md:items-center md:gap-0 md:justify-between">
                       <span className="text-sm text-[#000000] font-semibold flex-1">
@@ -398,12 +398,12 @@ export function HeroSearchBar({ initialQuery = '', variant = 'inline', onSearchI
                               Publicly Sourced
                             </span>
                           )}
-                        </div>
-                      )}
-                    </div>
+          </div>
+        )}
+      </div>
                 </div>
               )
-              })}
+            })}
             </>
           )}
           </div>

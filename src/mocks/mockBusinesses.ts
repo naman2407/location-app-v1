@@ -1988,4 +1988,86 @@ export const mockBusinesses: Business[] = [
       { question: 'How does mobile ordering work?', answer: 'Download the Taco Bell app, place your order, and pick it up at the designated mobile pickup area.' },
     ],
   },
+  // Galaxy Grill - NYC (Publicly Sourced)
+  {
+    slug: 'galaxy-grill-nyc',
+    name: 'Galaxy Grill',
+    rating: 4.1,
+    reviewCount: 287,
+    statusText: 'Open Now',
+    closesAt: '10:00 PM',
+    claimed: false,
+    address: {
+      line1: '245 8th Ave',
+      city: 'New York',
+      state: 'NY',
+      postalCode: '10011',
+    },
+    phone: '(212) 555-0300',
+    website: 'https://www.galaxygrill.com',
+    links: [
+      { label: 'Google', href: 'https://maps.google.com' },
+      { label: 'Facebook', href: 'https://facebook.com/galaxygrill' },
+      { label: 'Instagram', href: 'https://instagram.com/galaxygrill' },
+    ],
+    descriptor: 'Restaurant · American · Casual Dining',
+    about:
+      'Galaxy Grill is a popular neighborhood restaurant in New York City serving classic American comfort food with a modern twist. Known for their burgers, wings, and friendly atmosphere, this Chelsea location has been a local favorite for years.',
+    detailsPrimary: ['Dine-in', 'Takeout', 'Credit card', 'Debit card'],
+    detailsMore: ['Wheelchair accessible', 'Parking available', 'Wi-Fi', 'Restrooms', 'Outdoor seating'],
+    hours: {
+      openNowText: 'Open Now • Closes at 10:00 PM',
+      rows: [
+        { day: 'Monday', range: '11:00 AM – 10:00 PM' },
+        { day: 'Tuesday', range: '11:00 AM – 10:00 PM' },
+        { day: 'Wednesday', range: '11:00 AM – 10:00 PM' },
+        { day: 'Thursday', range: '11:00 AM – 10:00 PM' },
+        { day: 'Friday', range: '11:00 AM – 11:00 PM' },
+        { day: 'Saturday', range: '11:00 AM – 11:00 PM' },
+        { day: 'Sunday', range: '12:00 PM – 9:00 PM' },
+      ],
+    },
+    ratingHistogram: [
+      { stars: 5, count: 145 },
+      { stars: 4, count: 78 },
+      { stars: 3, count: 35 },
+      { stars: 2, count: 18 },
+      { stars: 1, count: 11 },
+    ],
+    aiSummary:
+      'Customers appreciate the generous portions, flavorful burgers, and friendly service at this Chelsea location. The casual atmosphere and reasonable prices make it a great spot for families and groups. Some reviewers note it can get busy during peak hours.',
+    reviews: [
+      {
+        author: 'Michael R.',
+        rating: 5,
+        date: '2 weeks ago',
+        text: 'Great burgers and wings! The staff is always friendly and the food comes out quickly. My go-to spot in Chelsea.',
+      },
+      {
+        author: 'Jennifer L.',
+        rating: 4,
+        date: '3 weeks ago',
+        text: 'Solid neighborhood restaurant. The burgers are juicy and the fries are crispy. Good value for money.',
+      },
+      {
+        author: 'David K.',
+        rating: 4,
+        date: '1 month ago',
+        text: 'Nice casual spot. Food is consistently good. Gets crowded on weekends but worth the wait.',
+      },
+      {
+        author: 'Sarah T.',
+        rating: 3,
+        date: '1 month ago',
+        text: 'Decent food but service can be slow when busy. Prices are fair for the area.',
+      },
+      {
+        author: 'Robert M.',
+        rating: 5,
+        date: '2 months ago',
+        text: 'Love this place! The wings are amazing and the portions are huge. Great for watching games too.',
+      },
+    ],
+    faqs: [],
+  },
 ]
