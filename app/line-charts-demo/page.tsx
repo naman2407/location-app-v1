@@ -896,7 +896,7 @@ export default function LineChartsDemoPage() {
   const [showScene2CardContent, setShowScene2CardContent] = useState(false)
   const [fadeOut, setFadeOut] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
-  const reduceMotion = useReducedMotion()
+  const reduceMotion = useReducedMotion() ?? undefined
   const runIdRef = useRef(0)
   const scene2RunIdRef = useRef(0)
   const scene2CompletedRef = useRef(false)
