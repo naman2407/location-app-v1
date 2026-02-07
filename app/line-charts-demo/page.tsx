@@ -55,7 +55,7 @@ function OdometerNumber({
     return Array.from({ length: cycles * 10 }, (_, i) => i % 10)
   }, [extraCycles])
   const effectiveDuration = duration + extraCycles * 0.8
-  const ease = [0.16, 1, 0.3, 1] as const
+  const ease: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
   if (reduceMotion) {
     return (
