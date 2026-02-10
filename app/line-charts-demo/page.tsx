@@ -2,15 +2,18 @@
 
 import { Suspense, useEffect, useMemo, useRef, useState } from 'react'
 import { useSearchParams } from 'next/navigation'
-import { AnimatePresence, motion, useAnimation, useReducedMotion } from 'framer-motion'
+import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion } from 'framer-motion'
 import type { CSSProperties } from 'react'
 
-const CARD_SHADOW = '0 2px 8px rgba(0, 0, 0, 0.1)'
+const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
+const CARD_SHADOW = DEMO_SHADOW
 const SCENE_VARIANTS = {
   enter: { x: 220, opacity: 0 },
   center: { x: 0, opacity: 1 },
   exit: { opacity: 0 },
 }
+const SCENE2_OUTSIDE_X = 2200
+const ODOMETER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 type OdometerNumberProps = {
   value: string | number
@@ -51,11 +54,11 @@ function OdometerNumber({
   const startDigitsTrimmed = startDigitsRaw.slice(-targetDigits.length)
   const startDigitsPadded = startDigitsTrimmed.padStart(targetDigits.length, '0')
   const digits = useMemo(() => {
-    const cycles = Math.max(0, extraCycles) + 1
+    // Keep at least two full cycles so forward rolling never runs out of strip.
+    const cycles = Math.max(0, extraCycles) + 2
     return Array.from({ length: cycles * 10 }, (_, i) => i % 10)
   }, [extraCycles])
-  const effectiveDuration = duration + extraCycles * 0.8
-  const ease: [number, number, number, number] = [0.16, 1, 0.3, 1]
+  const effectiveDuration = duration + extraCycles * 0.45
 
   if (reduceMotion) {
     return (
@@ -80,19 +83,21 @@ function OdometerNumber({
         const digit = Number(char)
         const digitIndex = formatted.slice(0, index + 1).replace(/\D/g, '').length - 1
         const startDigit = Number(startDigitsPadded[digitIndex] ?? 0)
-        const startOffset = startDigit + extraCycles * 10
+        let targetOffset = digit + Math.max(0, extraCycles) * 10
+        while (targetOffset <= startDigit) {
+          targetOffset += 10
+        }
         const digitDelay = startDelay + delay + index * 0.03
 
         return (
           <OdometerDigit
             key={`${char}-${index}`}
-            digit={digit}
-            startOffset={startOffset}
+            startOffset={startDigit}
+            targetOffset={targetOffset}
             digitHeight={digitHeight}
             digitWidth={digitWidth}
             duration={effectiveDuration}
             delay={digitDelay}
-            ease={ease}
             digits={digits}
           />
         )
@@ -115,38 +120,35 @@ function OdometerNumber({
 }
 
 type OdometerDigitProps = {
-  digit: number
   startOffset: number
+  targetOffset: number
   digitHeight: number
   digitWidth: number
   duration: number
   delay: number
-  ease: [number, number, number, number]
   digits: number[]
 }
 
 function OdometerDigit({
-  digit,
   startOffset,
+  targetOffset,
   digitHeight,
   digitWidth,
   duration,
   delay,
-  ease,
   digits,
 }: OdometerDigitProps) {
-  const controls = useAnimation()
+  const y = useMotionValue(-digitHeight * startOffset)
 
   useEffect(() => {
-    controls.set({ y: -digitHeight * startOffset })
-    const raf = requestAnimationFrame(() => {
-      controls.start({
-        y: -digitHeight * digit,
-        transition: { duration, delay, ease },
-      })
+    y.set(-digitHeight * startOffset)
+    const controls = animate(y, -digitHeight * targetOffset, {
+      duration,
+      delay,
+      ease: ODOMETER_EASE,
     })
-    return () => cancelAnimationFrame(raf)
-  }, [controls, digit, startOffset, digitHeight, duration, delay, ease])
+    return () => controls.stop()
+  }, [y, startOffset, targetOffset, digitHeight, duration, delay])
 
   return (
     <span
@@ -157,7 +159,7 @@ function OdometerDigit({
         lineHeight: `${digitHeight}px`,
       }}
     >
-      <motion.span className="block" animate={controls} initial={false} style={{ display: 'block' }}>
+      <motion.span className="block" style={{ display: 'block', y }}>
         {digits.map((num, idx) => (
           <span
             key={`${num}-${idx}`}
@@ -516,9 +518,7 @@ function GaugeCard({
         borderWidth,
         boxShadow: noShadow
           ? '0 0 0 rgba(15, 23, 42, 0)'
-          : highlight
-            ? '0 0 0 rgba(92, 104, 255, 0)'
-            : '0 6px 14px rgba(15, 23, 42, 0.06)',
+          : DEMO_SHADOW,
       }}
       initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
       animate={active ? { opacity: 1, y: 0 } : { opacity: 0, y: 16 }}
@@ -1065,7 +1065,7 @@ function LineChartsDemoInner() {
           style={{
             width: '1920px',
             height: '1080px',
-            opacity: fadeOut ? 0 : 1,
+            opacity: scene === 2 ? 1 : fadeOut ? 0 : 1,
             transition: 'opacity 0.6s ease-out',
           }}
         >
@@ -1121,7 +1121,7 @@ function LineChartsDemoInner() {
                           iconSrc="/images/demo/rating.svg"
                           iconBg="#FCD34D"
                           reduceMotion={reduceMotion}
-                          startDelay={0}
+                          startDelay={0.6}
                           active={showContent}
                         />
                         <KpiMetric
@@ -1134,7 +1134,7 @@ function LineChartsDemoInner() {
                           iconBg="#FBCFE8"
                           valueColor="#6F7074"
                           reduceMotion={reduceMotion}
-                          startDelay={0}
+                          startDelay={0.6}
                           active={showContent}
                         />
                         <KpiMetric
@@ -1151,7 +1151,7 @@ function LineChartsDemoInner() {
                           valueColor="#6F7074"
                           deltaDirection="down"
                           reduceMotion={reduceMotion}
-                          startDelay={0}
+                          startDelay={0.6}
                           active={showContent}
                         />
                         <KpiMetric
@@ -1165,7 +1165,7 @@ function LineChartsDemoInner() {
                           iconBg="#BBF7D0"
                           valueColor="#6F7074"
                           reduceMotion={reduceMotion}
-                          startDelay={0}
+                          startDelay={0.6}
                           active={showContent}
                         />
                       </motion.div>
@@ -1202,15 +1202,23 @@ function LineChartsDemoInner() {
               <motion.div
                 key="scene-2"
                 className="absolute inset-0 flex items-center justify-center"
-                variants={SCENE_VARIANTS}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                initial={reduceMotion ? { x: 0, opacity: 1 } : { x: SCENE2_OUTSIDE_X, opacity: 0 }}
+                animate={
+                  reduceMotion
+                    ? { x: 0, opacity: fadeOut ? 0 : 1 }
+                    : fadeOut
+                      ? { x: -SCENE2_OUTSIDE_X, opacity: 0 }
+                      : { x: 0, opacity: 1 }
+                }
+                exit={reduceMotion ? { opacity: 0 } : { x: -SCENE2_OUTSIDE_X, opacity: 0 }}
+                transition={{
+                  duration: fadeOut ? 0.8 : 0.7,
+                  ease: [0.22, 1, 0.36, 1],
+                }}
               >
                 <div
                   className="bg-white rounded-[14px] border"
-                  style={{ width: '1280px', padding: '14px', borderColor: '#DADCE0', boxShadow: '0 10px 26px rgba(15, 23, 42, 0.08)' }}
+                  style={{ width: '1280px', padding: '14px', borderColor: '#DADCE0', boxShadow: DEMO_SHADOW }}
                 >
                   <div className="grid grid-cols-[380px,1fr] gap-[16px] items-stretch">
                     <motion.div

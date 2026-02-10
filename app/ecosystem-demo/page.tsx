@@ -312,7 +312,7 @@ export default function EcosystemDemoPage() {
                       cx="114.917"
                       cy="101.344"
                       r="2.5"
-                      fill="#5755EF"
+                      fill="#5A58F2"
                       initial={{ scale: 0, opacity: 0 }}
                       animate={showCenterLogo && !reverseLocationLogo ? { scale: 1, opacity: 1 } : reverseLocationLogo ? { scale: 0, opacity: 0 } : {}}
                       transition={{ 

@@ -4,6 +4,8 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { SafeImage } from '../components/SafeImage'
 
+const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
+
 export default function HoursDemoPage() {
   const [showBrowser, setShowBrowser] = useState(false)
   const [urlText, setUrlText] = useState('')
@@ -350,10 +352,14 @@ Would you like the restaurant's phone number, directions, or menu?`
       // Fade out browsers
       await Promise.all([
         browser1Controls.start({
+          left: '-18%',
+          x: '-50%',
           opacity: 0,
           transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
         }),
         browser2Controls.start({
+          left: '118%',
+          x: '-50%',
           opacity: 0,
           transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
         })
@@ -432,7 +438,7 @@ Would you like the restaurant's phone number, directions, or menu?`
             <AnimatePresence>
               {showBrowser && (
                 <motion.div
-                  className="absolute bg-white rounded-xl shadow-lg overflow-hidden"
+                  className="absolute bg-white rounded-xl overflow-hidden"
                   style={{
                     width: '1400px',
                     height: '800px',
@@ -440,6 +446,7 @@ Would you like the restaurant's phone number, directions, or menu?`
                     top: '50%',
                     x: '-50%',
                     y: '-50%',
+                    boxShadow: DEMO_SHADOW,
                   }}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -671,12 +678,13 @@ Would you like the restaurant's phone number, directions, or menu?`
             <AnimatePresence>
               {showLocationBrowser && (
                 <motion.div
-                  className="absolute bg-white rounded-xl shadow-lg overflow-hidden"
+                  className="absolute bg-white rounded-xl overflow-hidden"
                   style={{
                     width: '1200px',
                     height: '700px',
                     left: '50%',
                     top: '50%',
+                    boxShadow: DEMO_SHADOW,
                   }}
                   animate={browser1Controls}
                   initial={{
@@ -735,14 +743,15 @@ Would you like the restaurant's phone number, directions, or menu?`
             <AnimatePresence>
               {showGoogleBrowser && (
                 <motion.div
-                  className="absolute bg-white rounded-xl shadow-lg overflow-hidden"
+                  className="absolute bg-white rounded-xl overflow-hidden"
                   style={{
                     width: '1200px',
                     height: '700px',
+                    boxShadow: DEMO_SHADOW,
                   }}
                   animate={browser2Controls}
                   initial={{
-                    left: '100%',
+                    left: '118%',
                     top: '50%',
                     x: '-50%',
                     y: '-45%',

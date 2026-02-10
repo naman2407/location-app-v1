@@ -4,7 +4,6 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-const PROGRESS_SIDE_PADDING = 432
 const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
 const DEMO_DROP_SHADOW = 'drop-shadow(0 10px 24px rgba(15, 23, 42, 0.12))'
 
@@ -19,20 +18,10 @@ export default function KnowledgeGraphDemoPage() {
   const [node1State, setNode1State] = useState<'inactive' | 'loading' | 'complete'>('inactive')
   const [node2State, setNode2State] = useState<'inactive' | 'loading' | 'complete'>('inactive')
   const [node3State, setNode3State] = useState<'inactive' | 'loading' | 'complete'>('inactive')
-  const [lineProgress, setLineProgress] = useState(0)
-  const [modalExitX, setModalExitX] = useState('-50%') // Modal position
+  const modalExitX = '-50%' // Modal position
   const [fadeOut, setFadeOut] = useState(false)
   const [scale, setScale] = useState(1)
-  const [nodesPosition, setNodesPosition] = useState({ x: 0 }) // For centering nodes after animation
-  const [lineTravelProgress, setLineTravelProgress] = useState(0) // For traveling line effect
-  const [lineStage, setLineStage] = useState<'container' | 'nodes'>('container') // Track which stage of line animation
-  const [line1Progress, setLine1Progress] = useState(0) // Line from left to node 1
-  const [line2Progress, setLine2Progress] = useState(0) // Line from node 1 to node 2
-  const [line3Progress, setLine3Progress] = useState(0) // Line from node 2 to node 3
-  const [line4Progress, setLine4Progress] = useState(0) // Line from node 3 to end
-  const [showLabels, setShowLabels] = useState(true) // Control visibility of node labels
   const [showCards, setShowCards] = useState(false) // Control visibility of publisher cards
-  const [cardsPosition, setCardsPosition] = useState({ x: 0 }) // Position of cards container
   const [showCursor, setShowCursor] = useState(false)
   const [cursorPosition, setCursorPosition] = useState({ x: 50, y: 50 })
   const [cursorClicking, setCursorClicking] = useState(false)
@@ -216,80 +205,36 @@ export default function KnowledgeGraphDemoPage() {
       await sleep(500) // Show success state
       setShowCursor(false)
 
-      // Beat D: Animated path extends from container's right edge, container moves with the line, nodes center
+      // Beat D: Replace node/line stepper with 3 loader cards
       await sleep(200)
-
-      // Remove highlight and blur when starting the path animation (after Update is clicked)
       setHighlightWednesday(false)
       setOtherRowsOpacity(1)
+      setShowModal(false)
+      await sleep(300)
 
-      // Stage 1: Line extends LEFT TO RIGHT from container's right edge (no labels visible)
       setShowProgress(true)
-      setShowLabels(false) // Hide labels during first line animation
-      setLineStage('container')
-      setLineProgress(1) // Start drawing path from container's right edge going LEFT TO RIGHT
-      setLineTravelProgress(1) // Traveling effect - dot moves along the line
-      await sleep(600) // Line extends left to right
-
-      // Stage 2: Hide container, everything disappears
-      setShowModal(false) // Hide the container/modal
-      await sleep(300) // Fade out container
-
-      // Stage 3: Show line on next frame - extends left to right to first node/circle
-      setLineStage('nodes')
-      setLine1Progress(0) // Reset line 1
-      setLine2Progress(0) // Reset line 2
-      setLine3Progress(0) // Reset line 3
-      setLine4Progress(0) // Reset line 4
-      setLineTravelProgress(0) // Reset traveling dot
-      await sleep(100) // Small pause
-      setShowLabels(true) // Show labels now
-
-      // Center the nodes container (remove the 20% offset)
-      setNodesPosition({ x: 0 }) // Move nodes to center (0% = centered)
-
-      // Line 1: Extends from left page edge to Node 1
-      setLine1Progress(1)
-      await sleep(600)
-
-      // Node 1: Start loading, then complete
       setNode1State('loading')
-      await sleep(900) // Processing time
+      setNode2State('inactive')
+      setNode3State('inactive')
+      await sleep(1900)
       setNode1State('complete')
-      await sleep(300) // Hold completed state
+      await sleep(250)
 
-      // Line 2: Extends from Node 1 (464px) to Node 2 (960px)
-      setLine2Progress(1) // Draw line from node 1 to node 2 (dot moves automatically with line)
-      await sleep(600) // Line extends to second node
-
-      // Node 2: Start loading, then complete
       setNode2State('loading')
-      await sleep(900) // Processing time (equal to node 1 and node 3)
+      await sleep(1900)
       setNode2State('complete')
-      await sleep(300) // Hold completed state
+      await sleep(250)
 
-      // Line 3: Extends from Node 2 (960px) to Node 3 (1456px)
-      setLine3Progress(1) // Draw line from node 2 to node 3 (dot moves automatically with line)
-      await sleep(600) // Line extends to third node
-
-      // Node 3: Start loading, then complete
       setNode3State('loading')
-      await sleep(900) // Processing time (equal to node 1 and node 2)
+      await sleep(1900)
       setNode3State('complete')
-      await sleep(300) // Hold completed state
+      await sleep(450)
 
-      // Line 4: Extends from Node 3 to right page edge
-      setLine4Progress(1)
-      await sleep(600)
-
-      // Move everything out of frame
-      setNodesPosition({ x: -150 }) // Move nodes container completely out of frame
-      setShowProgress(false) // Hide progress stepper
-      await sleep(600) // Animation duration
+      setShowProgress(false)
+      await sleep(300)
 
       // Show publisher cards (centered, no container)
       setShowCards(true)
-      setCardsPosition({ x: 0 }) // Cards appear centered
       await sleep(10000) // Show cards for 10 seconds
 
       // Fade out everything
@@ -420,11 +365,11 @@ export default function KnowledgeGraphDemoPage() {
                       alt="KG"
                       className="w-6 h-6"
                     />
-                    <span className="text-xl font-semibold text-gray-900">
+                    <span className="text-xl font-semibold" style={{ color: '#101827' }}>
                       Knowledge Graph
                     </span>
-                    <span className="text-lg text-gray-400">|</span>
-                    <span className="text-xl font-semibold text-gray-900">
+                    <span className="text-lg" style={{ color: '#101827' }}>|</span>
+                    <span className="text-xl font-semibold" style={{ color: '#101827' }}>
                       Business Hours
                     </span>
                   </div>
@@ -446,7 +391,7 @@ export default function KnowledgeGraphDemoPage() {
                           opacity: isWednesdayHighlighted ? 1 : otherRowsOpacity, // Wednesday always in focus when highlighted or editing, others blurred
                         }}
                       >
-                        <div className="w-20 text-sm font-medium text-gray-700">
+                        <div className="w-20 text-sm font-medium" style={{ color: '#101827' }}>
                           {item.day}:
                         </div>
                         <div className="flex items-center gap-2 flex-1 justify-end">
@@ -455,7 +400,7 @@ export default function KnowledgeGraphDemoPage() {
                             className="px-3 py-1.5 rounded-lg text-sm"
                             style={{
                               background: isWednesday && isEditingStartTime ? '#FFFFFF' : '#F3F4F6',
-                              color: '#374151',
+                              color: '#101827',
                               minWidth: '90px',
                               textAlign: 'center',
                               border: isWednesday && isEditingStartTime ? '2px solid #5A58F2' : '2px solid transparent',
@@ -465,13 +410,13 @@ export default function KnowledgeGraphDemoPage() {
                           >
                             {item.start}
                           </motion.div>
-                          <span className="text-sm text-gray-500">to</span>
+                          <span className="text-sm" style={{ color: '#101827' }}>to</span>
                           {/* End time pill */}
                           <motion.div
                             className="px-3 py-1.5 rounded-lg text-sm relative"
                             style={{
                               background: (isWednesday && isEditingEndTime) ? '#FFFFFF' : '#F3F4F6',
-                              color: '#374151',
+                              color: '#101827',
                               border: (isWednesday && isEditingEndTime) ? '2px solid #5A58F2' : '2px solid transparent',
                               boxShadow: (isWednesday && isEditingEndTime) ? '0 0 0 3px rgba(90, 88, 242, 0.1)' : 'none',
                               minWidth: '90px',
@@ -542,18 +487,24 @@ export default function KnowledgeGraphDemoPage() {
                         />
                       </motion.svg>
                     ) : saveButtonState === 'success' ? (
-                      <svg
+                      <motion.svg
                         className="w-5 h-5"
                         viewBox="0 0 24 24"
                         fill="none"
+                        initial={{ opacity: 0, scale: 0.75 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        transition={{ duration: 0.25, ease: [0.34, 1.56, 0.64, 1] }}
                       >
-                        <path
-                          d="M20 6L9 17l-5-5"
+                        <motion.path
+                          d="M6 12L10 16L18 8"
                           stroke="white"
                           strokeWidth="2"
                           strokeLinejoin="round"
+                          initial={{ pathLength: 0 }}
+                          animate={{ pathLength: 1 }}
+                          transition={{ duration: 0.35, delay: 0.08, ease: [0.4, 0, 0.2, 1] }}
                         />
-                      </svg>
+                      </motion.svg>
                     ) : (
                       'Update'
                     )}
@@ -564,304 +515,137 @@ export default function KnowledgeGraphDemoPage() {
           )}
         </AnimatePresence>
 
-        {/* Progress Stepper - Full width path from container to nodes */}
+        {/* 3-step Loader Cards */}
         <AnimatePresence>
           {showProgress && (
             <motion.div
               className="absolute"
+              initial={{ opacity: 0, scale: 0.99 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.99 }}
+              transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
               style={{
-                left: 0,
-                right: 0,
-                top: '50%',
-                transform: 'translateY(-50%)',
-                width: '100%',
-              }}
-              initial={{ opacity: 0, x: '20%' }} // Start offset to the right
-              animate={{
-                opacity: 1,
-                x: `${nodesPosition.x}%`, // Center nodes after line extends
-              }}
-              transition={{
-                opacity: { duration: 0.3 },
-                x: { duration: 0.6, ease: [0.4, 0, 0.2, 1], delay: 0.8 } // Move to center after line extends
+                inset: 0,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
               }}
             >
               <div
-                className="flex items-center justify-between relative"
                 style={{
-                  width: '100%',
-                  paddingLeft: `${PROGRESS_SIDE_PADDING}px`,
-                  paddingRight: `${PROGRESS_SIDE_PADDING}px`,
+                  width: 'min(92vw, 600px)',
+                  height: 430,
+                  position: 'relative',
+                  overflow: 'hidden',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  maskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
+                  WebkitMaskImage: 'linear-gradient(to bottom, transparent 0%, black 18%, black 82%, transparent 100%)',
                 }}
               >
-                {/* Stage 1: Line extending LEFT TO RIGHT from container's right edge (no labels) */}
-                {lineStage === 'container' && showModal && (
-                  <svg
-                    className="absolute top-6"
-                    style={{
-                      left: '40%', // Start position (user confirmed correct)
-                      width: '60%', // Extend to rightmost corner of main container (100% - 40% = 60%)
-                      height: '2px',
-                      overflow: 'visible',
-                      zIndex: 0, // Behind container
-                    }}
-                  >
-                    <motion.line
-                      x1="0"
-                      y1="1"
-                      x2="100%"
-                      y2="1"
-                      stroke="#5A58F2"
-                      strokeWidth="2"
-                      strokeLinecap="butt"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: lineProgress }}
-                      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                    />
-                  </svg>
-                )}
+                <motion.div
+                  animate={{
+                    y:
+                      node3State !== 'inactive'
+                        ? -(2 * (112 + 22)) + (1 * (112 + 22))
+                        : node2State !== 'inactive'
+                          ? -(1 * (112 + 22)) + (1 * (112 + 22))
+                          : 1 * (112 + 22),
+                  }}
+                  transition={{ duration: 0.42, ease: [0.22, 1, 0.36, 1] }}
+                  style={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 22 }}
+                >
+                  {[
+                    { key: 'n1', state: node1State, label: 'Connecting to 200+ Publishers' },
+                    { key: 'n2', state: node2State, label: 'Syncing Data' },
+                    { key: 'n3', state: node3State, label: 'Updating Listings' },
+                  ].map((item, idx) => {
+                    const activeIdx = node3State !== 'inactive' ? 2 : node2State !== 'inactive' ? 1 : 0
+                    const distance = Math.abs(idx - activeIdx)
+                    const opacity = Math.max(1 - distance * 0.28, 0.22)
 
-                {/* Stage 2: Multiple lines extending from left to nodes and end */}
-                {lineStage === 'nodes' && (
-                  <svg
-                    className="absolute top-6"
-                    viewBox="0 0 1920 2"
-                    preserveAspectRatio="none"
-                    style={{
-                      left: `-${PROGRESS_SIDE_PADDING}px`, // Extend beyond padded node container to page edge
-                      width: `calc(100% + ${PROGRESS_SIDE_PADDING * 2}px)`, // True full-artboard width
-                      height: '2px',
-                      overflow: 'visible',
-                    }}
-                  >
-                    {/* Line 1: From left page edge to Node 1 center */}
-                    <motion.line
-                      x1="0"
-                      y1="1"
-                      x2="766"
-                      y2="1"
-                      stroke="#5A58F2"
-                      strokeWidth="2"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: line1Progress }}
-                      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                    />
-
-                    {/* Line 2: From Node 1 center (464px) to Node 2 center (960px) */}
-                    <motion.line
-                      x1="766"
-                      y1="1"
-                      x2="960"
-                      y2="1"
-                      stroke="#5A58F2"
-                      strokeWidth="2"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: line2Progress }}
-                      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                    />
-
-                    {/* Line 3: From Node 2 center (960px) to Node 3 center (1456px) */}
-                    <motion.line
-                      x1="960"
-                      y1="1"
-                      x2="1130"
-                      y2="1"
-                      stroke="#5A58F2"
-                      strokeWidth="2"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: line3Progress }}
-                      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                    />
-
-                    {/* Line 4: From Node 3 center to right page edge */}
-                    <motion.line
-                      x1="1130"
-                      y1="1"
-                      x2="1920"
-                      y2="1"
-                      stroke="#5A58F2"
-                      strokeWidth="2"
-                      initial={{ pathLength: 0 }}
-                      animate={{ pathLength: line4Progress }}
-                      transition={{ duration: 0.6, ease: [0.4, 0, 0.2, 1] }}
-                    />
-                  </svg>
-                )}
-
-                {/* Node 1 */}
-                {showLabels && (
-                  <div className="flex flex-col items-center">
-                    <motion.div
-                      className="w-16 h-16 rounded-full flex items-center justify-center relative z-10"
-                      style={{
-                        background: '#5A58F2',
-                        opacity: node1State === 'complete' || node1State === 'loading' ? 1 : 0.85,
-                      }}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3, delay: 0.6 }}
-                    >
-                    {node1State === 'loading' && (
-                      <motion.svg
-                        className="w-6 h-6"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                      >
-                        <circle
-                          cx="12"
-                          cy="12"
-                          r="10"
-                          stroke="white"
-                          strokeWidth="2"
-                          strokeDasharray="31.416"
-                          strokeDashoffset="23.562"
-                        />
-                      </motion.svg>
-                    )}
-                    {node1State === 'complete' && (
-                      <motion.svg
-                        className="w-6 h-6"
-                        viewBox="0 0 24 24"
-                        fill="none"
+                    return (
+                      <motion.div
+                        key={item.key}
                         initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ duration: 0.2 }}
+                        animate={{ opacity }}
+                        transition={{ duration: 0.24, ease: 'easeOut' }}
+                        style={{
+                          width: '100%',
+                          height: 112,
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: 14,
+                          padding: '20px 24px',
+                          borderRadius: 14,
+                          border: '1px solid rgba(107, 114, 128, 0.35)',
+                          background: 'rgba(255, 255, 255, 0.82)',
+                          backdropFilter: 'blur(12px)',
+                          WebkitBackdropFilter: 'blur(12px)',
+                          color: '#101827',
+                          fontSize: 18,
+                          lineHeight: 1.2,
+                          fontWeight: 500,
+                        }}
                       >
-                        <path
-                          d="M20 6L9 17l-5-5"
-                          stroke="white"
-                          strokeWidth="2"
-                        />
-                      </motion.svg>
-                    )}
-                  </motion.div>
-                  {showLabels && (
-                    <div className="mt-3 text-gray-700 text-center font-semibold" style={{ fontSize: '16px', lineHeight: '1.4' }}>
-                      <div>Connecting to</div>
-                      <div>200+ Publishers</div>
-                    </div>
-                  )}
-                  </div>
-                )}
-
-                {/* Node 2 */}
-                {showLabels && (
-                  <div className="flex flex-col items-center">
-                    <motion.div
-                      className="w-16 h-16 rounded-full flex items-center justify-center relative z-10"
-                      style={{
-                        background: '#5A58F2',
-                        opacity: node2State === 'complete' || node2State === 'loading' ? 1 : 0.85,
-                      }}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3, delay: 0.6 }}
-                    >
-                      {node2State === 'loading' && (
-                        <motion.svg
-                          className="w-6 h-6"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                        <span
+                          style={{
+                            width: 46,
+                            height: 46,
+                            borderRadius: '50%',
+                            background: 'rgba(88, 88, 242, 0.95)',
+                            display: 'grid',
+                            placeItems: 'center',
+                            flexShrink: 0,
+                            opacity: item.state === 'inactive' ? 0.75 : item.state === 'complete' ? 0.88 : 1,
+                          }}
                         >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeDasharray="31.416"
-                            strokeDashoffset="23.562"
-                          />
-                        </motion.svg>
-                      )}
-                      {node2State === 'complete' && (
-                        <motion.svg
-                          className="w-6 h-6"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.2 }}
-                        >
-                          <path
-                            d="M20 6L9 17l-5-5"
-                            stroke="white"
-                            strokeWidth="2"
-                          />
-                        </motion.svg>
-                      )}
-                    </motion.div>
-                    {showLabels && (
-                      <div className="mt-3 text-gray-700 text-center font-semibold" style={{ fontSize: '16px', lineHeight: '1.4' }}>
-                        <div>Syncing</div>
-                        <div>Data</div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
-                {/* Node 3 */}
-                {showLabels && (
-                  <div className="flex flex-col items-center">
-                    <motion.div
-                      className="w-16 h-16 rounded-full flex items-center justify-center relative z-10"
-                      style={{
-                        background: '#5A58F2',
-                        opacity: node3State === 'complete' ? 1 : node3State === 'loading' ? 1 : 0.85,
-                      }}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      transition={{ duration: 0.3, delay: 0.6 }}
-                    >
-                      {node3State === 'loading' && (
-                        <motion.svg
-                          className="w-6 h-6"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
-                        >
-                          <circle
-                            cx="12"
-                            cy="12"
-                            r="10"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeDasharray="31.416"
-                            strokeDashoffset="23.562"
-                          />
-                        </motion.svg>
-                      )}
-                      {node3State === 'complete' && (
-                        <motion.svg
-                          className="w-6 h-6"
-                          viewBox="0 0 24 24"
-                          fill="none"
-                          initial={{ opacity: 0 }}
-                          animate={{ opacity: 1 }}
-                          transition={{ duration: 0.25 }}
-                        >
-                          <path
-                            d="M20 6L9 17l-5-5"
-                            stroke="white"
-                            strokeWidth="2"
-                            strokeLinejoin="round"
-                          />
-                        </motion.svg>
-                      )}
-                    </motion.div>
-                    {showLabels && (
-                      <div className="mt-3 text-gray-700 text-center font-semibold" style={{ fontSize: '16px', lineHeight: '1.4' }}>
-                        <div>Updating</div>
-                        <div>Listings</div>
-                      </div>
-                    )}
-                  </div>
-                )}
+                          <span style={{ width: 24, height: 24, position: 'relative', display: 'inline-block' }}>
+                            <motion.div
+                              style={{ position: 'absolute', inset: 0, display: 'grid', placeItems: 'center' }}
+                              animate={{ opacity: item.state === 'complete' ? 0 : 1 }}
+                              transition={{ duration: 0.2, ease: 'easeOut' }}
+                            >
+                              <motion.div
+                                style={{
+                                  width: 20,
+                                  height: 20,
+                                  borderRadius: '50%',
+                                  border: '2.8px solid rgba(255,255,255,0.35)',
+                                  borderTopColor: '#FFFFFF',
+                                  borderRightColor: '#FFFFFF',
+                                }}
+                                animate={{ rotate: 360 }}
+                                transition={{ duration: 0.8, repeat: Infinity, ease: 'linear' }}
+                              />
+                            </motion.div>
+                            <motion.svg
+                              viewBox="0 0 24 24"
+                              fill="none"
+                              style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
+                              initial={false}
+                              animate={{ opacity: item.state === 'complete' ? 1 : 0 }}
+                              transition={{ duration: 0.2, ease: 'easeOut' }}
+                            >
+                              <motion.path
+                                d="M6 12L10 16L18 8"
+                                stroke="#FFFFFF"
+                                strokeWidth="2.6"
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                initial={false}
+                                animate={{ pathLength: item.state === 'complete' ? 1 : 0 }}
+                                transition={{ duration: 0.34, ease: [0.4, 0, 0.2, 1] }}
+                              />
+                            </motion.svg>
+                          </span>
+                        </span>
+                        <span>{item.label}</span>
+                      </motion.div>
+                    )
+                  })}
+                </motion.div>
               </div>
             </motion.div>
           )}
