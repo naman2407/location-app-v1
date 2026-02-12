@@ -4,7 +4,7 @@ import { useEffect, useState, useRef } from 'react'
 import { motion, useAnimation, AnimatePresence } from 'framer-motion'
 import { SafeImage } from '../components/SafeImage'
 
-const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
+const DEMO_SHADOW = '0 6px 14px rgba(15, 23, 42, 0.08)'
 
 export default function HoursDemoPage() {
   const [showBrowser, setShowBrowser] = useState(false)
@@ -32,7 +32,7 @@ export default function HoursDemoPage() {
   const [cursorPosition, setCursorPosition] = useState({ x: 50, y: 50 })
   const [cursorClicking, setCursorClicking] = useState(false)
   const [sendButtonClicked, setSendButtonClicked] = useState(false)
-  
+
   const containerRef = useRef<HTMLDivElement>(null)
   const content1Ref = useRef<HTMLDivElement>(null)
   const browser1Controls = useAnimation()
@@ -64,11 +64,11 @@ Would you like the restaurant's phone number, directions, or menu?`
         const baseHeight = 1080
         const viewportWidth = window.innerWidth
         const viewportHeight = window.innerHeight
-        
+
         const scaleX = viewportWidth / baseWidth
         const scaleY = viewportHeight / baseHeight
         const newScale = Math.min(scaleX, scaleY, 1)
-        
+
         setScale(newScale)
       }
     }
@@ -129,7 +129,7 @@ Would you like the restaurant's phone number, directions, or menu?`
       // Move cursor to typing bar at bottom
       // Browser bottom: 50% + (800px/2)/1080px*100 = 50% + 37.04% = 87.04%
       // Typing bar is at bottom, input field center is approximately 87% - 2% = 85%
-      setCursorPosition({ x: 50, y: 85 })
+      setCursorPosition({ x: 50, y: 84 })
       await sleep(500)
 
       // Type question in input field
@@ -156,6 +156,7 @@ Would you like the restaurant's phone number, directions, or menu?`
       setSendButtonClicked(true) // Visual feedback on button
       await sleep(200) // Longer click animation
       setCursorClicking(false)
+      setSendButtonClicked(false)
       await sleep(100)
 
       // Clear input field first (question goes out from typing bar)
@@ -229,14 +230,14 @@ Would you like the restaurant's phone number, directions, or menu?`
         const easeProgress = progress < 0.5
           ? 4 * progress * progress * progress
           : 1 - Math.pow(-2 * progress + 2, 3) / 2
-        
+
         const currentScroll = startScroll + (targetScroll - startScroll) * easeProgress
         setScrollPosition(currentScroll)
-        
+
         if (content1Ref.current) {
           content1Ref.current.scrollTop = currentScroll
         }
-        
+
         if (progress >= 1) {
           clearInterval(scrollInterval)
         }
@@ -315,22 +316,22 @@ Would you like the restaurant's phone number, directions, or menu?`
         const startTime = Date.now()
         const startScroll = 0
         const targetScroll = content2Element.scrollHeight * 0.3
-        
+
         const scrollInterval = setInterval(() => {
           const elapsed = Date.now() - startTime
           const progress = Math.min(elapsed / scrollDuration, 1)
-          const easeProgress = progress < 0.5 
-            ? 2 * progress * progress 
+          const easeProgress = progress < 0.5
+            ? 2 * progress * progress
             : -1 + (4 - 2 * progress) * progress
-          
+
           const currentScroll = startScroll + (targetScroll - startScroll) * easeProgress
           content2Element.scrollTop = currentScroll
-          
+
           if (progress >= 1) {
             clearInterval(scrollInterval)
           }
         }, 16)
-        
+
         await sleep(scrollDuration)
       }
 
@@ -349,28 +350,27 @@ Would you like the restaurant's phone number, directions, or menu?`
       setShowModal(true)
       await sleep(7000)
 
-      // Fade out browsers
+      // Fade out browsers in place
       await Promise.all([
         browser1Controls.start({
-          left: '-18%',
-          x: '-50%',
           opacity: 0,
-          transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
+          transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] }
         }),
         browser2Controls.start({
-          left: '118%',
-          x: '-50%',
           opacity: 0,
-          transition: { duration: 0.8, ease: [0.25, 0.1, 0.25, 1] }
+          transition: { duration: 0.7, ease: [0.4, 0, 0.2, 1] }
         })
       ])
       setShowCursor(false)
-      
+
       // Brief pause with modal still visible
       await sleep(500)
-      
-      // Then fade out modal
+
+      // Then hide modal and browsers, and hold empty background
       setShowModal(false)
+      setShowLocationBrowser(false)
+      setShowGoogleBrowser(false)
+      await sleep(2000)
     }
 
     runAnimation()
@@ -382,7 +382,7 @@ Would you like the restaurant's phone number, directions, or menu?`
   }
 
   return (
-    <div 
+    <div
       className="fixed inset-0 w-screen h-screen overflow-hidden"
       style={{
         width: '100vw',
@@ -390,7 +390,7 @@ Would you like the restaurant's phone number, directions, or menu?`
         background: 'linear-gradient(180deg, #FFFFFF 0%, #F7F9FE 100%)',
       }}
     >
-      <div 
+      <div
         ref={containerRef}
         className="absolute inset-0 overflow-hidden flex items-center justify-center"
       >
@@ -413,14 +413,14 @@ Would you like the restaurant's phone number, directions, or menu?`
                     height: '28px',
                   }}
                   initial={{ opacity: 0, left: '50%', top: '50%' }}
-                  animate={{ 
+                  animate={{
                     opacity: 1,
                     left: `${cursorPosition.x}%`,
                     top: `${cursorPosition.y}%`,
                     scale: cursorClicking ? 0.85 : 1,
                   }}
                   exit={{ opacity: 0 }}
-                  transition={{ 
+                  transition={{
                     left: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
                     top: { duration: 0.5, ease: [0.4, 0, 0.2, 1] },
                     scale: { duration: 0.1 },
@@ -472,7 +472,7 @@ Would you like the restaurant's phone number, directions, or menu?`
                 <AnimatePresence>
                   {showChatInterface && (
                     <motion.div
-                      className="h-[calc(100%-48px)] bg-[#343541] overflow-y-auto relative"
+                      className="h-[calc(100%-48px)] bg-white overflow-y-auto relative"
                       initial={{ opacity: 0 }}
                       animate={{ opacity: 1 }}
                       exit={{ opacity: 0 }}
@@ -487,13 +487,13 @@ Would you like the restaurant's phone number, directions, or menu?`
                             className="mb-8"
                           >
                             <div className="flex items-start gap-4 justify-end">
-                              <div className="max-w-2xl bg-[#40414F] rounded-lg border border-[#565869] px-4 py-3">
-                                <div className="text-[#ECECF1] text-base">
+                              <div className="max-w-2xl bg-[#F8FAFC] rounded-lg border border-[#E5E7EB] px-4 py-3">
+                                <div className="text-[#101827] text-base">
                                   {question}
                                 </div>
                               </div>
-                              <div className="w-8 h-8 rounded-full bg-[#19C37D] flex items-center justify-center flex-shrink-0 mt-1">
-                                <span className="text-white text-xs font-semibold">U</span>
+                              <div className="w-8 h-8 rounded-full bg-[#5A58F2] flex items-center justify-center flex-shrink-0 mt-1">
+                                <span className="text-white text-[14px] leading-none font-semibold">U</span>
                               </div>
                             </div>
                           </motion.div>
@@ -509,61 +509,38 @@ Would you like the restaurant's phone number, directions, or menu?`
                             className="mb-8"
                           >
                             <div className="flex items-center gap-3">
-                              <svg 
-                                className="w-5 h-5 text-[#10A37F]" 
-                                fill="none" 
-                                stroke="currentColor" 
-                                viewBox="0 0 24 24"
-                              >
-                                <path 
-                                  strokeLinecap="round" 
-                                  strokeLinejoin="round" 
-                                  strokeWidth={2} 
-                                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" 
-                                />
-                              </svg>
-                              <span className="text-[#ECECF1]">Searching the web</span>
-                              <div className="flex gap-1.5 items-center">
-                                <motion.span
-                                  animate={{ 
-                                    opacity: [0.4, 1, 0.4],
-                                    scale: [1, 1.2, 1]
-                                  }}
-                                  transition={{ 
-                                    duration: 1, 
-                                    repeat: Infinity, 
-                                    delay: 0,
-                                    ease: "easeInOut"
-                                  }}
-                                  className="w-2 h-2 bg-[#10A37F] rounded-full"
-                                />
-                                <motion.span
-                                  animate={{ 
-                                    opacity: [0.4, 1, 0.4],
-                                    scale: [1, 1.2, 1]
-                                  }}
-                                  transition={{ 
-                                    duration: 1, 
-                                    repeat: Infinity, 
-                                    delay: 0.3,
-                                    ease: "easeInOut"
-                                  }}
-                                  className="w-2 h-2 bg-[#10A37F] rounded-full"
-                                />
-                                <motion.span
-                                  animate={{ 
-                                    opacity: [0.4, 1, 0.4],
-                                    scale: [1, 1.2, 1]
-                                  }}
-                                  transition={{ 
-                                    duration: 1, 
-                                    repeat: Infinity, 
-                                    delay: 0.6,
-                                    ease: "easeInOut"
-                                  }}
-                                  className="w-2 h-2 bg-[#10A37F] rounded-full"
-                                />
+                              <div className="w-8 h-8 rounded-full bg-[#5A58F2] flex items-center justify-center flex-shrink-0">
+                                <svg
+                                  className="w-[18px] h-[18px] text-white"
+                                  fill="none"
+                                  stroke="currentColor"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                                  />
+                                </svg>
                               </div>
+                              <motion.span
+                                className="font-medium"
+                                style={{
+                                  color: '#9CA3AF',
+                                  backgroundImage:
+                                    'linear-gradient(110deg, #9CA3AF 0%, #9CA3AF 38%, #5A58F2 50%, #9CA3AF 62%, #9CA3AF 100%)',
+                                  backgroundSize: '220% 100%',
+                                  backgroundClip: 'text',
+                                  WebkitBackgroundClip: 'text',
+                                  WebkitTextFillColor: 'transparent',
+                                }}
+                                initial={{ opacity: 0.9 }}
+                                animate={{ backgroundPosition: ['180% 0%', '-40% 0%'] }}
+                                transition={{ duration: 1.35, repeat: Infinity, ease: 'linear' }}
+                              >
+                                Thinking
+                              </motion.span>
                             </div>
                           </motion.div>
                         )}
@@ -572,17 +549,17 @@ Would you like the restaurant's phone number, directions, or menu?`
                         {showAnswer && (
                           <div className="mb-8">
                             <div className="flex items-start gap-4">
-                              <div className="w-8 h-8 rounded-full bg-[#AB68FF] flex items-center justify-center flex-shrink-0 mt-1">
-                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <div className="w-8 h-8 rounded-full bg-[#5A58F2] flex items-center justify-center flex-shrink-0">
+                                <svg className="w-[18px] h-[18px] text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
                                 </svg>
                               </div>
                               <div className="flex-1 pt-1">
                                 {/* Answer Text */}
-                                <div className="text-[#ECECF1] text-base leading-relaxed whitespace-pre-wrap">
+                                <div className="text-[#101827] text-base leading-relaxed whitespace-pre-wrap">
                                   {answerText}
                                   {answerText.length < fullAnswer.length && (
-                                    <span className="inline-block w-0.5 h-4 bg-[#ECECF1] ml-1 animate-pulse"></span>
+                                    <span className="inline-block w-0.5 h-4 bg-[#101827] ml-1 animate-pulse"></span>
                                   )}
                                 </div>
 
@@ -592,30 +569,30 @@ Would you like the restaurant's phone number, directions, or menu?`
                                     initial={{ opacity: 0, y: 10 }}
                                     animate={{ opacity: 1, y: 0 }}
                                     transition={{ duration: 0.3 }}
-                                    className="mt-6 pt-4 border-t border-[#565869] flex items-center gap-3 flex-wrap"
+                                    className="mt-6 pt-4 border-t border-[#E5E7EB] flex items-center gap-3 flex-wrap"
                                   >
-                                    <span className="text-[#8E8EA0] text-sm">Sources:</span>
+                                    <span className="text-[#6B7280] text-sm">Sources:</span>
                                     <button
                                       onClick={handleLocationClick}
                                       className={`text-sm font-medium transition-colors ${
-                                        hoverLocationLink 
-                                          ? 'text-[#0D8A6A] underline' 
-                                          : 'text-[#10A37F] hover:text-[#0D8A6A] hover:underline'
+                                        hoverLocationLink
+                                          ? 'text-[#4C4AD1] underline'
+                                          : 'text-[#5A58F2] hover:text-[#4C4AD1] hover:underline'
                                       }`}
                                     >
                                       Location.com
                                     </button>
-                                    <span className="text-[#565869]">·</span>
+                                    <span className="text-[#D1D5DB]">·</span>
                                     <button
                                       onClick={handleLocationClick}
-                                      className="text-[#10A37F] hover:text-[#0D8A6A] text-sm font-medium hover:underline transition-colors"
+                                      className="text-[#5A58F2] hover:text-[#4C4AD1] text-sm font-medium hover:underline transition-colors"
                                     >
                                       Google
                                     </button>
-                                    <span className="text-[#565869]">·</span>
+                                    <span className="text-[#D1D5DB]">·</span>
                                     <button
                                       onClick={handleLocationClick}
-                                      className="text-[#10A37F] hover:text-[#0D8A6A] text-sm font-medium hover:underline transition-colors"
+                                      className="text-[#5A58F2] hover:text-[#4C4AD1] text-sm font-medium hover:underline transition-colors"
                                     >
                                       Yelp
                                     </button>
@@ -631,33 +608,33 @@ Would you like the restaurant's phone number, directions, or menu?`
                           <motion.div
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            className="absolute bottom-0 left-0 right-0 bg-[#343541] border-t border-[#565869]"
+                            className="absolute bottom-0 left-0 right-0 bg-white border-t border-[#E5E7EB]"
                             style={{ zIndex: 10 }}
                           >
                             <div className="max-w-5xl mx-auto px-6 py-4">
                               <div className="relative">
-                                <div className="flex-1 bg-[#40414F] rounded-[30px] border border-[#565869] px-4 py-3 min-h-[48px] flex items-center pr-14">
-                                  <div className="text-[#ECECF1] text-base flex-1">
+                                <div className="flex-1 bg-white rounded-[30px] border border-[#D1D5DB] px-4 py-3 min-h-[48px] flex items-center pr-14">
+                                  <div className="text-[#101827] text-base flex-1">
                                     {inputText}
                                     {inputText.length < question.length && (
-                                      <span className="inline-block w-0.5 h-4 bg-[#ECECF1] ml-1 animate-pulse"></span>
+                                      <span className="inline-block w-0.5 h-4 bg-[#101827] ml-1 animate-pulse"></span>
                                     )}
                                   </div>
                                   <motion.button
                                     disabled={!inputText || inputText.length === 0}
-                                    className={`absolute right-2 w-[36px] h-[36px] rounded-full flex items-center justify-center transition-colors flex-shrink-0 ${
+                                    className={`absolute right-2 w-[38px] h-[38px] rounded-full flex items-center justify-center transition-colors flex-shrink-0 overflow-hidden ${
                                       inputText && inputText.length > 0
-                                        ? 'bg-[#10A37F] hover:bg-[#0D8A6A] cursor-pointer'
-                                        : 'bg-[#6B7280] cursor-not-allowed opacity-50'
+                                        ? 'bg-[#5A58F2] hover:bg-[#4C4AD1] cursor-pointer'
+                                        : 'bg-[#A29FF8] cursor-not-allowed opacity-60'
                                     }`}
                                     animate={{
-                                      scale: sendButtonClicked ? 0.9 : 1,
+                                      scale: sendButtonClicked ? [0.92, 1] : 1,
                                     }}
-                                    transition={{ duration: 0.1 }}
+                                    transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1], times: [0, 1] }}
                                   >
-                                    <img 
-                                      src="/images/demo/arrow.svg" 
-                                      alt="Arrow" 
+                                    <img
+                                      src="/images/demo/arrow.svg"
+                                      alt="Arrow"
                                       className="w-4 h-4"
                                     />
                                   </motion.button>
@@ -705,7 +682,7 @@ Would you like the restaurant's phone number, directions, or menu?`
                 </div>
 
                 {/* Browser Content */}
-                <div 
+                <div
                   ref={content1Ref}
                   className="relative w-full h-[calc(100%-48px)] overflow-y-auto overflow-x-hidden bg-white"
                   style={{ scrollBehavior: 'smooth' }}
@@ -775,7 +752,7 @@ Would you like the restaurant's phone number, directions, or menu?`
                 </div>
 
                 {/* Browser Content */}
-                <div 
+                <div
                   id="content2"
                   className="relative w-full h-[calc(100%-48px)] overflow-y-auto overflow-x-hidden bg-white"
                   style={{ scrollBehavior: 'smooth' }}

@@ -7,7 +7,9 @@ import { IMAGES } from '@/app/constants/images'
 
 export default function EcosystemDemoPage() {
   const [showCenterLogo, setShowCenterLogo] = useState(false)
+  const [showYextLogo, setShowYextLogo] = useState(false)
   const [showRotatingLogos, setShowRotatingLogos] = useState(false)
+  const [showCenterWebLines, setShowCenterWebLines] = useState(false)
   const [fadeOutLines, setFadeOutLines] = useState(false)
   const [fadeOutBrandLogos, setFadeOutBrandLogos] = useState(false)
   const [reverseLocationLogo, setReverseLocationLogo] = useState(false)
@@ -38,6 +40,10 @@ export default function EcosystemDemoPage() {
 
   useEffect(() => {
     const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+    const POST_YEXT_ACTIVE_MS = 6000
+    const LINE_FADE_MS = 500
+    const BRAND_FADE_MS = 500
+    const CENTER_FADE_MS = 500
 
     const runAnimation = async () => {
       // Start with 5 seconds of empty screen (just gradient)
@@ -53,20 +59,29 @@ export default function EcosystemDemoPage() {
 
       // Show rotating logos after location logo animation completes
       setShowRotatingLogos(true)
-      await sleep(20000) // Rotate for 20 seconds
+      await sleep(10000) // First half of rotation
+
+      // Midpoint handoff: fade out location.com, then reveal Yext piece-by-piece
+      setShowCenterLogo(false)
+      await sleep(420)
+      setShowYextLogo(true)
+      await sleep(380)
+      setShowCenterWebLines(true)
+      await sleep(POST_YEXT_ACTIVE_MS)
 
       // Start fade-out sequence
-      // Step 1: Fade out lines
+      // Step 1: Fade out Yext + all lines + rotating brand network together
       setFadeOutLines(true)
-      await sleep(500) // Wait for lines to fade out
-      
-      // Step 2: Fade out brand logos
+      setShowCenterWebLines(false)
       setFadeOutBrandLogos(true)
-      await sleep(500) // Wait for brand logos to fade out
-      
-      // Step 3: Reverse location logo animation
-      setReverseLocationLogo(true)
-      await sleep(2000) // Wait for reverse animation to complete
+      setShowYextLogo(false)
+      await sleep(LINE_FADE_MS)
+      await sleep(BRAND_FADE_MS)
+      await sleep(CENTER_FADE_MS)
+
+      // Step 4: Clear rotating layer and hold empty background
+      setShowRotatingLogos(false)
+      await sleep(2000)
     }
 
     runAnimation()
@@ -117,10 +132,11 @@ export default function EcosystemDemoPage() {
               top: '50%',
               left: '50%',
               transform: 'translate(-50%, -50%)',
+              zIndex: 40,
             }}
             initial={{ opacity: 0 }}
-            animate={showCenterLogo && !reverseLocationLogo ? { opacity: 1 } : reverseLocationLogo ? { opacity: 0 } : {}}
-            transition={{ duration: 0.2 }}
+            animate={showCenterLogo && !showYextLogo ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
           >
             <div className="relative w-80 h-80 flex items-center justify-center">
               <svg width="179" height="131" viewBox="0 0 179 131" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -353,6 +369,86 @@ export default function EcosystemDemoPage() {
             </div>
           </motion.div>
 
+          {/* Midpoint center logo switch: Yext logo (same center anchor, no background) */}
+          <motion.div
+            className="absolute"
+            style={{
+              top: '50%',
+              left: '50%',
+              transform: 'translate(-50%, -50%)',
+              zIndex: 60,
+            }}
+            initial={{ opacity: 0 }}
+            animate={showYextLogo ? { opacity: 1 } : { opacity: 0 }}
+            transition={{ duration: 0.34, ease: [0.22, 1, 0.36, 1] }}
+          >
+            <div className="relative w-80 h-80 flex items-center justify-center">
+              <motion.div
+                aria-hidden
+                className="absolute"
+                initial={{ opacity: 0, scale: 0.96 }}
+                animate={showYextLogo ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.36, ease: [0.22, 1, 0.36, 1] }}
+                style={{
+                  width: 140,
+                  height: 140,
+                  borderRadius: '50%',
+                  background: 'linear-gradient(180deg, #FFFFFF 0%, #F7F9FE 100%)',
+                  opacity: 1,
+                  zIndex: 1,
+                }}
+              />
+              <motion.svg
+                width="140"
+                height="140"
+                viewBox="0 0 720 720"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+                style={{ display: 'block', position: 'relative', zIndex: 2 }}
+                initial={false}
+                animate={showYextLogo ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.96 }}
+                transition={{ duration: 0.28, ease: 'easeOut' }}
+              >
+                <motion.path
+                  d="M360,0C161.2,0,0,161.2,0,360s161.2,360,360,360,360-161.2,360-360S558.8,0,360,0ZM360,691.2c-182.9,0-331.2-148.3-331.2-331.2S177.1,28.8,360,28.8s331.2,148.3,331.2,331.2-148.3,331.2-331.2,331.2Z"
+                  fill="#101827"
+                  initial={{ opacity: 0, scale: 0.92 }}
+                  animate={showYextLogo ? { opacity: 1, scale: 1 } : { opacity: 0, scale: 0.92 }}
+                  transition={{ duration: 0.22, delay: 0.02, ease: 'easeOut' }}
+                  style={{ transformOrigin: '50% 50%' }}
+                />
+                <motion.path
+                  d="M270 259.6 209.3 187.2 187.2 205.7 255.6 287.2 255.6 349.2 284.4 349.2 284.4 287.2 352.8 205.7 330.7 187.2 270 259.6Z"
+                  fill="#101827"
+                  initial={{ opacity: 0, y: -14 }}
+                  animate={showYextLogo ? { opacity: 1, y: 0 } : { opacity: 0, y: -14 }}
+                  transition={{ duration: 0.24, delay: 0.16, ease: [0.22, 1, 0.36, 1] }}
+                />
+                <motion.path
+                  d="M332.4 367.2 270 429.6 207.6 367.2 187.2 387.6 249.6 450 187.2 512.4 207.6 532.8 270 470.4 332.4 532.8 352.8 512.4 290.4 450 352.8 387.6 332.4 367.2Z"
+                  fill="#101827"
+                  initial={{ opacity: 0, x: -14 }}
+                  animate={showYextLogo ? { opacity: 1, x: 0 } : { opacity: 0, x: -14 }}
+                  transition={{ duration: 0.24, delay: 0.26, ease: [0.22, 1, 0.36, 1] }}
+                />
+                <motion.path
+                  d="M448.2,349.2c44.7,0,81-36.3,81-81h-28.8c0,28.8-23.4,52.2-52.2,52.2s-16-1.9-22.9-5.3l69.8-69.8,21.1-21.1c-14.4-22.3-39.5-37-68-37-44.7,0-81,36.3-81,81s36.3,81,81,81ZM448.2,216c10.1,0,19.6,2.9,27.6,7.9l-71.9,71.9c-5-8-7.9-17.4-7.9-27.6,0-28.8,23.4-52.2,52.2-52.2Z"
+                  fill="#101827"
+                  initial={{ opacity: 0, y: 12 }}
+                  animate={showYextLogo ? { opacity: 1, y: 0 } : { opacity: 0, y: 12 }}
+                  transition={{ duration: 0.24, delay: 0.36, ease: [0.22, 1, 0.36, 1] }}
+                />
+                <motion.path
+                  d="M370.8 399.6 435.6 399.6 435.6 529.2 464.4 529.2 464.4 399.6 529.2 399.6 529.2 370.8 370.8 370.8 370.8 399.6Z"
+                  fill="#101827"
+                  initial={{ opacity: 0, x: 14 }}
+                  animate={showYextLogo ? { opacity: 1, x: 0 } : { opacity: 0, x: 14 }}
+                  transition={{ duration: 0.24, delay: 0.46, ease: [0.22, 1, 0.36, 1] }}
+                />
+              </motion.svg>
+            </div>
+          </motion.div>
+
           {/* Rotating Logos Around Center */}
           {showRotatingLogos && (
             <motion.div
@@ -363,6 +459,7 @@ export default function EcosystemDemoPage() {
                 width: '1px',
                 height: '1px',
                 transform: 'translate(-50%, -50%)',
+                zIndex: 20,
               }}
               animate={{
                 rotate: 360,
@@ -386,57 +483,163 @@ export default function EcosystemDemoPage() {
                   pointerEvents: 'none',
                 }}
               >
+                {/* Center-to-brand dotted web lines (enabled at midpoint) */}
+                {showCenterWebLines && !fadeOutLines && logos.map((logo, index) => {
+                  const angle = (index * 360) / logoCount
+                  const x = Math.cos((angle * Math.PI) / 180) * radius
+                  const y = Math.sin((angle * Math.PI) / 180) * radius
+
+                  const centerX = radius + 120
+                  const centerY = radius + 120
+                  const svgX = centerX + x
+                  const svgY = centerY + y
+                  const lineLength = Math.sqrt(Math.pow(svgX - centerX, 2) + Math.pow(svgY - centerY, 2))
+
+                  return (
+                    <g key={`center-line-${logo.name}`}>
+                      {/* Data flow effect from center -> brand */}
+                      <motion.line
+                        x1={centerX}
+                        y1={centerY}
+                        x2={svgX}
+                        y2={svgY}
+                        stroke="#5A58F2"
+                        strokeWidth="2.4"
+                        strokeLinecap="round"
+                        strokeDasharray="4,10"
+                        initial={{ opacity: 0 }}
+                        animate={
+                          showCenterWebLines && !fadeOutLines
+                            ? { opacity: 0.95, strokeDashoffset: [22, 0] }
+                            : { opacity: 0, strokeDashoffset: 22 }
+                        }
+                        transition={{
+                          opacity: {
+                            duration: 0.25,
+                            delay: showCenterWebLines ? index * 0.12 : 0,
+                          },
+                          strokeDashoffset: {
+                            duration: 0.7,
+                            repeat: Infinity,
+                            ease: 'linear',
+                            delay: showCenterWebLines ? index * 0.08 : 0,
+                          },
+                        }}
+                      />
+
+                      {/* Soft glow pass to make transfer more prominent */}
+                      <motion.line
+                        x1={centerX}
+                        y1={centerY}
+                        x2={svgX}
+                        y2={svgY}
+                        stroke="rgba(90, 88, 242, 0.42)"
+                        strokeWidth="3.8"
+                        strokeLinecap="round"
+                        strokeDasharray="3,16"
+                        initial={{ opacity: 0 }}
+                        animate={
+                          showCenterWebLines && !fadeOutLines
+                            ? { opacity: [0.15, 0.48, 0.15], strokeDashoffset: [18, -4] }
+                            : { opacity: 0, strokeDashoffset: 18 }
+                        }
+                        transition={{
+                          opacity: {
+                            duration: 1.1,
+                            repeat: Infinity,
+                            ease: 'easeInOut',
+                            delay: showCenterWebLines ? index * 0.08 : 0,
+                          },
+                          strokeDashoffset: {
+                            duration: 0.9,
+                            repeat: Infinity,
+                            ease: 'linear',
+                            delay: showCenterWebLines ? index * 0.08 : 0,
+                          },
+                        }}
+                      />
+
+                      <motion.circle
+                        r="3.4"
+                        fill="#7D7BF5"
+                        style={{ filter: 'drop-shadow(0 0 6px rgba(90, 88, 242, 0.75))' }}
+                        initial={{ opacity: 0 }}
+                        animate={
+                          showCenterWebLines && !fadeOutLines
+                            ? {
+                                opacity: [0, 1, 1, 0],
+                                cx: [centerX, svgX],
+                                cy: [centerY, svgY],
+                              }
+                            : { opacity: 0, cx: centerX, cy: centerY }
+                        }
+                        transition={{
+                          duration: 1.05,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: showCenterWebLines ? index * 0.12 : 0,
+                        }}
+                      />
+
+                      <motion.circle
+                        r="7"
+                        fill="rgba(162, 159, 248, 0.25)"
+                        initial={{ opacity: 0 }}
+                        animate={
+                          showCenterWebLines && !fadeOutLines
+                            ? {
+                                opacity: [0, 0.55, 0.45, 0],
+                                cx: [centerX, svgX],
+                                cy: [centerY, svgY],
+                              }
+                            : { opacity: 0, cx: centerX, cy: centerY }
+                        }
+                        transition={{
+                          duration: 1.05,
+                          repeat: Infinity,
+                          ease: 'easeInOut',
+                          delay: showCenterWebLines ? index * 0.12 : 0,
+                        }}
+                      />
+                    </g>
+                  )
+                })}
+
+                {/* Brand-to-brand connector ring (follows rotating brand logos lifecycle) */}
                 {logos.map((logo, index) => {
                   const angle1 = (index * 360) / logoCount
-                  const angle2 = ((index + 1) % logoCount * 360) / logoCount
+                  const angle2 = (((index + 1) % logoCount) * 360) / logoCount
                   const x1 = Math.cos((angle1 * Math.PI) / 180) * radius
                   const y1 = Math.sin((angle1 * Math.PI) / 180) * radius
                   const x2 = Math.cos((angle2 * Math.PI) / 180) * radius
                   const y2 = Math.sin((angle2 * Math.PI) / 180) * radius
-                  
-                  // Convert to SVG coordinates (center is at radius + 120)
+
                   const svgX1 = radius + 120 + x1
                   const svgY1 = radius + 120 + y1
                   const svgX2 = radius + 120 + x2
                   const svgY2 = radius + 120 + y2
-                  
-                  // Calculate line length for dash animation
-                  const dashLength = 6
-                  const gapLength = 6
-                  const lineLength = Math.sqrt(Math.pow(svgX2 - svgX1, 2) + Math.pow(svgY2 - svgY1, 2))
 
                   return (
                     <motion.line
-                      key={`line-${index}`}
+                      key={`ring-line-${logo.name}`}
                       x1={svgX1}
                       y1={svgY1}
                       x2={svgX2}
                       y2={svgY2}
-                      stroke="rgba(0, 0, 0, 0.5)"
-                      strokeWidth="1"
-                      strokeDasharray={`${dashLength},${gapLength}`}
-                      initial={{ 
-                        strokeDashoffset: lineLength,
-                        opacity: 0 
-                      }}
-                      animate={{ 
-                        strokeDashoffset: fadeOutLines ? lineLength : 0,
-                        opacity: fadeOutLines ? 0 : 1 
-                      }}
+                      stroke="rgba(90, 88, 242, 0.45)"
+                      strokeWidth="1.2"
+                      strokeDasharray="5,7"
+                      initial={{ opacity: 0 }}
+                      animate={showRotatingLogos && !fadeOutBrandLogos ? { opacity: 1 } : { opacity: 0 }}
                       transition={{
-                        strokeDashoffset: {
-                          duration: 0.8,
-                          delay: fadeOutLines ? 0 : index * 0.25, // Sequential animation - each line appears after the previous
-                          ease: 'easeOut',
-                        },
-                        opacity: {
-                          duration: 0.4,
-                          delay: fadeOutLines ? 0 : index * 0.25,
-                        },
+                        duration: 0.4,
+                        delay: showRotatingLogos && !fadeOutBrandLogos ? index * 0.12 : 0,
+                        ease: [0.22, 1, 0.36, 1],
                       }}
                     />
                   )
                 })}
+
               </svg>
 
               {/* Logos - rotate with circle but stay upright */}
@@ -493,4 +696,3 @@ export default function EcosystemDemoPage() {
     </div>
   )
 }
-

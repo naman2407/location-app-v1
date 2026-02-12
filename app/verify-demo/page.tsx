@@ -3,8 +3,9 @@
 import { useEffect, useState, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { SafeImage } from '../components/SafeImage'
+import { Compare } from '@/components/ui/compare'
 
-const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
+const DEMO_SHADOW = '0 6px 14px rgba(15, 23, 42, 0.08)'
 
 export default function VerifyDemoPage() {
   const [showBrowser, setShowBrowser] = useState(false)
@@ -23,6 +24,10 @@ export default function VerifyDemoPage() {
   const [showLogo, setShowLogo] = useState(false)
   const [showLogoAnimation, setShowLogoAnimation] = useState(false)
   const [reverseLocationLogo, setReverseLocationLogo] = useState(false)
+  const [showCompare, setShowCompare] = useState(false)
+  const [hideLocationLayer, setHideLocationLayer] = useState(false)
+  const [showCtaRipple, setShowCtaRipple] = useState(false)
+  const [ctaRippleKey, setCtaRippleKey] = useState(0)
 
   const containerRef = useRef<HTMLDivElement>(null)
   const contentRef = useRef<HTMLDivElement>(null)
@@ -101,6 +106,32 @@ export default function VerifyDemoPage() {
   useEffect(() => {
     const runAnimation = async () => {
       const sleep = (ms: number) => new Promise(r => setTimeout(r, ms))
+      const smoothScrollToTop = async (duration: number = 700) => {
+        if (!contentRef.current) return
+        const startScroll = contentRef.current.scrollTop
+        const startTime = performance.now()
+
+        await new Promise<void>((resolve) => {
+          const tick = () => {
+            if (!contentRef.current) {
+              resolve()
+              return
+            }
+            const elapsed = performance.now() - startTime
+            const progress = Math.min(elapsed / duration, 1)
+            const ease = progress < 0.5
+              ? 4 * progress * progress * progress
+              : 1 - Math.pow(-2 * progress + 2, 3) / 2
+            contentRef.current.scrollTop = startScroll * (1 - ease)
+            if (progress < 1) {
+              requestAnimationFrame(tick)
+            } else {
+              resolve()
+            }
+          }
+          requestAnimationFrame(tick)
+        })
+      }
 
       // Start with 5 seconds of empty screen (just gradient)
       await sleep(5000)
@@ -130,6 +161,7 @@ export default function VerifyDemoPage() {
 
       // Show location.png - reset loaded state for smooth fade-in
       setLocationImageLoaded(false) // Reset loaded state for fade-in
+      setHideLocationLayer(false)
       setShowLocationImage(true)
       await sleep(500) // Wait for fade-in animation
 
@@ -168,45 +200,32 @@ export default function VerifyDemoPage() {
 
       // Click CTA - Start high-impact transformation
       setCursorClicking(true)
+      setCtaRippleKey(prev => prev + 1)
+      setShowCtaRipple(true)
       await sleep(200)
       setCursorClicking(false)
       await sleep(100)
+      await sleep(220)
+      setShowCtaRipple(false)
 
       // Hide cursor
       setShowCursor(false)
 
-      // Fade out location.png
-      setShowLocationImage(false)
-      await sleep(400)
+      // Compare transition from unverified to verified
+      await smoothScrollToTop(800)
+      await sleep(1000)
+      setShowCompare(true)
+      await sleep(340) // Let compare layer settle in before fading old layer
+      setHideLocationLayer(true)
+      await sleep(2600)
 
-      // Fade in verification screen
-      setShowVerificationScreen(true)
-      setVerificationStatus('verifying')
-      await sleep(200)
+      // Phase 2: Keep verified state visible for 6 seconds
+      await sleep(6000)
 
-      // Show spinner with "Verifying Brand Information" for 3 seconds
-      await sleep(3000)
-
-      // Change to checkmark with "Brand Verified"
-      setVerificationStatus('verified')
-      await sleep(3000)
-
-      // Hide verification screen and show location-verified.png
-      setShowVerificationScreen(false)
-      setVerifiedImageLoaded(false)
-      setShowVerifiedImage(true)
-      
-      await sleep(300) // Wait for image to load
-
-      // Phase 2: Show location-verified.png for 10 seconds
-      await sleep(10000)
-
-      // Phase 3: Push location-verified and browser out together from left
-      // Trigger the slide-out animation
-      setShowLogo(true) // This triggers browser slide-out
-      await sleep(1200) // Wait for slide-out animation to complete
-      // Hide image and browser after they've slid out
-      setShowVerifiedImage(false)
+      // Phase 3: Fade browser out in place
+      setShowLogo(true) // Trigger in-place browser fade-out
+      await sleep(900) // Wait for fade-out animation to complete
+      // Hide image and browser after fade
       setShowBrowser(false)
 
       // Phase 4: Empty screen with just background for 1.5 seconds
@@ -277,6 +296,28 @@ export default function VerifyDemoPage() {
             )}
           </AnimatePresence>
 
+          <AnimatePresence>
+            {showCtaRipple && (
+              <motion.div
+                key={`cta-ripple-${ctaRippleKey}`}
+                className="absolute pointer-events-none z-40"
+                style={{
+                  left: '72%',
+                  top: '65.5%',
+                  width: 14,
+                  height: 14,
+                  borderRadius: '999px',
+                  border: '2px solid rgba(90, 88, 242, 0.55)',
+                  transform: 'translate(-50%, -50%)',
+                }}
+                initial={{ scale: 0.2, opacity: 0.9 }}
+                animate={{ scale: 6.5, opacity: 0 }}
+                exit={{ opacity: 0 }}
+                transition={{ duration: 0.55, ease: [0.22, 1, 0.36, 1] }}
+              />
+            )}
+          </AnimatePresence>
+
 
 
           {/* Browser - Container stays the same, only inner content changes */}
@@ -296,10 +337,10 @@ export default function VerifyDemoPage() {
                 animate={{
                   opacity: showLogo ? 0 : 1,
                   scale: showLogo ? 0.95 : 1,
-                  x: showLogo ? '-200%' : '-50%',
+                  x: '-50%',
                 }}
-                exit={{ opacity: 0, scale: 0.95, x: '-200%' }}
-                transition={{ duration: 1.2, ease: [0.4, 0, 0.2, 1] }}
+                exit={{ opacity: 0, scale: 0.95, x: '-50%' }}
+                transition={{ duration: 0.8, ease: [0.4, 0, 0.2, 1] }}
               >
 
                 {/* Browser Topbar */}
@@ -324,102 +365,34 @@ export default function VerifyDemoPage() {
                   style={{ scrollBehavior: 'smooth' }}
                 >
                   <AnimatePresence mode="wait">
-                    {/* Verification Screen */}
-                    {showVerificationScreen && (
+                    {/* Compare transition */}
+                    {showCompare && (
                       <motion.div
-                        key="verification"
-                        className="absolute inset-0 bg-white flex items-center justify-center"
+                        key="compare"
+                        className="absolute inset-0 bg-white"
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
-                        transition={{ duration: 0.3 }}
+                        transition={{ duration: 0.56, ease: [0.22, 1, 0.36, 1] }}
                       >
-                        <motion.div
-                          className="flex flex-col items-center justify-center"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={{ opacity: 1, y: 0 }}
-                          transition={{ duration: 0.5 }}
-                        >
-                          {/* Spinner or Checkmark */}
-                          <AnimatePresence mode="wait">
-                            {verificationStatus === 'verifying' ? (
-                              <motion.div
-                                key="spinner"
-                                className="w-24 h-24 rounded-full flex items-center justify-center mb-6"
-                                style={{
-                                  background: '#5A58F2',
-                                }}
-                                initial={{ opacity: 0, scale: 0.8 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.8 }}
-                                transition={{ duration: 0.3 }}
-                              >
-                                <motion.svg
-                                  className="w-10 h-10"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                  animate={{ rotate: 360 }}
-                                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                                >
-                                  <circle
-                                    cx="12"
-                                    cy="12"
-                                    r="10"
-                                    stroke="white"
-                                    strokeWidth="2"
-                                    strokeDasharray="31.416"
-                                    strokeDashoffset="23.562"
-                                  />
-                                </motion.svg>
-                              </motion.div>
-                            ) : (
-                              <motion.div
-                                key="checkmark"
-                                className="w-24 h-24 rounded-full flex items-center justify-center mb-6"
-                                style={{
-                                  background: '#5A58F2',
-                                }}
-                                initial={{ opacity: 0, scale: 0 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                transition={{
-                                  duration: 0.5,
-                                  ease: [0.34, 1.56, 0.64, 1]
-                                }}
-                              >
-                                <svg
-                                  className="w-10 h-10"
-                                  viewBox="0 0 24 24"
-                                  fill="none"
-                                >
-                            <motion.path
-                                d="M6 12L10 16L18 8"
-                                stroke="white"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: 1 }}
-                                transition={{ duration: 0.5, delay: 0.2, ease: [0.4, 0, 0.2, 1] }}
-                            />
-                                </svg>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-
-                          {/* Label */}
-                          <motion.p
-                            key={verificationStatus}
-                            className="text-xl font-semibold text-gray-900"
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -10 }}
-                            transition={{ duration: 0.3 }}
-                          >
-                            {verificationStatus === 'verifying'
-                              ? 'Verifying Brand Information'
-                              : 'Brand Verified'}
-                          </motion.p>
-                        </motion.div>
+                        <div className="relative w-full h-full overflow-hidden">
+                          <Compare
+                            firstImage="/images/demo/location.png"
+                            secondImage="/images/demo/location-verified.png"
+                            firstImageClassName="w-full h-auto block"
+                            secondImageClassname="w-full h-auto block"
+                            className="w-full h-full pointer-events-none"
+                            slideMode="hover"
+                            autoplay={true}
+                            autoplayMode="once"
+                            autoplayDuration={3200}
+                            autoplayStartDelayMs={220}
+                            initialSliderPercentage={0}
+                            showHandlebar={true}
+                            disableInteractions={true}
+                            lineOffsetTopPx={48}
+                          />
+                        </div>
                       </motion.div>
                     )}
 
@@ -428,11 +401,16 @@ export default function VerifyDemoPage() {
                       <motion.div
                         key="location"
                         className="w-full"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: locationImageLoaded ? 1 : 0 }}
-                        exit={{ opacity: 0 }}
+                        initial={{ opacity: 0, filter: 'blur(4px)' }}
+                        animate={{
+                          opacity: hideLocationLayer ? 0 : (locationImageLoaded ? 1 : 0),
+                          filter: hideLocationLayer
+                            ? 'blur(2px)'
+                            : (locationImageLoaded ? 'blur(0px)' : 'blur(4px)'),
+                        }}
+                        exit={{ opacity: 0, filter: 'blur(2px)' }}
                         transition={{
-                          duration: 0.8,
+                          duration: 0.6,
                           ease: [0.4, 0, 0.2, 1],
                         }}
                       >
@@ -447,29 +425,6 @@ export default function VerifyDemoPage() {
                       </motion.div>
                     )}
 
-                    {/* Location-verified.png - Verified page */}
-                    {showVerifiedImage && !showVerificationScreen && (
-                      <motion.div
-                        key="verified"
-                        className="w-full"
-                        initial={{ opacity: 0 }}
-                        animate={{
-                          opacity: verifiedImageLoaded ? 1 : 0,
-                        }}
-                        exit={{ opacity: 0 }}
-                        transition={{
-                          duration: 0.8,
-                          ease: [0.4, 0, 0.2, 1],
-                        }}
-                      >
-                        <SafeImage
-                          src="/images/demo/location-verified.png"
-                          alt="Location Verified Page"
-                          className="w-full h-auto block"
-                          onLoad={() => setVerifiedImageLoaded(true)}
-                        />
-                      </motion.div>
-                    )}
                   </AnimatePresence>
                 </div>
               </motion.div>

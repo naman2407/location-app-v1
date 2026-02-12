@@ -4,8 +4,8 @@ import { useState, useEffect, useRef } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 
 const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
-const DEMO_DROP_SHADOW = 'drop-shadow(0 10px 24px rgba(15, 23, 42, 0.12))'
+const DEMO_SHADOW = '0 6px 14px rgba(15, 23, 42, 0.08)'
+const DEMO_DROP_SHADOW = 'drop-shadow(0 6px 14px rgba(15, 23, 42, 0.08))'
 
 export default function KnowledgeGraphDemoPage() {
   const [showModal, setShowModal] = useState(false)
@@ -335,12 +335,12 @@ export default function KnowledgeGraphDemoPage() {
               }}
               exit={{
                 opacity: 0,
-                x: '-200%',
+                x: '-50%',
                 y: '-50%',
                 transition: {
-                  duration: 0.5,
-                  ease: [0.25, 0.1, 0.25, 1],
-                  opacity: { duration: 0.4, ease: [0.4, 0, 0.2, 1] }
+                  duration: 0.45,
+                  ease: [0.4, 0, 0.2, 1],
+                  opacity: { duration: 0.45, ease: [0.4, 0, 0.2, 1] }
                 }
               }}
               transition={{

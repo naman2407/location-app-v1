@@ -93,7 +93,7 @@ function SearchLanding({
     ctx.clearRect(0, 0, width, height)
     ctx.globalAlpha = 1
     ctx.fillStyle = '#101827'
-    ctx.font = '500 24px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
+    ctx.font = '400 16px Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif'
     ctx.textBaseline = 'middle'
     ctx.fillText(SEARCH_QUERY, 24, height / 2)
 
@@ -212,13 +212,11 @@ function SearchLanding({
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'space-between',
-          gap: 16,
-          padding: '0 12px 0 24px',
-          borderRadius: 999,
+          gap: 12,
+          padding: '12px 56px 12px 16px',
+          borderRadius: 30,
           background: '#FFFFFF',
           border: '1px solid #D1D5DB',
-          boxShadow:
-            '0px 2px 3px -1px rgba(0,0,0,0.1), 0px 1px 0px 0px rgba(25,28,33,0.02), 0px 0px 0px 1px rgba(25,28,33,0.08)',
           position: 'relative',
           overflow: 'hidden',
         }}
@@ -239,7 +237,8 @@ function SearchLanding({
         <motion.span
           style={{
             color: '#101827',
-            fontSize: 24,
+            fontSize: 16,
+            lineHeight: 1.4,
             whiteSpace: 'nowrap',
             overflow: 'hidden',
             textOverflow: 'ellipsis',
@@ -260,27 +259,20 @@ function SearchLanding({
             display: 'grid',
             placeItems: 'center',
             flexShrink: 0,
-            position: 'relative',
             overflow: 'hidden',
             opacity: sending ? 0.9 : 1,
+            right: 8,
+            top: 12,
+            position: 'absolute',
           }}
           animate={{ scale: sending ? [0.92, 1] : 1 }}
           transition={{ duration: 0.22, ease: [0.22, 1, 0.36, 1], times: [0, 1] }}
         >
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="18"
-            height="18"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="#FFFFFF"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          >
-            <path d="M5 12h14" />
-            <path d="M13 6l6 6-6 6" />
-          </svg>
+          <img
+            src="/images/demo/arrow.svg"
+            alt="Arrow"
+            style={{ width: 16, height: 16 }}
+          />
         </motion.button>
       </div>
     </motion.div>
@@ -949,7 +941,7 @@ export default function HoursDemoAISearchAnimation() {
         height: '100vh',
         overflow: 'hidden',
         background:
-          'radial-gradient(1200px 640px at 50% 18%, rgba(88, 88, 242, 0.08) 0%, rgba(88, 88, 242, 0) 62%), linear-gradient(180deg, #FFFFFF 0%, #F7F9FE 100%)',
+          'linear-gradient(180deg, #FFFFFF 0%, #F7F9FE 100%)',
       }}
     >
       <div

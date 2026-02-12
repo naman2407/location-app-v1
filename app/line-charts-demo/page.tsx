@@ -5,14 +5,13 @@ import { useSearchParams } from 'next/navigation'
 import { AnimatePresence, animate, motion, useMotionValue, useReducedMotion } from 'framer-motion'
 import type { CSSProperties } from 'react'
 
-const DEMO_SHADOW = '0 10px 24px rgba(15, 23, 42, 0.12)'
+const DEMO_SHADOW = '0 6px 14px rgba(15, 23, 42, 0.08)'
 const CARD_SHADOW = DEMO_SHADOW
 const SCENE_VARIANTS = {
-  enter: { x: 220, opacity: 0 },
-  center: { x: 0, opacity: 1 },
+  enter: { opacity: 0 },
+  center: { opacity: 1 },
   exit: { opacity: 0 },
 }
-const SCENE2_OUTSIDE_X = 2200
 const ODOMETER_EASE: [number, number, number, number] = [0.16, 1, 0.3, 1]
 
 type OdometerNumberProps = {
@@ -177,6 +176,62 @@ function OdometerDigit({
   )
 }
 
+type SmoothCountNumberProps = {
+  value: number
+  startValue?: number
+  decimals?: number
+  className?: string
+  style?: CSSProperties
+  duration?: number
+  delay?: number
+  startDelay?: number
+  suffix?: string
+  suffixClassName?: string
+  reduceMotion?: boolean
+}
+
+function SmoothCountNumber({
+  value,
+  startValue = 0,
+  decimals = 0,
+  className,
+  style,
+  duration = 1,
+  delay = 0,
+  startDelay = 0,
+  suffix,
+  suffixClassName,
+  reduceMotion,
+}: SmoothCountNumberProps) {
+  const motionValue = useMotionValue(startValue)
+  const [display, setDisplay] = useState(startValue)
+
+  useEffect(() => {
+    if (reduceMotion) {
+      setDisplay(value)
+      return
+    }
+
+    motionValue.set(startValue)
+    const controls = animate(motionValue, value, {
+      duration,
+      delay: startDelay + delay,
+      ease: ODOMETER_EASE,
+      onUpdate: (latest) => setDisplay(latest),
+    })
+    return () => controls.stop()
+  }, [reduceMotion, motionValue, value, startValue, duration, delay, startDelay])
+
+  const text = decimals > 0 ? display.toFixed(decimals) : `${Math.round(display)}`
+
+  return (
+    <span className={className} style={{ display: 'inline-flex', alignItems: 'baseline', ...style }}>
+      {text}
+      {suffix ? <span className={suffixClassName}>{suffix}</span> : null}
+    </span>
+  )
+}
+
 type KpiMetricProps = {
   label: string
   value: string
@@ -192,6 +247,7 @@ type KpiMetricProps = {
   reduceMotion?: boolean
   startDelay?: number
   active?: boolean
+  useSmoothCount?: boolean
 }
 
 function KpiMetric({
@@ -209,7 +265,12 @@ function KpiMetric({
   reduceMotion,
   startDelay = 0,
   active = true,
+  useSmoothCount = false,
 }: KpiMetricProps) {
+  const numericValue = Number(value)
+  const numericDelta = Number(delta)
+  const canUseSmoothCount = useSmoothCount && Number.isFinite(numericValue) && Number.isFinite(numericDelta)
+
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-3">
@@ -224,26 +285,44 @@ function KpiMetric({
       <div className="flex items-baseline gap-4 min-h-[44px]">
         <div className="inline-flex w-fit">
           {active || reduceMotion ? (
-            <OdometerNumber
-              key={`${value}-${active ? 'on' : 'off'}`}
-              value={value}
-              startValue={valueStart}
-              extraCycles={1}
-              suffix={valueSuffix}
-              delay={1.2}
-              duration={1.1}
-              startDelay={startDelay}
-              digitHeight={34}
-              digitWidth={22}
-              className="text-[36px] font-medium tracking-tight leading-none tabular-nums"
-              style={{
-                color: valueColor ?? '#111827',
-                justifyContent: 'flex-start',
-              }}
-              suffixClassName="text-xl font-medium text-gray-500 ml-1"
-              suffixDelay={0}
-              reduceMotion={reduceMotion}
-            />
+            canUseSmoothCount ? (
+              <SmoothCountNumber
+                value={numericValue}
+                startValue={typeof valueStart === 'number' ? valueStart : 0}
+                suffix={valueSuffix}
+                delay={1.2}
+                duration={1.1}
+                startDelay={startDelay}
+                className="text-[36px] font-medium tracking-tight leading-none tabular-nums"
+                style={{
+                  color: valueColor ?? '#111827',
+                  justifyContent: 'flex-start',
+                }}
+                suffixClassName="text-xl font-medium text-gray-500 ml-1"
+                reduceMotion={reduceMotion}
+              />
+            ) : (
+              <OdometerNumber
+                key={`${value}-${active ? 'on' : 'off'}`}
+                value={value}
+                startValue={valueStart}
+                extraCycles={1}
+                suffix={valueSuffix}
+                delay={1.2}
+                duration={1.1}
+                startDelay={startDelay}
+                digitHeight={34}
+                digitWidth={22}
+                className="text-[36px] font-medium tracking-tight leading-none tabular-nums"
+                style={{
+                  color: valueColor ?? '#111827',
+                  justifyContent: 'flex-start',
+                }}
+                suffixClassName="text-xl font-medium text-gray-500 ml-1"
+                suffixDelay={0}
+                reduceMotion={reduceMotion}
+              />
+            )
           ) : (
             <span className="text-[36px] font-medium tracking-tight leading-none tabular-nums opacity-0">
               {value}
@@ -253,22 +332,36 @@ function KpiMetric({
         <div className="flex items-center gap-1 text-sm font-medium text-emerald-600">
           {active || reduceMotion ? <span>{deltaDirection === 'down' ? '↘' : '↗'}</span> : null}
           {active || reduceMotion ? (
-            <OdometerNumber
-              key={`${delta}-${active ? 'on' : 'off'}`}
-              value={delta}
-              startValue={deltaStart}
-              extraCycles={1}
-              suffix={deltaSuffix}
-              delay={1.25}
-              duration={1.0}
-              startDelay={startDelay}
-              digitHeight={18}
-              digitWidth={10}
-              className="text-sm font-medium text-emerald-600 tracking-tight"
-              suffixClassName="text-sm font-medium text-emerald-600 ml-1"
-              suffixDelay={0}
-              reduceMotion={reduceMotion}
-            />
+            canUseSmoothCount ? (
+              <SmoothCountNumber
+                value={numericDelta}
+                startValue={typeof deltaStart === 'number' ? deltaStart : 0}
+                suffix={deltaSuffix}
+                delay={1.25}
+                duration={1.0}
+                startDelay={startDelay}
+                className="text-sm font-medium text-emerald-600 tracking-tight"
+                suffixClassName="text-sm font-medium text-emerald-600 ml-1"
+                reduceMotion={reduceMotion}
+              />
+            ) : (
+              <OdometerNumber
+                key={`${delta}-${active ? 'on' : 'off'}`}
+                value={delta}
+                startValue={deltaStart}
+                extraCycles={1}
+                suffix={deltaSuffix}
+                delay={1.25}
+                duration={1.0}
+                startDelay={startDelay}
+                digitHeight={18}
+                digitWidth={10}
+                className="text-sm font-medium text-emerald-600 tracking-tight"
+                suffixClassName="text-sm font-medium text-emerald-600 ml-1"
+                suffixDelay={0}
+                reduceMotion={reduceMotion}
+              />
+            )
           ) : (
             <span className="text-sm font-medium text-emerald-600 opacity-0">{delta}</span>
           )}
@@ -530,12 +623,19 @@ function GaugeCard({
     >
       <div className="flex items-center justify-between mb-3">
         {showTitle ? (
-          <span className="text-[16px] font-semibold text-gray-900 whitespace-nowrap">{title}</span>
+          <motion.span
+            className="text-[16px] font-semibold text-gray-900 whitespace-nowrap"
+            initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+            animate={showTitle ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+          >
+            {title}
+          </motion.span>
         ) : (
           <span className="text-[16px] font-semibold text-gray-900 opacity-0">Visibility score</span>
         )}
         {showBadge ? (
-          <span
+          <motion.span
             className="text-[12px] font-medium px-2.5 py-0.5 whitespace-nowrap"
             style={{
               borderRadius: '6px',
@@ -543,16 +643,26 @@ function GaugeCard({
               color: '#146C43',
               border: '1px solid #146C43',
             }}
+            initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 4 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
           >
             Strong performance
-          </span>
+          </motion.span>
         ) : (
           <span className="text-[12px] font-medium px-2.5 py-0.5 opacity-0">Strong performance</span>
         )}
       </div>
       <div className="flex items-center justify-center flex-1">
         <div className="relative w-full max-w-[360px] h-[140px] flex items-center justify-center px-4">
-          <svg width="360" height="140" viewBox="0 0 360 140">
+          <motion.svg
+            width="360"
+            height="140"
+            viewBox="0 0 360 140"
+            initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
+            animate={showContent ? { opacity: 1 } : { opacity: 0 }}
+            transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+          >
             <g transform="translate(180 104)">
               <path
                 d={arcPath}
@@ -583,7 +693,7 @@ function GaugeCard({
                 transition={reduceMotion ? { duration: 0 } : { duration: 1.2, ease: [0.22, 1, 0.36, 1] }}
               />
             </g>
-          </svg>
+          </motion.svg>
           <div className="absolute inset-0 flex flex-col items-center justify-center pt-5">
             {showContent && (active || reduceMotion) ? (
               <OdometerNumber
@@ -617,15 +727,20 @@ function GaugeCard({
               ) : (
                 <span className="opacity-0">{delta}</span>
               )}
-              <span className="text-[14px] text-gray-800">since last scan</span>
+              <span className={`text-[14px] text-gray-800 ${showContent ? '' : 'opacity-0'}`}>since last scan</span>
             </div>
           </div>
         </div>
       </div>
-      <div className="mt-1 flex items-center justify-center gap-2 text-[13px] text-gray-800">
+      <motion.div
+        className="mt-1 flex items-center justify-center gap-2 text-[13px] text-gray-800"
+        initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
+        animate={showContent ? { opacity: 1 } : { opacity: 0 }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+      >
         <span className="w-3 h-3 rounded-full" style={{ backgroundColor: accent }} />
         <span>Your Score</span>
-      </div>
+      </motion.div>
     </motion.div>
   )
 }
@@ -642,6 +757,7 @@ type MetricRowCardProps = {
   reduceMotion?: boolean
   active?: boolean
   delay?: number
+  showHeader?: boolean
   showContent?: boolean
 }
 
@@ -657,6 +773,7 @@ function MetricRowCard({
   reduceMotion,
   active,
   delay = 0,
+  showHeader = true,
   showContent = true,
 }: MetricRowCardProps) {
   return (
@@ -670,10 +787,15 @@ function MetricRowCard({
           : { duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] }
       }
     >
-      <div className={`flex items-center justify-between text-[12px] font-medium text-gray-900 mb-2 ${showContent ? '' : 'opacity-0'}`}>
+      <motion.div
+        className="flex items-center justify-between text-[12px] font-medium text-gray-900 mb-2"
+        initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+        animate={showHeader ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      >
         <span>{title}</span>
         <span className="text-[11px] text-indigo-500">{linkLabel}</span>
-      </div>
+      </motion.div>
       <div className="flex items-center justify-between gap-5 mb-2 flex-1">
         <div className="flex items-baseline gap-1.5 justify-start" style={{ width: `${valueBlockWidth}px` }}>
           {showContent && (active || reduceMotion) ? (
@@ -730,11 +852,18 @@ function MetricRowCard({
 type MiniLineChartProps = {
   reduceMotion?: boolean
   active?: boolean
+  showHeader?: boolean
   showLegend?: boolean
   shellVisible?: boolean
 }
 
-function MiniLineChart({ reduceMotion, active, showLegend, shellVisible = true }: MiniLineChartProps) {
+function MiniLineChart({
+  reduceMotion,
+  active,
+  showHeader = true,
+  showLegend,
+  shellVisible = true,
+}: MiniLineChartProps) {
   const chartWidth = 360
   const chartHeight = 230
   const padding = { top: 20, right: 12, bottom: 28, left: 28 }
@@ -797,7 +926,14 @@ function MiniLineChart({ reduceMotion, active, showLegend, shellVisible = true }
       animate={shellVisible ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
       transition={reduceMotion ? { duration: 0 } : { duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
     >
-      <div className="text-[12px] font-medium text-gray-900 mb-2">Visibility score over time</div>
+      <motion.div
+        className="text-[12px] font-medium text-gray-900 mb-2"
+        initial={reduceMotion ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+        animate={showHeader ? { opacity: 1, y: 0 } : { opacity: 0, y: 8 }}
+        transition={reduceMotion ? { duration: 0 } : { duration: 0.45, ease: [0.22, 1, 0.36, 1] }}
+      >
+        Visibility score over time
+      </motion.div>
       <motion.svg
         width="100%"
         height="100%"
@@ -1016,15 +1152,15 @@ function LineChartsDemoInner() {
       timers.push(id)
     }
 
-    schedule(() => setShowScene2Shells(true), 300)
-    schedule(() => setShowScene2Cards(true), 450)
-    schedule(() => setShowScene2Header(true), 700)
-    schedule(() => setShowScene2GaugeContent(true), 1000)
-    schedule(() => setShowScene2CardContent(true), 1300)
+    schedule(() => setShowScene2Shells(true), 650)
+    schedule(() => setShowScene2Cards(true), 1200)
+    schedule(() => setShowScene2Header(true), 1850)
     schedule(() => {
+      setShowScene2GaugeContent(true)
+      setShowScene2CardContent(true)
       setShowScene2Metrics(true)
       setShowScene2Chart(true)
-    }, 1650)
+    }, 3200)
     schedule(() => {
       setShowScene2Legend(true)
       setShowScene2Badges(true)
@@ -1036,7 +1172,7 @@ function LineChartsDemoInner() {
       setShowScene2Metrics(true)
       setShowScene2Chart(true)
       scene2CompletedRef.current = true
-    }, 2100)
+    }, 4300)
 
     return () => {
       timers.forEach((timer) => window.clearTimeout(timer))
@@ -1077,7 +1213,7 @@ function LineChartsDemoInner() {
               style={{ opacity: 0.35 }}
             />
           )}
-          <AnimatePresence initial={true}>
+          <AnimatePresence initial={true} mode="wait">
             {scene === 1 && (
               <motion.div
                 key="scene-1"
@@ -1136,6 +1272,7 @@ function LineChartsDemoInner() {
                           reduceMotion={reduceMotion}
                           startDelay={0.6}
                           active={showContent}
+                          useSmoothCount
                         />
                         <KpiMetric
                           key={`kpi-time-${showContent ? 'on' : 'off'}`}
@@ -1167,6 +1304,7 @@ function LineChartsDemoInner() {
                           reduceMotion={reduceMotion}
                           startDelay={0.6}
                           active={showContent}
+                          useSmoothCount
                         />
                       </motion.div>
                       <motion.div
@@ -1202,15 +1340,15 @@ function LineChartsDemoInner() {
               <motion.div
                 key="scene-2"
                 className="absolute inset-0 flex items-center justify-center"
-                initial={reduceMotion ? { x: 0, opacity: 1 } : { x: SCENE2_OUTSIDE_X, opacity: 0 }}
+                initial={reduceMotion ? { opacity: 1 } : { opacity: 0 }}
                 animate={
                   reduceMotion
-                    ? { x: 0, opacity: fadeOut ? 0 : 1 }
+                    ? { opacity: fadeOut ? 0 : 1 }
                     : fadeOut
-                      ? { x: -SCENE2_OUTSIDE_X, opacity: 0 }
-                      : { x: 0, opacity: 1 }
+                      ? { opacity: 0 }
+                      : { opacity: 1 }
                 }
-                exit={reduceMotion ? { opacity: 0 } : { x: -SCENE2_OUTSIDE_X, opacity: 0 }}
+                exit={{ opacity: 0 }}
                 transition={{
                   duration: fadeOut ? 0.8 : 0.7,
                   ease: [0.22, 1, 0.36, 1],
@@ -1319,6 +1457,7 @@ function LineChartsDemoInner() {
                           valueBlockWidth={64}
                           reduceMotion={reduceMotion}
                           active={s2CardContent}
+                          showHeader={s2Header}
                           showContent={s2Metrics}
                           delay={0}
                         />
@@ -1333,6 +1472,7 @@ function LineChartsDemoInner() {
                           valueBlockWidth={64}
                           reduceMotion={reduceMotion}
                           active={s2CardContent}
+                          showHeader={s2Header}
                           showContent={s2Metrics}
                           delay={0.1}
                         />
@@ -1347,6 +1487,7 @@ function LineChartsDemoInner() {
                           valueBlockWidth={88}
                           reduceMotion={reduceMotion}
                           active={s2CardContent}
+                          showHeader={s2Header}
                           showContent={s2Metrics}
                           delay={0.2}
                         />
@@ -1354,6 +1495,7 @@ function LineChartsDemoInner() {
                         <MiniLineChart
                           reduceMotion={reduceMotion}
                           active={s2Chart}
+                          showHeader={s2Header}
                           showLegend={s2Legend}
                           shellVisible={s2CardContent}
                         />
